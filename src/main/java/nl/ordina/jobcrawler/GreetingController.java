@@ -12,7 +12,7 @@ public class GreetingController {
 
     private final AtomicLong counter = new AtomicLong();
 
-    @CrossOrigin(origins = "localhost:4200")
+    @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/greeting")
     public Greeting greeting(@RequestParam String name) {
         return new Greeting(counter.incrementAndGet(), name);
