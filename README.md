@@ -1,5 +1,5 @@
 # Jobcrawler Backend
-Backend for the job crawler to find IT vacancies.
+Backend for the job crawler to find IT vacancies
 
 ## Endpoints
 All endpoints and their functionality is described in the [endpoint document](docs/ENDPOINTS.md)
