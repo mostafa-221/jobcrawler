@@ -25,5 +25,4 @@ public class AanvraagDTO {
     private String postingDate;
     private String about;
     private List<String> skillSet;
-
 }
