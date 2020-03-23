@@ -17,7 +17,7 @@ mvn --version
 ```
 
 #### Docker
-Install docker as described [here](https://docs.docker.com/install/). If you're installing on Linux
+Install docker as described [here](https://docs.docker.com/install/). If you're installing on Ubuntu or a different linux system, check out [these pages](https://docs.docker.com/install/linux/docker-ce/ubuntu/) for installation.
 Check if Docker is working:
 ```
 docker --version
