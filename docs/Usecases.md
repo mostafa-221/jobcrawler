@@ -1,5 +1,6 @@
 # Jobcrawler use cases
 
+Adriaan =- 23 maart
 We staan nog aan het begin van onze samenwerking in dit jobcrawler project. 
 Op dit moment zijn we nog heel erg in de verkenningsfase.
 Door veel onduidelijkheden in de mogelijkheden van de webservices is het opstellen van use cases nog prematuur.
@@ -9,14 +10,16 @@ Ik nodig hierbij eenieder van het jobcrawler project uit om eigen bevindingen ro
 
 ## Inventarisatie op te halen informatie van recruiters
 
+Adriaan =- 23 maart
 Het blijkt het geval te zijn dat de websites van de verschillende recruiters een zeer verschillende opbouw hebben.
-
 Aan de hand van de uitkomsten van de verkenningsfase zou ik graag een inventarisatie willen hebben van de mogelijkheden en informatie-items die we zouden kunnen onttrekken aan de verschillende websites.
 Samen kunnen bespreken wat we er uiteindelijk voor use cases uit zouden willen destilleren. Op het moment van schrijven is het maandag 23 maart, laten we als voorlopig doel stellen dat we dit voor eind maart weten en dan onze eerste use cases opbouwen.
 
 
 
 ## Gemeenschappelijke Aanvraag-informatie bestaande pakket
+
+Adriaan =- 23 maart
 De informatie die bij de verschillende recruiters vandaan gehaald is door de verschillende scapers in het bestaande pakket ondergebracht in de entiteit
 Aanvraag:
 
@@ -33,6 +36,8 @@ Aanvraag:
     
     
 ## Verschillen tussen de websites
+
+Adriaan =- 23 maart
 Verschillen tussen de websites van recruiters uit het bestaande pakket:
 
 - De website van Yacht is voorzien van een vrij vast template, zodat daar ook bepaalde vaste kenmerken kunnen worden opgehaald zoals (voorzover ik mij herinner) duur van de opdracht en dergelijke.
@@ -42,4 +47,13 @@ je kunt daar dus niet zoeken op vaste kopjes
 Kennelijk is de Aanvraag entiteit voorzien van de gemeenschappelijke gegevens over meerdere recruiters.
 
 De "oude" webcrawler is kennelijk op magische wijze al in staat  van verschillende recruiters toch de al zeer informatieve kenmerken uit de Aanvraag al te verzamelen ondanks de verschillen tussen de opbouw van de webpagina's.
+
+## Keuzen, ideeën en mogelijke uitgangspunten
+
+Adriaan, 23 maart - idee:
+Mogelijkheid zou zijn wat minder strak vast te houden aan uitsluitend gemeenschappelijke attributen die we via alle recruiters altijd kunnen vullen.
+Dit heeft als gevolg een wat complexere opzet van de applicatie maar wel met de mogelijkheid om bij bepaalde recruiterssites een hoeveelheid gegevens op te halen die wat meer zegt dan de gegevens in de huidige Aanvraag entiteit. 
+
+Adriaan, 23 maart - vraag:
+Vraag: is het nu zo dat de attributen in de entiteit Aanvraag in de bestaande webapplicatie altijd worden gevuld of alleen bij bepaalde recruiters? Ik twijfel er aan of dit wel het geval is?
 
