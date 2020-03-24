@@ -12,7 +12,7 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AanvraagDTO {
+public class VacancyDTO {
     @GeneratedValue
     @Id
     private UUID id;

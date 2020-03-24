@@ -1,7 +1,7 @@
 CREATE SCHEMA jobcrawler
     AUTHORIZATION postgres;
 
-CREATE TABLE jobcrawler.aanvraag
+CREATE TABLE jobcrawler.vacancy
 (
     id uuid NOT NULL,
     aanvraag_url text NOT NULL,
@@ -16,5 +16,5 @@ CREATE TABLE jobcrawler.aanvraag
     PRIMARY KEY (id)
 );
 
-ALTER TABLE jobcrawler.aanvraag
+ALTER TABLE jobcrawler.vacancy
     OWNER to postgres;
