@@ -1,3 +1,36 @@
+# Backend improvements
+Mostafa =- 24 march
+This section explains some functionality that I think would be good to have in the backend.
+
+## Type URL
+The vacancy URL is currently read and saved as a string. 
+Having the url be of type java.net.URL can give us extra functionality such as checking if the url is not corrupt. This can however be checked without changing the type of the url variable. However I think it is a good learning point to see how to work with and save other types.
+
+## Making attributes optional in reading the job
+In updating a job, it would be great to not give all attributes. So it would update the job based only on the attributes that were sent.
+
+For example u can supply an ID and a url, then it would update only the URL of that ID and leave the rest as is.  
+
+## Get jobs by other fields
+Getting the jobs by all its fields would be preferable. We can use this to filter all jobs from a certain company or from a certain data or distance. 
+
+## Date of retrieval
+This task is to have the date at which the job was read from the page. Time would also be handy. We can then use this to sort and filter.
+
+## making skills a many to many relationship
+Right now skills are a list of string that has the annotation 
+
+    @ElementCollection
+    
+This annotation makes a new table in the database with an entry for each skill with the vacancy ID and the name of the skill. 
+This means if more jobs have the same skill, that skill will be saved multiple times in the database. Also it makes many queries when updating the skills as per this video https://www.youtube.com/watch?v=BbDX0nv_Td0
+
+A way to solve this is to make the skills an entity with a many-to-many relationship, as a job can have multiple skills and a skill can be required for multiple jobs. 
+Feel free however to research and experiment with other solutions.
+
+## Sorting
+When getting all the jobs it would be nice to be able to show sorted data, by date, company, alphabetical, # of skills, etc. 
+
 # Jobcrawler use cases
 
 Adriaan =- 23 maart
