@@ -16,14 +16,12 @@ public class VacancyService {
     @Autowired
     private VacancyRepository repository;
 
+    /* Add */
     public Vacancy add(Vacancy vacancy) {
         return repository.save(vacancy);
     }
 
-    public void delete(UUID id) {
-        repository.deleteById(id);
-    }
-
+    /* Get */
     public List<Vacancy> getAllJobs() {
         return repository.findAll();
     }
@@ -49,4 +47,11 @@ public class VacancyService {
     public List<Vacancy> getJobsByBroker(String broker) {
         return repository.findByBrokerEquals(broker);
     }
+
+    /* Delete */
+    public void delete(UUID id) {
+        repository.deleteById(id);
+    }
+
+
 }
