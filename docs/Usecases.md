@@ -1,6 +1,6 @@
 # Jobcrawler use cases
 
-We staan nog aan het begin van onze samenwerking in dit jobcrawler project.
+Adriaan =- 23 maart We staan nog aan het begin van onze samenwerking in dit jobcrawler project.
 Op dit moment zijn we nog heel erg in de verkenningsfase.
 Door veel onduidelijkheden in de mogelijkheden van de webservices is het opstellen van use cases nog prematuur.
 
@@ -9,7 +9,7 @@ Ik nodig hierbij eenieder van het jobcrawler project uit om eigen bevindingen ro
 
 ## Inventarisatie op te halen informatie van recruiters
 
-Het blijkt het geval te zijn dat de websites van de verschillende recruiters een zeer verschillende opbouw hebben.
+Adriaan =- 23 maart Het blijkt het geval te zijn dat de websites van de verschillende recruiters een zeer verschillende opbouw hebben.
 
 Aan de hand van de uitkomsten van de verkenningsfase zou ik graag een inventarisatie willen hebben van de mogelijkheden en informatie-items die we zouden kunnen onttrekken aan de verschillende websites.
 Samen kunnen bespreken wat we er uiteindelijk voor use cases uit zouden willen destilleren. Op het moment van schrijven is het maandag 23 maart, laten we als voorlopig doel stellen dat we dit voor eind maart weten en dan onze eerste use cases opbouwen.
@@ -17,7 +17,7 @@ Samen kunnen bespreken wat we er uiteindelijk voor use cases uit zouden willen d
 
 
 ## Gemeenschappelijke Aanvraag-informatie bestaande pakket
-De informatie die bij de verschillende recruiters vandaan gehaald is door de verschillende scapers in het bestaande pakket ondergebracht in de entiteit
+Adriaan =- 23 maart De informatie die bij de verschillende recruiters vandaan gehaald is door de verschillende scapers in het bestaande pakket ondergebracht in de entiteit
 Aanvraag:
 
     private URL aanvraagURL;
@@ -33,7 +33,7 @@ Aanvraag:
 
 
 ## Verschillen tussen de websites
-Verschillen tussen de websites van recruiters uit het bestaande pakket:
+Adriaan =- 23 maart Verschillen tussen de websites van recruiters uit het bestaande pakket:
 
 - De website van Yacht is voorzien van een vrij vast template, zodat daar ook bepaalde vaste kenmerken kunnen worden opgehaald zoals (voorzover ik mij herinner) duur van de opdracht en dergelijke.
 - Myler heeft een hoeveelheid losse tekst die weliswaar is opgemaakt maar bij iedere opdracht net weer anders,
@@ -43,6 +43,13 @@ Kennelijk is de Aanvraag entiteit voorzien van de gemeenschappelijke gegevens ov
 
 De "oude" webcrawler is kennelijk op magische wijze al in staat  van verschillende recruiters toch de al zeer informatieve kenmerken uit de Aanvraag al te verzamelen ondanks de verschillen tussen de opbouw van de webpagina's.
 
+## Keuzen, ideeën en mogelijke uitgangspunten
+Adriaan, 23 maart - idee: Mogelijkheid zou zijn wat minder strak vast te houden aan uitsluitend gemeenschappelijke attributen die we via alle recruiters altijd kunnen vullen. Dit heeft als gevolg een wat complexere opzet van de applicatie maar wel met de mogelijkheid om bij bepaalde recruiterssites een hoeveelheid gegevens op te halen die wat meer zegt dan de gegevens in de huidige Aanvraag entiteit.
+
+Adriaan, 23 maart - vraag: Vraag: is het nu zo dat de attributen in de entiteit Aanvraag in de bestaande webapplicatie altijd worden gevuld of alleen bij bepaalde recruiters? Ik twijfel er aan of dit wel het geval is?
+
+
+-- Start toevoeging Timo, 24 maart --
 ## Haalbaarheid scrapen vacatures van websites welke zijn gebruikt in het Arabot project
 
 In het Arabot project zijn scrapers voor de volgende vacaturesites aanwezig:
@@ -394,3 +401,5 @@ Van de gebruikte websites in het Arabot project ben ik van mening dat wij de vol
 Ondanks dat de website van it-contracts ten opzichte van de anderen meer java vacatures heeft, is het nagenoeg onmogelijk om deze vacatures op een juiste manier te scrapen. We kunnen altijd een poging doen om it-contracts te gebruiken en zelf keywords in te geven waarop binnen de pagina moet worden gezocht. Het is dan echter wel zo dat een vacature welke niet een ingege-ven keyword bevat niet gebruikt zal worden.
 
 Verder heb ik nog geen onderzoek gedaan naar andere vacature sites. We kunnen wel verder kijken dan de gebruikte websites in het Arabot project.
+
+-- Eind toevoeging Timo, 24 maart --
