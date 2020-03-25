@@ -1,6 +1,7 @@
 package nl.ordina.jobcrawler.controller;
 
 import nl.ordina.jobcrawler.model.Vacancy;
+import nl.ordina.jobcrawler.model.VacancyURLs;
 import nl.ordina.jobcrawler.service.ConnectionDocumentService;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -18,10 +19,9 @@ At this moment getVacancies() returns a list with Vacancies that only exist of a
  */
 
 @Component
-public class MylerVacancyScraper implements VacancyScraper {
+public class MylerVacancyScraper extends VacancyScraper {
 
-    private static final String BROKER = "MYLER";
-    private static final String SEARCH_TERM = "java";
+    private static final String BROKER = "Myler";
     private static final String SEARCH_URL = "https://www.myler.nl/opdrachten/?search=" + SEARCH_TERM;
 
     private List<Vacancy> vacancies = new ArrayList<>();
@@ -45,12 +45,47 @@ public class MylerVacancyScraper implements VacancyScraper {
             Elements vacancyURLs = mylerVacancies.getElementsByClass("headfirst-plugin-item").select("a");
             for(Element vacancyURL : vacancyURLs) {
                 Vacancy vacancy = new Vacancy();
-                String row = vacancyURL.attr("href");
-                vacancy.setVacancyURL(row);
-                vacancy.setBroker("Myler");
+                String url = vacancyURL.attr("href");
+                vacancy.setVacancyURL(url);
+                vacancy.setBroker(BROKER);
                 this.vacancies.add(vacancy);
             }
         }
         return vacancies;
+    }
+
+    @Override
+    protected List<VacancyURLs> getVacancyURLs() throws IOException {
+        return null;
+    }
+
+    @Override
+    protected int getTotalNumberOfPages(Document doc) {
+        return 0;
+    }
+
+    @Override
+    protected void setVacancyTitle(Document doc, Vacancy vacancy) {
+
+    }
+
+    @Override
+    protected void setVacancySpecifics(Document doc, Vacancy vacancy) {
+
+    }
+
+    @Override
+    protected List<String> getVacancySpecifics(Document doc) {
+        return null;
+    }
+
+    @Override
+    protected void setVacancyAbout(Document doc, Vacancy vacancy) {
+
+    }
+
+    @Override
+    protected void setVacancySkillSet(Document doc, Vacancy vacancy) {
+
     }
 }

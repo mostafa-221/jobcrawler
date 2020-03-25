@@ -1,6 +1,7 @@
 package nl.ordina.jobcrawler.controller;
 
 import nl.ordina.jobcrawler.model.Vacancy;
+import nl.ordina.jobcrawler.model.VacancyURLs;
 import nl.ordina.jobcrawler.service.ConnectionDocumentService;
 import nl.ordina.jobcrawler.service.Utils;
 import org.jsoup.nodes.Document;
@@ -18,8 +19,10 @@ Most of the code in this class is based on the available Arabot code. Some chang
  */
 
 @Component
-public class YachtVacancyScraper implements VacancyScraper {
-    private static final String SEARCH_URL = "https://www.yacht.nl/vacatures?zoekterm=java&soortdienstverband=Detachering";
+public class YachtVacancyScraper extends VacancyScraper {
+
+    private static final String BROKER = "Yacht";
+    private static final String SEARCH_URL = "https://www.yacht.nl/vacatures?zoekterm=" + SEARCH_TERM + "&soortdienstverband=Detachering";
     
     private List<Vacancy> vacancies = new ArrayList<>();
     
@@ -36,16 +39,14 @@ public class YachtVacancyScraper implements VacancyScraper {
         getVacancies connect to the SEARCH_URL and requests this html page.
         If the response is not null it selects the a tags and requests the urls to the vacancy pages. The 'hours' information is only available on the main page and not on the detailed vacancy pages. Therefore I created as a (temporary) solution as hashmap where I store this data in a key->value storage (url->hours).
          */
-        HashMap<String, String> vacancyURLs = getVacancyURLs();
-        Iterator vacancyUrl = vacancyURLs.entrySet().iterator();
-        while(vacancyUrl.hasNext()){
-            Map.Entry pair = (Map.Entry)vacancyUrl.next();
-            Document doc = connectionDocumentService.getConnection(pair.getKey().toString());
+        List<VacancyURLs> vacancyURLs = getVacancyURLs();
+        for(VacancyURLs vacancyURL : vacancyURLs){
+            Document doc = connectionDocumentService.getConnection(vacancyURL.getUrl());
             if(doc != null) {
                     Vacancy vacancy = new Vacancy();
-                    vacancy.setVacancyURL(pair.getKey().toString());
-                    vacancy.setBroker("Yacht");
-                    vacancy.setHours(pair.getValue().toString());
+                    vacancy.setVacancyURL(vacancyURL.getUrl());
+                    vacancy.setBroker(BROKER);
+                    vacancy.setHours(vacancyURL.getHours());
                     setVacancyTitle(doc, vacancy);
                     setVacancySpecifics(doc, vacancy);
                     setVacancyAbout(doc, vacancy);
@@ -56,27 +57,38 @@ public class YachtVacancyScraper implements VacancyScraper {
         return vacancies;
     }
 
-    private HashMap<String, String> getVacancyURLs() throws IOException {
+    @Override
+    protected List<VacancyURLs> getVacancyURLs() throws IOException {
         //  Returns a hashmap with urls and hours a week
-        HashMap<String, String> vacancyURLs = new HashMap<>();
+        List<VacancyURLs> vacancyURLs = new ArrayList<>();
         int totalNumberOfPages = 1;
         for(int pageNumber = 1; pageNumber <= totalNumberOfPages; pageNumber++) {
             Document doc = connectionDocumentService.getConnection(SEARCH_URL + "&pagina=" + pageNumber);
             if(doc == null)
                 continue;
 
+            if(pageNumber == 1)
+                totalNumberOfPages = getTotalNumberOfPages(doc);
+
             Elements jobLinkElements = doc.select("div.results article h2 a[href]");
             Elements hours = doc.select("div.results article dl");
             for(int i = 0; i<hours.size(); i++) {
                 Element hour = hours.get(i);
                 Element jobLink = jobLinkElements.get(i);
-                vacancyURLs.put(jobLink.absUrl("href"), hour.select("dd").get(1).text());
+                vacancyURLs.add(new VacancyURLs(jobLink.absUrl("href"), hour.select("dd").get(1).text()));
             }
         }
         return vacancyURLs;
     }
 
-    private void setVacancyTitle(Document doc, Vacancy vacancy) {
+    @Override
+    protected int getTotalNumberOfPages(Document doc) {
+        //To do: implementation
+        return 1;
+    }
+
+    @Override
+    protected void setVacancyTitle(Document doc, Vacancy vacancy) {
         // Selects vacancy title
         Element vacancyHeader = doc.select("header.cf h1").first();
         if(vacancyHeader != null) {
@@ -84,7 +96,8 @@ public class YachtVacancyScraper implements VacancyScraper {
         }
     }
 
-    private void setVacancySpecifics(Document doc, Vacancy vacancy) {
+    @Override
+    protected void setVacancySpecifics(Document doc, Vacancy vacancy) {
         // Sets vacancyNumber, vacancyLocation and publish date.
         List<String> vacancySpecifics = getVacancySpecifics(doc);
         vacancy.setVacancyNumber(vacancySpecifics.get(0).trim());
@@ -96,7 +109,8 @@ public class YachtVacancyScraper implements VacancyScraper {
         }
     }
 
-    private List<String> getVacancySpecifics(Document doc) {
+    @Override
+    protected List<String> getVacancySpecifics(Document doc) {
         // Request for vacancy specifics. Returns a list.
         Element vacancyHeader = doc.select("header.cf p.meta").first();
         if(vacancyHeader != null) {
@@ -107,7 +121,8 @@ public class YachtVacancyScraper implements VacancyScraper {
         return new ArrayList<>();
     }
 
-    private void setVacancyAbout(Document doc, Vacancy vacancy) {
+    @Override
+    protected void setVacancyAbout(Document doc, Vacancy vacancy) {
         // Extracts the about part from the vacancy which starts from the first h2 tag to the second h2 tag.
         Elements aboutElements = doc.select(".description h2 ~ *");
         StringBuilder about = new StringBuilder();
@@ -121,7 +136,8 @@ public class YachtVacancyScraper implements VacancyScraper {
         vacancy.setAbout(about.toString());
     }
 
-    private void setVacancySkillSet(Document doc, Vacancy vacancy) {
+    @Override
+    protected void setVacancySkillSet(Document doc, Vacancy vacancy) {
         // The needed skills for a vacancy in Dutch are named 'Functie-eisen'. We'd like to select these skills, starting from the h2 tag that contains those. Let's select everything after that h2 tag
         Elements skillSets = doc.select("h2:contains(Functie-eisen) ~ *");
         for(Element skillSet : skillSets) {
