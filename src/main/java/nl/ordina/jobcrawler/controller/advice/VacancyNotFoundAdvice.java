@@ -1,5 +1,6 @@
-package nl.ordina.jobcrawler.controller;
+package nl.ordina.jobcrawler.controller.advice;
 
+import nl.ordina.jobcrawler.controller.exception.VacancyNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;

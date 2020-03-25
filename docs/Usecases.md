@@ -6,6 +6,8 @@ This section explains some functionality that I think would be good to have in t
 The vacancy URL is currently read and saved as a string. 
 Having the url be of type java.net.URL can give us extra functionality such as checking if the url is not corrupt. This can however be checked without changing the type of the url variable. However I think it is a good learning point to see how to work with and save other types.
 
+**Gijs** - [ghyze](https://github.com/ghyze) explained that it is not a very easy thing to start with and it is not necessary as we can check the string. Therefore we decided to keep the type as a string and checking the url when getting it. 
+
 ## Making attributes optional in reading the job
 In updating a job, it would be great to not give all attributes. So it would update the job based only on the attributes that were sent.
 

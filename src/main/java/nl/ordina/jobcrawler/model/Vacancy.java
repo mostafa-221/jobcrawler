@@ -1,15 +1,17 @@
 package nl.ordina.jobcrawler.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Getter;
 import lombok.Setter;
+import nl.ordina.jobcrawler.controller.exception.VacancyURLMalformedException;
 
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 
 
-import java.net.MalformedURLException;
+import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 import java.util.UUID;
@@ -23,12 +25,10 @@ public class Vacancy {
     @Id
     private UUID id;
 
-//    @NotBlank //will give error if uncommented
+//    @NotBlank
     @Column(columnDefinition="text")
-//    @JsonProperty(value = "url") //this is to name the json variable 'url'
-
-//    @Lob
-    private URL vacancyURL;
+    @JsonDeserialize
+    private String vacancyURL;
 
 
     @NotBlank
@@ -51,17 +51,23 @@ public class Vacancy {
     @ElementCollection
     private List<String> skills;
 
-    public String getVacancyURL() {
-        return vacancyURL.toString();
-    }
+    public Boolean checkURL(){
+        if( ! this.vacancyURL.startsWith("http")) this.vacancyURL = "https://" + this.vacancyURL; //adding the protocol, if not present
 
-    public void setVacancyURL(String vacancyURL) {
-        if( ! vacancyURL.startsWith("https://")) vacancyURL = "https://" + vacancyURL;
+        URL url;
+        HttpURLConnection huc;
+        int responseCode = 0;
 
         try {
-            this.vacancyURL = new URL(vacancyURL);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
+            url = new URL(this.vacancyURL);
+            huc = (HttpURLConnection) url.openConnection();
+            huc.setRequestMethod("HEAD");   // faster because we it doesn't download the response body
+            responseCode = huc.getResponseCode();
+
+            if(responseCode == 200) return true;    //website is good
+            else throw new VacancyURLMalformedException(this.vacancyURL, responseCode);
+        } catch (IOException e) {
+            throw new VacancyURLMalformedException(this.vacancyURL);
         }
     }
 

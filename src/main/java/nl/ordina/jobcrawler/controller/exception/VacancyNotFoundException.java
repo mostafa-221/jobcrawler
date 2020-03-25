@@ -1,4 +1,4 @@
-package nl.ordina.jobcrawler.controller;
+package nl.ordina.jobcrawler.controller.exception;
 
 import java.util.UUID;
 

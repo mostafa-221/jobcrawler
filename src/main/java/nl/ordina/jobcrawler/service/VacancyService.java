@@ -1,6 +1,6 @@
 package nl.ordina.jobcrawler.service;
 
-import nl.ordina.jobcrawler.controller.VacancyNotFoundException;
+import nl.ordina.jobcrawler.controller.exception.VacancyNotFoundException;
 import nl.ordina.jobcrawler.model.Vacancy;
 import nl.ordina.jobcrawler.repository.VacancyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,8 @@ public class VacancyService {
 
     //******** Adding ********//
     public Vacancy add(Vacancy vacancy) {
-        return vacancyRepository.saveAndFlush(vacancy);
+        if(vacancy.checkURL()) return vacancyRepository.saveAndFlush(vacancy);
+        else return null;
     }
 
     //******** Getting ********//
