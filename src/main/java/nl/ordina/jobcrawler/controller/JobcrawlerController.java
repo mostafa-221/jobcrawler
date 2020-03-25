@@ -38,28 +38,6 @@ public class JobcrawlerController {
         return vacancyService.add(job);
     }
 
-    @PostMapping({"/add/{amount}","/add"})
-    public int addTest(@PathVariable(name = "amount", required = false) Integer amount) {
-        int enteredAmount = amount == null ? 10 : amount;
-        // Add x random entries with different skillsets into the database
-        for(int i = 0; i<enteredAmount; i++) {
-            Vacancy vacancy = new Vacancy();
-            vacancy.setVacancyURL("google.nl");
-            List<String> skillset = new ArrayList<>();
-
-            for(int j = 0; j < 3; j++) { // add random skills to List<String>
-                Random r1 = new Random();
-                char c1 = (char) (r1.nextInt(26) + 'a');
-                String s1 = String.valueOf(c1);
-                skillset.add(s1);
-            }
-            vacancy.setSkillSet(skillset);
-
-            vacancyService.add(vacancy);
-        }
-        return enteredAmount;
-    }
-
     // Get mappings
 
     @GetMapping("/getByID/{id}")
@@ -87,7 +65,7 @@ public class JobcrawlerController {
 
     @GetMapping("/getJobsWithSkill/{skill}")
     public List<Vacancy> getJobsWithSkill(@PathVariable("skill") String skill) {
-        // Only show vacancies which needs a specific skill that's requested via a get method (localhost:8080/getJobsWithSkill/requestedskill )
+        // Only show vacancies which needs a specific skill that's requested via a get method
         return vacancyService.getJobsWithSkill(skill);
     }
 
