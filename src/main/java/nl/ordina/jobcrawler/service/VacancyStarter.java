@@ -39,7 +39,8 @@ public class VacancyStarter {
         // This function gets executed every 15 minutes
         log.info("CRON Scheduled");
         scrapeYacht();
-        scrapeMyler();
+        //Disbale Myler as it does not scrape entire vacancy yet.
+//        scrapeMyler();
         System.out.println();
     }
 
@@ -61,6 +62,7 @@ public class VacancyStarter {
         log.info("YACHT -- " + newVacancy + " new vacancies added.");
         log.info("YACHT -- " + existVacancy + " existing vacancies found.");
         log.info("YACHT -- Finished scraping");
+        yachtVacancies.clear(); // Clear List<Vacancy> for next time use
     }
 
     private void scrapeMyler() throws IOException {
@@ -81,5 +83,6 @@ public class VacancyStarter {
         log.info("MYLER -- " + newVacancy + " new vacancies added.");
         log.info("MYLER -- " + existVacancy + " existing vacancies found.");
         log.info("MYLER -- Finished scraping");
+        mylerVacancies.clear(); // Clear List<Vacancy> for next time use
     }
 }
