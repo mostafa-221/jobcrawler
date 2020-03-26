@@ -39,14 +39,18 @@ If you haven't created the container before, create and start the container with
 docker run --name jobcrawler-postgres -e POSTGRES_PASSWORD=*password* -d -p 5432:5432 postgres
 ```
 
-If you did create the container before, run this:
+Otherwise, if you did create the container before, run this:
 ```
 docker start jobcrawler-postgres
 ```
 
-Now navigate into the postgres server:
+Now navigate into the postgres docker container and open bash:
 ```
 docker exec -it jobcrawler-postgres bash
+```
+
+Log into the postgres server with the user "postgres"
+```
 psql -U postgres
 ```
 
