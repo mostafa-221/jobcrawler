@@ -26,7 +26,7 @@ public class JobcrawlerController {
         String[] texts = {requestText, "Test result 1", "Test result 2"};
         String[] links = {"http://google.com/", "http://duckduckgo.com/"};
 
-        return new SearchResult(texts, links);
+        return new SearchResult(request, aanvraagService.getAllJobs());
 
     }
 
