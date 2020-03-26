@@ -1,7 +1,6 @@
 package nl.ordina.jobcrawler.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
