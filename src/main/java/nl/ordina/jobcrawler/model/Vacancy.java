@@ -1,7 +1,8 @@
 package nl.ordina.jobcrawler.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -10,8 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Getter
-@Setter
+@Data
+@Builder
+@AllArgsConstructor
 @Entity
 public class Vacancy {
 
