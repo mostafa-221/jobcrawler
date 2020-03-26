@@ -21,49 +21,20 @@ Most of the code in this class is based on the available Arabot code. Some chang
 @Component
 public class YachtVacancyScraper extends VacancyScraper {
 
-    private static final String BROKER = "Yacht";
-    private static final String SEARCH_URL = "https://www.yacht.nl/vacatures?zoekterm=" + SEARCH_TERM + "&soortdienstverband=Detachering";
-    
-    private List<Vacancy> vacancies = new ArrayList<>();
-    
-    private final ConnectionDocumentService connectionDocumentService;
-    
     @Autowired
     public YachtVacancyScraper(ConnectionDocumentService connectionDocumentService) {
-        this.connectionDocumentService = connectionDocumentService;
-    }
-
-    @Override
-    public List<Vacancy> getVacancies() throws IOException {
-        /*
-        getVacancies connect to the SEARCH_URL and requests this html page.
-        If the response is not null it selects the a tags and requests the urls to the vacancy pages. The 'hours' information is only available on the main page and not on the detailed vacancy pages. Therefore I created as a (temporary) solution as hashmap where I store this data in a key->value storage (url->hours).
-         */
-        List<VacancyURLs> vacancyURLs = getVacancyURLs();
-        for(VacancyURLs vacancyURL : vacancyURLs){
-            Document doc = connectionDocumentService.getConnection(vacancyURL.getUrl());
-            if(doc != null) {
-                    Vacancy vacancy = new Vacancy();
-                    vacancy.setVacancyURL(vacancyURL.getUrl());
-                    vacancy.setBroker(BROKER);
-                    vacancy.setHours(vacancyURL.getHours());
-                    setVacancyTitle(doc, vacancy);
-                    setVacancySpecifics(doc, vacancy);
-                    setVacancyAbout(doc, vacancy);
-                    setVacancySkillSet(doc, vacancy);
-                    this.vacancies.add(vacancy);
-            }
-        }
-        return vacancies;
+        super(connectionDocumentService);
+        BROKER = "Yacht";
+        SEARCH_URL = "https://www.yacht.nl/vacatures?soortdienstverband=Detachering&zoekterm=" + SEARCH_TERM;
     }
 
     @Override
     protected List<VacancyURLs> getVacancyURLs() throws IOException {
-        //  Returns a hashmap with urls and hours a week
+        //  Returns a List with VacancyURLs
         List<VacancyURLs> vacancyURLs = new ArrayList<>();
         int totalNumberOfPages = 1;
         for(int pageNumber = 1; pageNumber <= totalNumberOfPages; pageNumber++) {
-            Document doc = connectionDocumentService.getConnection(SEARCH_URL + "&pagina=" + pageNumber);
+            Document doc = getDocument(SEARCH_URL + "&pagina=" + pageNumber);
             if(doc == null)
                 continue;
 
@@ -73,9 +44,16 @@ public class YachtVacancyScraper extends VacancyScraper {
             Elements jobLinkElements = doc.select("div.results article h2 a[href]");
             Elements hours = doc.select("div.results article dl");
             for(int i = 0; i<hours.size(); i++) {
-                Element hour = hours.get(i);
-                Element jobLink = jobLinkElements.get(i);
-                vacancyURLs.add(new VacancyURLs(jobLink.absUrl("href"), hour.select("dd").get(1).text()));
+                String hour = hours.get(i).select("dd").get(1).text().split(" ")[0];
+                String vacancyURL = jobLinkElements.get(i).absUrl("href");
+                // Split Yacht vacancy url on questionmark, as the position parameter can change due to new or removed vacancies on the Yacht website. URL will also work without any parameter. Prevents duplicates with slightly different url
+                vacancyURL = vacancyURL.contains("?") ? vacancyURL.split("\\?")[0] : vacancyURL;
+                vacancyURLs.add(
+                        VacancyURLs.builder()
+                        .url(vacancyURL)
+                        .hours(hour)
+                        .build()
+                );
             }
         }
         return vacancyURLs;
@@ -83,8 +61,19 @@ public class YachtVacancyScraper extends VacancyScraper {
 
     @Override
     protected int getTotalNumberOfPages(Document doc) {
-        //To do: implementation
-        return 1;
+        // In case there are a lot of pages, we can easily detect the last page by getting the id from the double arrow that goes to the last page.
+        Elements pagesElement = doc.select("li.last.last-short a");
+        if(pagesElement.isEmpty()) {
+            // If only a few pages are available the double arrow is disabled and does not contain an ID. Now we need to request the latest page via li.pages and select the last entry.
+            Elements fewPagesElement = doc.select("li.pages ul li a");
+            if(fewPagesElement.isEmpty())
+                return 1;
+
+            return Integer.parseInt(fewPagesElement.last().attr("id"));
+        }
+        else {
+            return Integer.parseInt(pagesElement.attr("id"));
+        }
     }
 
     @Override
