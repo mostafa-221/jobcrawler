@@ -16,8 +16,12 @@ import java.util.*;
 @RestController
 public class JobcrawlerController {
 
-    @Autowired
     private VacancyService vacancyService;
+
+    @Autowired
+    public JobcrawlerController(VacancyService vacancyService) {
+        this.vacancyService = vacancyService;
+    }
 
     // Post mappings
 
