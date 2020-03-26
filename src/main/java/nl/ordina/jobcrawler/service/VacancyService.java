@@ -2,6 +2,7 @@ package nl.ordina.jobcrawler.service;
 
 import nl.ordina.jobcrawler.model.Vacancy;
 import nl.ordina.jobcrawler.repo.VacancyRepository;
+import nl.ordina.jobcrawler.service.exception.DuplicateRecordFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,8 +14,12 @@ import java.util.stream.Collectors;
 @Service
 public class VacancyService {
 
-    @Autowired
     private VacancyRepository repository;
+
+    @Autowired
+    public VacancyService(VacancyRepository repository) {
+        this.repository = repository;
+    }
 
     /* Add */
     public Vacancy add(Vacancy vacancy) {
@@ -39,9 +44,12 @@ public class VacancyService {
 
     public Vacancy doesRecordExist(String url) {
         List<Vacancy> record = repository.findByVacancyURLEquals(url);
-        if(record.size() != 1)
+        if(record.size() == 0)
             return null;
-        return record.get(0);
+        else if(record.size() > 1)
+            throw new DuplicateRecordFoundException(String.format("Duplicate entry found in database for url %s", url));
+        else
+            return record.get(0);
     }
 
     public List<Vacancy> getJobsByBroker(String broker) {
