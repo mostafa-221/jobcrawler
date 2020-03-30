@@ -1,16 +1,23 @@
 package nl.ordina.jobcrawler;
 
+import nl.ordina.jobcrawler.model.Aanvraag;
+
+import java.util.List;
+
 public class SearchResult {
 
-    private final String[] texts;
-    private final String[] links;
+    private final String[] queries = new String[3];
+    private final List<Aanvraag> vacancies;
 
-    public SearchResult(String[] texts, String[] links) {
-        this.texts = texts;
-        this.links = links;
+    public SearchResult(SearchRequest request, List<Aanvraag> vacancies) {
+        this.queries[0] = request.getLocation();
+        this.queries[1] = request.getDistance();
+        this.queries[2] = request.getKeywords();
+
+        this.vacancies = vacancies;
     }
 
-    public String[] getTexts() { return this.texts; }
-    public String[] getLinks() { return this.links; }
+    public String[] getQueries() { return queries; }
+    public List<Aanvraag> getVacancies() { return  vacancies; }
 
 }
