@@ -27,14 +27,7 @@ public class JobcrawlerController {
 
     @PostMapping("/searchrequest")
     public SearchResult searchRequest(@RequestBody SearchRequest request) {
-
-        // Temporary mock data
-        String requestText = "For request: " + request.getLocation() + ", " + request.getDistance() + ", " + request.getKeywords() +  ":";
-        String[] texts = {requestText, "Test result 1", "Test result 2"};
-        String[] links = {"http://google.com/", "http://duckduckgo.com/"};
-
-        return new SearchResult(texts, links);
-
+        return new SearchResult(request, vacancyService.getAllJobs());
     }
 
     @PostMapping("/addJobWithJson")
