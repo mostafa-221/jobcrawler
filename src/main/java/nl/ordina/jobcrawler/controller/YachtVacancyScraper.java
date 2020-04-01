@@ -23,9 +23,7 @@ public class YachtVacancyScraper extends VacancyScraper {
 
     @Autowired
     public YachtVacancyScraper(ConnectionDocumentService connectionDocumentService) {
-        super(connectionDocumentService);
-        BROKER = "Yacht";
-        SEARCH_URL = "https://www.yacht.nl/vacatures?soortdienstverband=Detachering&zoekterm=" + SEARCH_TERM;
+        super(connectionDocumentService, "https://www.yacht.nl/vacatures?soortdienstverband=Detachering&zoekterm=java", "Yacht");
     }
 
     @Override
@@ -34,7 +32,7 @@ public class YachtVacancyScraper extends VacancyScraper {
         List<VacancyURLs> vacancyURLs = new ArrayList<>();
         int totalNumberOfPages = 1;
         for(int pageNumber = 1; pageNumber <= totalNumberOfPages; pageNumber++) {
-            Document doc = getDocument(SEARCH_URL + "&pagina=" + pageNumber);
+            Document doc = getDocument(getSEARCH_URL() + "&pagina=" + pageNumber);
             if(doc == null)
                 continue;
 

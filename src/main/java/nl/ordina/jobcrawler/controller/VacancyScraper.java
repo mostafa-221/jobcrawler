@@ -16,15 +16,19 @@ import java.util.List;
 @Slf4j
 abstract class VacancyScraper {
 
-    protected String BROKER = "";
-    protected String SEARCH_URL = "";
-    protected final String SEARCH_TERM = "java";
+    private final String SEARCH_URL;
+    private final String BROKER;
 
     private final ConnectionDocumentService connectionDocumentService;
 
-    @Autowired
-    public VacancyScraper(ConnectionDocumentService connectionDocumentService) {
+    public VacancyScraper(@Autowired ConnectionDocumentService connectionDocumentService, String url, String broker) {
         this.connectionDocumentService = connectionDocumentService;
+        this.SEARCH_URL = url;
+        this.BROKER = broker;
+    }
+
+    public String getSEARCH_URL() {
+        return SEARCH_URL;
     }
 
     public List<Vacancy> getVacancies() throws IOException {

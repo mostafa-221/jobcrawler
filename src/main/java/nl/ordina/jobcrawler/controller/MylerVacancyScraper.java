@@ -21,9 +21,7 @@ At this moment getVacancies() returns a list with Vacancies that only exist of a
 public class MylerVacancyScraper extends VacancyScraper {
 
     public MylerVacancyScraper(ConnectionDocumentService connectionDocumentService) {
-        super(connectionDocumentService);
-        BROKER = "Myler";
-        SEARCH_URL = "https://www.myler.nl/opdrachten/?search=" + SEARCH_TERM;
+        super(connectionDocumentService, "https://www.myler.nl/opdrachten/?search=java", "Myler");
     }
 
     @Override
@@ -32,7 +30,7 @@ public class MylerVacancyScraper extends VacancyScraper {
         List<VacancyURLs> vacancyURLs = new ArrayList<>();
         int totalNumberOfPages = 1;
         for(int pageNumber = 1; pageNumber <= totalNumberOfPages; pageNumber++) {
-            Document doc = getDocument(SEARCH_URL);
+            Document doc = getDocument(getSEARCH_URL());
             if(doc == null)
                 continue;
 
