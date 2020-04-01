@@ -1,6 +1,5 @@
 package nl.ordina.jobcrawler;
 
-import nl.ordina.jobcrawler.model.Aanvraag;
 import nl.ordina.jobcrawler.model.Vacancy;
 
 import java.util.List;
@@ -8,7 +7,7 @@ import java.util.List;
 public class SearchResult {
 
     private final String[] queries = new String[3];
-    private final List<Aanvraag> vacancies;
+    private final List<Vacancy> vacancies;
 
     public SearchResult(SearchRequest request, List<Vacancy> vacancies) {
         this.queries[0] = request.getLocation();
@@ -19,6 +18,6 @@ public class SearchResult {
     }
 
     public String[] getQueries() { return queries; }
-    public List<Aanvraag> getVacancies() { return  vacancies; }
+    public List<Vacancy> getVacancies() { return  vacancies; }
 
 }
