@@ -42,14 +42,8 @@ public class VacancyService {
         return repository.findById(id);
     }
 
-    public Vacancy doesRecordExist(String url) {
-        List<Vacancy> record = repository.findByVacancyURLEquals(url);
-        if(record.size() == 0)
-            return null;
-        else if(record.size() > 1)
-            throw new DuplicateRecordFoundException(String.format("Duplicate entry found in database for url %s", url));
-        else
-            return record.get(0);
+    public Optional<Vacancy> getExistingRecord(String url) {
+        return repository.findByVacancyURLEquals(url);
     }
 
     public List<Vacancy> getJobsByBroker(String broker) {

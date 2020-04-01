@@ -6,13 +6,14 @@ import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface VacancyRepository extends JpaRepository<Vacancy, UUID> {
 
     @Transactional
-    List<Vacancy> findByVacancyURLEquals(String url);
+    Optional<Vacancy> findByVacancyURLEquals(String url);
 
     @Transactional
     List<Vacancy> findByBrokerEquals(String broker);
