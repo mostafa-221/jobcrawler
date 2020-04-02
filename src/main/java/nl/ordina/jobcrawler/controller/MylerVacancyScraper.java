@@ -20,8 +20,11 @@ At this moment getVacancies() returns a list with Vacancies that only exist of a
 @Component
 public class MylerVacancyScraper extends VacancyScraper {
 
+    private static final String SEARCH_URL = "https://www.myler.nl/opdrachten/?search=java";
+    private static final String BROKER = "Myler";
+
     public MylerVacancyScraper(ConnectionDocumentService connectionDocumentService) {
-        super(connectionDocumentService, "https://www.myler.nl/opdrachten/?search=java", "Myler");
+        super(connectionDocumentService, SEARCH_URL, BROKER);
     }
 
     @Override

@@ -21,9 +21,12 @@ Most of the code in this class is based on the available Arabot code. Some chang
 @Component
 public class YachtVacancyScraper extends VacancyScraper {
 
+    private static final String SEARCH_URL = "https://www.yacht.nl/vacatures?soortdienstverband=Detachering&zoekterm=java";
+    private static final String BROKER = "Yacht";
+
     @Autowired
     public YachtVacancyScraper(ConnectionDocumentService connectionDocumentService) {
-        super(connectionDocumentService, "https://www.yacht.nl/vacatures?soortdienstverband=Detachering&zoekterm=java", "Yacht");
+        super(connectionDocumentService, SEARCH_URL, BROKER);
     }
 
     @Override
