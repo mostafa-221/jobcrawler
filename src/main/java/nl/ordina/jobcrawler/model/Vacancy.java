@@ -1,44 +1,52 @@
 package nl.ordina.jobcrawler.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import java.net.URL;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
-@Getter
-@Setter
-public class Aanvraag {
+@Data
+@Builder
+@AllArgsConstructor
+@Entity
+public class Vacancy {
 
-	@GeneratedValue
     @Id
-	private String id;
-    private URL aanvraagURL;
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    private UUID id;
+    @NotNull
+    private String vacancyURL;
     private String title;
     private String broker;
-    private String aanvraagNummer;
+    private String vacancyNumber;
     private String hours;
     private String location;
     private String postingDate;
+    @Column(columnDefinition = "TEXT")
     private String about;
+    @ElementCollection
+    @Column(columnDefinition = "TEXT")
     private List<String> skillSet;
 
-
-    public Aanvraag() {
-        skillSet = new ArrayList<String>();
+    public Vacancy() {
+        skillSet = new ArrayList<>();
     }
 
     @Override
     public String toString() {
         String newLine = "\n";
         StringBuilder returnValue = new StringBuilder();
-        returnValue.append(aanvraagURL.toString() + newLine);
+        returnValue.append(vacancyURL.toString() + newLine);
         returnValue.append(title + newLine);
         returnValue.append(broker + newLine);
-        returnValue.append(aanvraagNummer + newLine);
+        returnValue.append(vacancyNumber + newLine);
         returnValue.append(hours + newLine);
         returnValue.append(location + newLine);
         returnValue.append(postingDate + newLine);
