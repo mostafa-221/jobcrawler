@@ -1,4 +1,4 @@
-package nl.ordina.jobcrawler.controller;
+package nl.ordina.jobcrawler.scrapers;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.ordina.jobcrawler.model.Vacancy;

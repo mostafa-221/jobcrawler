@@ -1,4 +1,4 @@
-package nl.ordina.jobcrawler.controller;
+package nl.ordina.jobcrawler.scrapers;
 
 import nl.ordina.jobcrawler.model.Vacancy;
 import nl.ordina.jobcrawler.model.VacancyURLs;

@@ -1,8 +1,8 @@
 package nl.ordina.jobcrawler.service;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.ordina.jobcrawler.controller.MylerVacancyScraper;
-import nl.ordina.jobcrawler.controller.YachtVacancyScraper;
+import nl.ordina.jobcrawler.scrapers.MylerVacancyScraper;
+import nl.ordina.jobcrawler.scrapers.YachtVacancyScraper;
 import nl.ordina.jobcrawler.model.Vacancy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /*
 This 'starter' class uses the @Scheduled annotation. Every 15 minutes it executes the cronJobSch() function to retrieve all vacancies.
