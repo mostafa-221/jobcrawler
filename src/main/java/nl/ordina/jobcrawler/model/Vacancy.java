@@ -64,17 +64,27 @@ public class Vacancy {
     @JsonIgnoreProperties("vacancies") // so that when printing a vacancy, it doesnt list all the vacancies until the skill
             Set<Skill> skills = new HashSet<>();  //a set is a collection that has no duplicates
 
+    public void addSkill(Skill skillsToBeAdded){
+        this.skills.add(skillsToBeAdded);
+        skillsToBeAdded.addVacancy(this);
+    }
+
+    public void removeSkill(Skill skillsToBeRemoved){
+        this.skills.remove(skillsToBeRemoved);
+        skillsToBeRemoved.removeVacancy(this);
+    }
+
     public void addSkills(List<Skill> skillsToBeAdded) {
         for (Skill skill : skillsToBeAdded) {
             this.skills.add(skill);
-//            skill.addVacancy(this);
+            skill.addVacancy(this);
         }
     }
 
     public void removeSkills(List<Skill> skillsToBeRemoved) {
         for (Skill skill : skillsToBeRemoved) {
             this.skills.remove(skill);
-//            skill.removeVacancy(this);
+            skill.removeVacancy(this);
         }
     }
 

@@ -51,7 +51,7 @@ public class JobcrawlerController {
 
     @GetMapping(path = "skills/{skill}")
     public Set<Vacancy> getVacanciesBySkill(@PathVariable("skill") String skillName){
-        return vacancyService.getVacanciesBySkill(skillName);
+        return skillService.getVacanciesBySkill(skillName);
     }
     //******** Updating ********//
     @PutMapping("{id}")
