@@ -48,7 +48,7 @@ public class VacancyService {
     //******** Deleting ********//
     public void deleteVacancyById(UUID id) {
         Vacancy vacancyToDelete = vacancyRepository.findById(id).orElseThrow(() -> new VacancyNotFoundException(id));
-        Set<Skill> skillsToDelete = vacancyToDelete.getSkills();
+        Set<Skill> skillsToDelete = new HashSet<Skill>(vacancyToDelete.getSkills());
 
         vacancyRepository.deleteById(id);
         System.out.println(skillsToDelete);

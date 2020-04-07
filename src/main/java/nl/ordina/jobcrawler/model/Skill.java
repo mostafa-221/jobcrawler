@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -20,8 +21,8 @@ public class Skill {
     @Id
     private UUID id;
 
-    //    @NaturalId
-//    @Column(nullable = false, unique = true)
+    @NaturalId
+    @Column(nullable = false, unique = true)
     private String name;
 
     @ManyToMany(mappedBy = "skills")
@@ -33,19 +34,17 @@ public class Skill {
         this.name = name;
     }
 
-    public void addVacancy(Vacancy vacancy){
+    public void addVacancy(Vacancy vacancy) {
         this.vacancies.add(vacancy);
-//        vacancy.getSkills().add(this);
     }
 
-    public void removeVacancy(Vacancy vacancyToBeRemoved){
+    public void removeVacancy(Vacancy vacancyToBeRemoved) {
         this.vacancies.remove(vacancyToBeRemoved);
-//        vacancyToBeRemoved.getSkills().remove(this);
     }
 
     @Override
     public String toString() {
-        return "" + this.id + "\t" + this.name + "\n";
+        return "" + this.name;
     }
 
 }

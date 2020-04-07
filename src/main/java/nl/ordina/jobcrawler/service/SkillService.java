@@ -37,7 +37,6 @@ public class SkillService {
             if (existingSkill.isPresent()) {
                 System.out.println("** Existing skill: " + existingSkill.get().getName() + "\t" + existingSkill.get().getId());
                 newSkills.add(existingSkill.get()); // here happens a fetch query
-//                System.out.println("** finished with " + skill.getName());
             } else {
                 newSkills.add(skill);
             }
@@ -57,7 +56,7 @@ public class SkillService {
         }
     }
 
-    public void addSkillsToVacancy(List<Skill> skills, Vacancy vacancy) {
+    public void addSkillsToVacancy(Set<Skill> skills, Vacancy vacancy) {
         Set<Skill> newSkills = new HashSet<>();
 
         for (Skill skill : skills) {
@@ -74,18 +73,13 @@ public class SkillService {
 
     }
 
-    public void removeSkillsFromVacancy(List<Skill> skills, Vacancy vacancy) {
+    public void removeSkillsFromVacancy(Set<Skill> skills, Vacancy vacancy) {
         for (Skill skill : skills) {
-            // remove the relationships
+            // remove the relationships, this can also be done using the vacancyRepository
             skillRepository.removeRelationsById(skill.getId(), vacancy.getId());
-
-            // remove the skill if there are no more relationships
-            if (skillRepository.countRelationsById(skill.getId()) == 0) {
-                skillRepository.deleteById(skill.getId());
-            }
         }
         vacancy.removeSkills(skills);
-//        deleteSkillsIfNoRelations(skills);
+        deleteSkillsIfNoRelations(skills);
     }
 
     public Set<Vacancy> getVacanciesBySkill(String skillName) {
@@ -99,8 +93,8 @@ public class SkillService {
 
         System.out.println("** new skills: " + newSkills + " and old skills " + oldSkills);
 
-        List<Skill> skillsToAdd = new ArrayList<Skill>(newSkills); // will contain the new skills to be added
-        List<Skill> skillsToRemove = new ArrayList<Skill>(oldSkills); // will contain the skills to be deleted
+        Set<Skill> skillsToAdd = new HashSet<Skill>(newSkills); // will contain the new skills to be added
+        Set<Skill> skillsToRemove = new HashSet<Skill>(oldSkills); // will contain the skills to be deleted
 
         for (Skill newSkill : newSkills) {
             for (Skill oldSkill : oldSkills) {

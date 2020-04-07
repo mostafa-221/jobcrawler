@@ -74,14 +74,14 @@ public class Vacancy {
         skillsToBeRemoved.removeVacancy(this);
     }
 
-    public void addSkills(List<Skill> skillsToBeAdded) {
+    public void addSkills(Set<Skill> skillsToBeAdded) {
         for (Skill skill : skillsToBeAdded) {
             this.skills.add(skill);
             skill.addVacancy(this);
         }
     }
 
-    public void removeSkills(List<Skill> skillsToBeRemoved) {
+    public void removeSkills(Set<Skill> skillsToBeRemoved) {
         for (Skill skill : skillsToBeRemoved) {
             this.skills.remove(skill);
             skill.removeVacancy(this);
