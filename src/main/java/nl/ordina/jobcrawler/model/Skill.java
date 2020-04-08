@@ -1,9 +1,7 @@
 package nl.ordina.jobcrawler.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
@@ -11,11 +9,12 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
+@ToString
+@Getter @Setter @RequiredArgsConstructor
+//@Data gives StackOverflowError
 public class Skill {
+
 
     @GeneratedValue
     @Id
@@ -26,7 +25,6 @@ public class Skill {
     private String name;
 
     @ManyToMany(mappedBy = "skills")
-    // @ManyToMany(mappedBy = "skills", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @JsonIgnoreProperties("skills")
     Set<Vacancy> vacancies = new HashSet<>();
 
@@ -42,9 +40,5 @@ public class Skill {
         this.vacancies.remove(vacancyToBeRemoved);
     }
 
-    @Override
-    public String toString() {
-        return "" + this.name;
-    }
 
 }

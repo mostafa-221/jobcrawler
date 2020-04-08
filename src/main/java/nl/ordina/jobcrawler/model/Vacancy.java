@@ -1,75 +1,63 @@
 package nl.ordina.jobcrawler.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import nl.ordina.jobcrawler.controller.exception.VacancyURLMalformedException;
-
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-
-
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-@Getter
-@Setter
+@Data
+@Builder
+@AllArgsConstructor @NoArgsConstructor
 @Entity
 public class Vacancy {
 
-    @GeneratedValue
+
     @Id
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
-
-    //    @NotBlank
-    @Column(columnDefinition = "text")
-    @JsonDeserialize
+    @NotNull
     private String vacancyURL;
-
-
-    @NotBlank
     private String title;
     private String broker;
-
-    @NotBlank
     private String vacancyNumber;
     private String hours;
     private String location;
     private String postingDate;
-
-    @Column(columnDefinition = "text")
+    @Column(columnDefinition = "TEXT")
     private String about;
 
-    //can also be an entity with one to many association, which is the better approach
-    //Not efficient, or not good for performance
-    // makes new entry for each job that has that skill
-    // when the aanvraag is deleted, the skills associated to it as also deleted
-//    @ElementCollection
-//    private List<String> skills;
-
-    // Eager fetch type so that the skills are loaded when a vacancy is loaded
-    // Fetch type lazy is better for many to many relationships
-    @ManyToMany(cascade = CascadeType.PERSIST) // is cascading good in this case?
+    @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(
             name = "vacancy_skills",
             joinColumns = @JoinColumn(name = "vacancy_id"),
             inverseJoinColumns = @JoinColumn(name = "skill_id"))
-    @JsonIgnoreProperties("vacancies") // so that when printing a vacancy, it doesnt list all the vacancies until the skill
-            Set<Skill> skills = new HashSet<>();  //a set is a collection that has no duplicates
+    @JsonIgnoreProperties("vacancies") // so that when printing a vacancy, it doesn't list all the vacancies of the skill (so no looping)
+    Set<Skill> skills;  //a set is a collection that has no duplicates
 
-    public void addSkill(Skill skillsToBeAdded){
+    public void addSkill(String skillsToBeAdded) {
+        Skill skill = new Skill(skillsToBeAdded);
+        this.skills.add(skill);
+        skill.addVacancy(this);
+    }
+
+    public void addSkill(Skill skillsToBeAdded) {
         this.skills.add(skillsToBeAdded);
         skillsToBeAdded.addVacancy(this);
     }
 
-    public void removeSkill(Skill skillsToBeRemoved){
+    public void removeSkill(Skill skillsToBeRemoved) {
         this.skills.remove(skillsToBeRemoved);
         skillsToBeRemoved.removeVacancy(this);
     }
@@ -112,10 +100,8 @@ public class Vacancy {
 
     @Override
     public String toString() {
-
         String newLine = "\n";
         StringBuilder returnValue = new StringBuilder();
-        returnValue.append(id.toString() + newLine);
         returnValue.append(vacancyURL.toString() + newLine);
         returnValue.append(title + newLine);
         returnValue.append(broker + newLine);
@@ -127,5 +113,6 @@ public class Vacancy {
         returnValue.append(skills.toString() + newLine + newLine);
         returnValue.append("*****************************************");
         return returnValue.toString();
+
     }
 }

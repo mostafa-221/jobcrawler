@@ -1,7 +1,6 @@
 package nl.ordina.jobcrawler.controller.exception;
 
 
-
 public class VacancyURLMalformedException extends RuntimeException {
     public VacancyURLMalformedException(String url) {
         super("Vacancy URL is malformed or could not be reached " + url);

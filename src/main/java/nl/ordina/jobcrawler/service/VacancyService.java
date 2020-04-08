@@ -1,21 +1,18 @@
 package nl.ordina.jobcrawler.service;
 
-import lombok.extern.slf4j.Slf4j;
 import nl.ordina.jobcrawler.controller.exception.VacancyNotFoundException;
 import nl.ordina.jobcrawler.model.Skill;
 import nl.ordina.jobcrawler.model.Vacancy;
-import nl.ordina.jobcrawler.repository.VacancyRepository;
+import nl.ordina.jobcrawler.repo.VacancyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-@Slf4j
 @Service
 public class VacancyService {
 
     private VacancyRepository vacancyRepository;
-    //private SkillRepository skillRepository;
     private SkillService skillService;
 
     @Autowired
@@ -36,17 +33,29 @@ public class VacancyService {
     }
 
     //******** Getting ********//
-    public List<Vacancy> getAllVacancies() {
+    public List<Vacancy> getAllJobs() {
         return vacancyRepository.findAll();
     }
 
-    public Vacancy getVacancyById(UUID id) {
-        return vacancyRepository.findById(id).orElseThrow(() -> new VacancyNotFoundException(id));
+    public Optional<Vacancy> getByID(UUID id) {
+        return vacancyRepository.findById(id);
+    }
+
+    public Set<Vacancy> getJobsWithSkill(String skill) {
+        return skillService.getVacanciesBySkill(skill);
+    }
+
+    public List<Vacancy> getJobsByBroker(String broker) {
+        return vacancyRepository.findByBrokerEquals(broker);
+    }
+
+    public Optional<Vacancy> getExistingRecord(String url) {
+        return vacancyRepository.findByVacancyURLEquals(url);
     }
 
 
     //******** Deleting ********//
-    public void deleteVacancyById(UUID id) {
+    public void delete(UUID id) {
         Vacancy vacancyToDelete = vacancyRepository.findById(id).orElseThrow(() -> new VacancyNotFoundException(id));
         Set<Skill> skillsToDelete = new HashSet<Skill>(vacancyToDelete.getSkills());
 
@@ -79,5 +88,6 @@ public class VacancyService {
                 .orElseThrow(() -> new VacancyNotFoundException(id));
 
     }
+
 
 }

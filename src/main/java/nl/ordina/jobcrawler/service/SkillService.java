@@ -2,11 +2,14 @@ package nl.ordina.jobcrawler.service;
 
 import nl.ordina.jobcrawler.model.Skill;
 import nl.ordina.jobcrawler.model.Vacancy;
-import nl.ordina.jobcrawler.repository.SkillRepository;
+import nl.ordina.jobcrawler.repo.SkillRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class SkillService {
@@ -18,6 +21,7 @@ public class SkillService {
         this.skillRepository = skillRepository;
     }
 
+    //******** Getting ********//
     public List<Skill> getAllSkills() {
         return skillRepository.findAll();
     }
@@ -26,6 +30,13 @@ public class SkillService {
         return skillRepository.findByName(skill.getName());
     }
 
+    public Set<Vacancy> getVacanciesBySkill(String skillName) {
+        Optional<Skill> skill = skillRepository.findByName(skillName);
+        return skill.map(Skill::getVacancies).orElse(null);
+    }
+
+
+    //******** linking ********//
     public Set<Skill> linkToExistingSkills(Set<Skill> skills, Vacancy vacancy) {
         Set<Skill> newSkills = new HashSet<>();
         // Todo: try to find a solution to have 1 query per iteration searching and fetching
@@ -45,6 +56,8 @@ public class SkillService {
         return newSkills;
     }
 
+
+    //******** Deleting ********//
     public void deleteSkillsIfNoRelations(Set<Skill> skillsToDelete) {
         for (Skill skill : skillsToDelete) {
             int relations = skillRepository.countRelationsById(skill.getId());
@@ -56,6 +69,8 @@ public class SkillService {
         }
     }
 
+
+    //******** Adding ********//
     public void addSkillsToVacancy(Set<Skill> skills, Vacancy vacancy) {
         Set<Skill> newSkills = new HashSet<>();
 
@@ -73,6 +88,8 @@ public class SkillService {
 
     }
 
+
+    //******** Deleting ********//
     public void removeSkillsFromVacancy(Set<Skill> skills, Vacancy vacancy) {
         for (Skill skill : skills) {
             // remove the relationships, this can also be done using the vacancyRepository
@@ -82,11 +99,8 @@ public class SkillService {
         deleteSkillsIfNoRelations(skills);
     }
 
-    public Set<Vacancy> getVacanciesBySkill(String skillName) {
-        Optional<Skill> skill = skillRepository.findByName(skillName);
-        return skill.map(Skill::getVacancies).orElse(null);
-    }
 
+    //******** Updating ********//
     public void updateSkills(Set<Skill> newSkills, Vacancy vacancy) {
 
         Set<Skill> oldSkills = vacancy.getSkills();

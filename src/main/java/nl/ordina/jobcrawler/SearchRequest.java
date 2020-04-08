@@ -12,8 +12,16 @@ public class SearchRequest {
         this.keywords = keywords;
     }
 
-    public String getLocation() {return this.location;}
-    public String getDistance() {return this.distance;}
-    public String getKeywords() {return this.keywords;}
+    public String getLocation() {
+        return this.location;
+    }
+
+    public String getDistance() {
+        return this.distance;
+    }
+
+    public String getKeywords() {
+        return this.keywords;
+    }
 
 }

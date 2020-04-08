@@ -13,7 +13,7 @@ public class VacancyNotFoundAdvice {
     @ResponseBody
     @ExceptionHandler(VacancyNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    String jobNotFoundHandler(VacancyNotFoundException ex){
+    String jobNotFoundHandler(VacancyNotFoundException ex) {
         return ex.getMessage();
     }
 }

@@ -12,8 +12,9 @@ public class VacancyURLMalformedAdvice {
 
     @ResponseBody
     @ExceptionHandler(VacancyURLMalformedException.class)
-    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)  //not sure if this is the correct status
-    String vacancyURLMalformedHandler(VacancyURLMalformedException ex){
+    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
+        //not sure if this is the correct status
+    String vacancyURLMalformedHandler(VacancyURLMalformedException ex) {
         return ex.getMessage();
     }
 }
