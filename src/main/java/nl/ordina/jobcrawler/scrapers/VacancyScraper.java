@@ -34,7 +34,7 @@ abstract class VacancyScraper {
     public List<Vacancy> getVacancies() throws IOException {
         log.info(String.format("%s -- Start scraping", BROKER.toUpperCase()));
         /*
-        getVacancies retrieves all vanacyURLs via the getVacancyURLs method and set the various elements of Vacancy below.
+        getVacancies retrieves all vacancyURLs via the getVacancyURLs method and set the various elements of Vacancy below.
          */
         List<Vacancy> vacancies = new ArrayList<>();
         List<VacancyURLs> vacancyURLs = getVacancyURLs();
@@ -67,6 +67,8 @@ abstract class VacancyScraper {
 
     abstract protected void setVacancyTitle(Document doc, Vacancy vacancy);
 
+    // Scrapes the date, nr of hours and the location (town or municipality) of the vacancy
+    // and sets those values in the vacancy
     abstract protected void setVacancySpecifics(Document doc, Vacancy vacancy);
 
     abstract protected List<String> getVacancySpecifics(Document doc);

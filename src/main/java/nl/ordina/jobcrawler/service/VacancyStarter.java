@@ -1,7 +1,7 @@
 package nl.ordina.jobcrawler.service;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.ordina.jobcrawler.scrapers.MylerVacancyScraper;
+import nl.ordina.jobcrawler.scrapers.JobBirdScraper;
 import nl.ordina.jobcrawler.scrapers.YachtVacancyScraper;
 import nl.ordina.jobcrawler.model.Vacancy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,12 +25,12 @@ public class VacancyStarter {
     @Autowired
     private VacancyService vacancyService;
 
-    private final MylerVacancyScraper mylerVacancyScraper;
+    private final JobBirdScraper jobBirdScraper;
     private final YachtVacancyScraper yachtVacancyScraper;
 
     @Autowired
-    public VacancyStarter(MylerVacancyScraper mylerVacancyScraper, YachtVacancyScraper yachtVacancyScraper) {
-        this.mylerVacancyScraper = mylerVacancyScraper;
+    public VacancyStarter(JobBirdScraper jobBirdScraper, YachtVacancyScraper yachtVacancyScraper) {
+        this.jobBirdScraper = jobBirdScraper;
         this.yachtVacancyScraper = yachtVacancyScraper;
     }
 
@@ -41,9 +41,9 @@ public class VacancyStarter {
         scrape();
     }
 
-    private void scrape() throws IOException {
+    public void scrape() throws IOException {
         List<Vacancy> allVacancies = yachtVacancyScraper.getVacancies();
-        allVacancies.addAll(mylerVacancyScraper.getVacancies());
+        allVacancies.addAll(jobBirdScraper.getVacancies());
         int existVacancy = 0;
         int newVacancy = 0;
         for(Vacancy vacancy : allVacancies) {

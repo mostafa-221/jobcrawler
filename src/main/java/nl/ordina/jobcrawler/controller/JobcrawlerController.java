@@ -35,6 +35,12 @@ public class JobcrawlerController {
         return vacancyService.add(job);
     }
 
+
+    @GetMapping("/scrape")
+    public void scrape() throws Exception {
+        vacancyService.scrape();
+    }
+
     // Get mappings
 
     @GetMapping("/getByID/{id}")

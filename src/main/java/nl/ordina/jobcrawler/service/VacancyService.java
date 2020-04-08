@@ -2,7 +2,6 @@ package nl.ordina.jobcrawler.service;
 
 import nl.ordina.jobcrawler.model.Vacancy;
 import nl.ordina.jobcrawler.repo.VacancyRepository;
-import nl.ordina.jobcrawler.service.exception.DuplicateRecordFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,12 +13,16 @@ import java.util.stream.Collectors;
 @Service
 public class VacancyService {
 
+
     private VacancyRepository repository;
 
     @Autowired
     public VacancyService(VacancyRepository repository) {
         this.repository = repository;
     }
+
+    @Autowired VacancyStarter vacancyStarter;
+
 
     /* Add */
     public Vacancy add(Vacancy vacancy) {
@@ -55,5 +58,8 @@ public class VacancyService {
         repository.deleteById(id);
     }
 
+    public void scrape() throws Exception {
+        vacancyStarter.scrape();
+    }
 
 }
