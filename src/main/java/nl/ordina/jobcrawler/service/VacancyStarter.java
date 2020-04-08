@@ -1,8 +1,9 @@
 package nl.ordina.jobcrawler.service;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.ordina.jobcrawler.controller.MylerVacancyScraper;
-import nl.ordina.jobcrawler.controller.YachtVacancyScraper;
+import nl.ordina.jobcrawler.controller.scraper.HuxleyITVacancyScraper;
+import nl.ordina.jobcrawler.controller.scraper.MylerVacancyScraper;
+import nl.ordina.jobcrawler.controller.scraper.YachtVacancyScraper;
 import nl.ordina.jobcrawler.model.Vacancy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /*
 This 'starter' class uses the @Scheduled annotation. Every 15 minutes it executes the cronJobSch() function to retrieve all vacancies.
@@ -27,15 +27,17 @@ public class VacancyStarter {
     private VacancyService vacancyService;
 
     private final MylerVacancyScraper mylerVacancyScraper;
+    private final HuxleyITVacancyScraper huxleyITVacancyScraper;
     private final YachtVacancyScraper yachtVacancyScraper;
 
     @Autowired
-    public VacancyStarter(MylerVacancyScraper mylerVacancyScraper, YachtVacancyScraper yachtVacancyScraper) {
+    public VacancyStarter(MylerVacancyScraper mylerVacancyScraper, HuxleyITVacancyScraper huxleyITVacancyScraper, YachtVacancyScraper yachtVacancyScraper) {
         this.mylerVacancyScraper = mylerVacancyScraper;
+        this.huxleyITVacancyScraper = huxleyITVacancyScraper;
         this.yachtVacancyScraper = yachtVacancyScraper;
     }
 
-    @Scheduled(cron = "0 0/15 * * * *")
+    @Scheduled(cron = "0 0/1 * * * *")
     public void cronJobSch() throws IOException {
         // This function gets executed every 15 minutes
         log.info("CRON Scheduled");
@@ -45,6 +47,7 @@ public class VacancyStarter {
     private void scrape() throws IOException {
         List<Vacancy> allVacancies = yachtVacancyScraper.getVacancies();
         allVacancies.addAll(mylerVacancyScraper.getVacancies());
+        allVacancies.addAll(huxleyITVacancyScraper.getVacancies());
         int existVacancy = 0;
         int newVacancy = 0;
         for(Vacancy vacancy : allVacancies) {
