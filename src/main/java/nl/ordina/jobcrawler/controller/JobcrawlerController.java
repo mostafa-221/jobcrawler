@@ -33,7 +33,7 @@ public class JobcrawlerController {
 
     @PostMapping("/searchrequest")
     public SearchResult searchRequest(@RequestBody SearchRequest request) {
-        return new SearchResult(request, vacancyService.getAllJobs());
+        return new SearchResult(request, vacancyService.getAllVacancies());
     }
 
 
@@ -48,20 +48,20 @@ public class JobcrawlerController {
     @GetMapping("/getByID/{id}")
     public Vacancy getByID(@PathVariable("id") UUID id) {
         // Retrieve a vacancy by its ID (UUID). If Vacancy is not found it throws a 'VacancyNotFoundException' (HttpStatus.NOT_FOUND).
-        Optional<Vacancy> vacancy = vacancyService.getByID(id);
+        Optional<Vacancy> vacancy = vacancyService.getVacancyByID(id);
         return vacancy.orElseThrow(() -> new VacancyNotFoundException("Vacancy with id: " + id + " not found."));
     }
 
     @GetMapping("/getJobsByBroker/{broker}")
     public List<Vacancy> getJobsByBroker(@PathVariable("broker") String broker) {
         // Retrieve all vacancies from a specific broker. Currently case sensitive
-        return vacancyService.getJobsByBroker(broker);
+        return vacancyService.getVacanciesByBroker(broker);
     }
 
     @GetMapping("/getAllJobs")
     public List<Vacancy> getAllJobs() {
         // Retrieve all vacancies that are available in the database
-        return vacancyService.getAllJobs();
+        return vacancyService.getAllVacancies();
     }
 
     @GetMapping(path = "skills")
@@ -72,7 +72,7 @@ public class JobcrawlerController {
     @GetMapping("/getJobsWithSkill/{skill}")
     public Set<Vacancy> getJobsWithSkill(@PathVariable("skill") String skill) {
         // Only show vacancies which needs a specific skill that's requested via a get method
-        return vacancyService.getJobsWithSkill(skill);
+        return vacancyService.getVacanciesBySkill(skill);
     }
 
 

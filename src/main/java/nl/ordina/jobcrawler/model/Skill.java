@@ -11,7 +11,9 @@ import java.util.UUID;
 
 @Entity
 @ToString
-@Getter @Setter @RequiredArgsConstructor
+@Getter
+@Setter
+@RequiredArgsConstructor
 //@Data gives StackOverflowError
 public class Skill {
 
@@ -20,7 +22,6 @@ public class Skill {
     @Id
     private UUID id;
 
-    @NaturalId
     @Column(nullable = false, unique = true)
     private String name;
 
@@ -38,6 +39,11 @@ public class Skill {
 
     public void removeVacancy(Vacancy vacancyToBeRemoved) {
         this.vacancies.remove(vacancyToBeRemoved);
+    }
+
+    @Override
+    public String toString(){
+        return this.name;
     }
 
 

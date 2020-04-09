@@ -1,5 +1,7 @@
 package nl.ordina.jobcrawler.service;
 
+
+import nl.ordina.jobcrawler.controller.exception.SkillNotFoundException;
 import nl.ordina.jobcrawler.model.Skill;
 import nl.ordina.jobcrawler.model.Vacancy;
 import nl.ordina.jobcrawler.repo.SkillRepository;
@@ -26,70 +28,64 @@ public class SkillService {
         return skillRepository.findAll();
     }
 
-    public Optional<Skill> getExistingSkill(Skill skill) {
+    public Optional<Skill> getSkillByName(Skill skill) {
         return skillRepository.findByName(skill.getName());
     }
 
     public Set<Vacancy> getVacanciesBySkill(String skillName) {
-        Optional<Skill> skill = skillRepository.findByName(skillName);
-        return skill.map(Skill::getVacancies).orElse(null);
+        // searches for a skill, if not found throws a skill not found exception
+        Skill skill = skillRepository.findByName(skillName).orElseThrow(() -> new SkillNotFoundException(skillName));
+        return skill.getVacancies();
     }
 
 
     //******** linking ********//
-    public Set<Skill> linkToExistingSkills(Set<Skill> skills, Vacancy vacancy) {
+    // links the skills of the vacancy to existing entries in the database //
+    // reads from the skill table //
+    public Set<Skill> linkToExistingSkills(Set<Skill> skills) {
         Set<Skill> newSkills = new HashSet<>();
         // Todo: try to find a solution to have 1 query per iteration searching and fetching
 
         for (Skill skill : skills) {
             System.out.println("** Checking if skill is in database for " + skill.getName());
-            Optional<Skill> existingSkill = getExistingSkill(skill); //here happens a search query
+            Optional<Skill> existingSkill = getSkillByName(skill); //here happens a search query
 
             if (existingSkill.isPresent()) {
                 System.out.println("** Existing skill: " + existingSkill.get().getName() + "\t" + existingSkill.get().getId());
                 newSkills.add(existingSkill.get()); // here happens a fetch query
+
             } else {
                 newSkills.add(skill);
             }
-            skill.addVacancy(vacancy);
         }
         return newSkills;
     }
 
 
     //******** Deleting ********//
+    // Deletes from the skill table if no relations are found in the linking table
     public void deleteSkillsIfNoRelations(Set<Skill> skillsToDelete) {
         for (Skill skill : skillsToDelete) {
-            int relations = skillRepository.countRelationsById(skill.getId());
+            int relations = skillRepository.countRelationsById(skill.getId());  //counts the entries in the relation table
             System.out.println("** Skill " + skill.getName() + " has " + relations + " relation(s)");
             if (relations == 0) {
                 System.out.println("** Deleting skill " + skill.getName());
-                skillRepository.deleteById(skill.getId());
+                skillRepository.deleteById(skill.getId()); // deletes the skill from the skill table
             }
         }
     }
 
 
     //******** Adding ********//
-    public void addSkillsToVacancy(Set<Skill> skills, Vacancy vacancy) {
-        Set<Skill> newSkills = new HashSet<>();
-
-        for (Skill skill : skills) {
-            System.out.println("** Checking if skill is in database for " + skill.getName());
-            Optional<Skill> existingSkill = skillRepository.findByName(skill.getName()); //here happens a search query
-            if (existingSkill.isPresent()) {
-                System.out.println("** Existing skill: " + existingSkill.get().getName() + "\t" + existingSkill.get().getId());
-                vacancy.addSkill(existingSkill.get()); // here happens a fetch query
-
-            } else {
-                vacancy.addSkill(skill);
-            }
-        }
-
+    // takes skills and adds it to a vacancy //
+    public void addSkillsToVacancy(Set<Skill> skills, Vacancy vacancy) { ;
+        skills = linkToExistingSkills(skills);
+        vacancy.addSkills(skills);
     }
 
 
     //******** Deleting ********//
+    // takes skills and removes them from a vacancy //
     public void removeSkillsFromVacancy(Set<Skill> skills, Vacancy vacancy) {
         for (Skill skill : skills) {
             // remove the relationships, this can also be done using the vacancyRepository
@@ -101,6 +97,9 @@ public class SkillService {
 
 
     //******** Updating ********//
+    // Takes a new set of skills to replace old ones from a vacancy
+    // calculates what needs to be removed and what needs to be added
+    // Adds and removes the skills accordingly
     public void updateSkills(Set<Skill> newSkills, Vacancy vacancy) {
 
         Set<Skill> oldSkills = vacancy.getSkills();
@@ -110,6 +109,7 @@ public class SkillService {
         Set<Skill> skillsToAdd = new HashSet<Skill>(newSkills); // will contain the new skills to be added
         Set<Skill> skillsToRemove = new HashSet<Skill>(oldSkills); // will contain the skills to be deleted
 
+        // Removes all the common skills to only leaves the differences
         for (Skill newSkill : newSkills) {
             for (Skill oldSkill : oldSkills) {
                 if (newSkill.getName().equals(oldSkill.getName())) {
@@ -123,7 +123,7 @@ public class SkillService {
         System.out.println("** skills to be added " + skillsToAdd);
 
         removeSkillsFromVacancy(skillsToRemove, vacancy);
-        skillRepository.saveAll(skillsToAdd);
+//        skillRepository.saveAll(skillsToAdd);
         addSkillsToVacancy(skillsToAdd, vacancy);
     }
 

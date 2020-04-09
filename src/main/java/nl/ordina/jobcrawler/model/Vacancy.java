@@ -18,7 +18,8 @@ import java.util.UUID;
 
 @Data
 @Builder
-@AllArgsConstructor @NoArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 public class Vacancy {
 
@@ -38,12 +39,12 @@ public class Vacancy {
     @Column(columnDefinition = "TEXT")
     private String about;
 
-    @ManyToMany(cascade = CascadeType.PERSIST)
+    @ManyToMany(cascade = CascadeType.PERSIST)  //saves the skills when a vacancy gets saved
     @JoinTable(
             name = "vacancy_skills",
             joinColumns = @JoinColumn(name = "vacancy_id"),
             inverseJoinColumns = @JoinColumn(name = "skill_id"))
-    @JsonIgnoreProperties("vacancies") // so that when printing a vacancy, it doesn't list all the vacancies of the skill (so no looping)
+    @JsonIgnoreProperties("vacancies") // so that when printing a vacancy, it doesn't list all the vacancies of a skill (so no looping)
     Set<Skill> skills;  //a set is a collection that has no duplicates
 
     public void addSkill(String skillsToBeAdded) {
@@ -88,11 +89,15 @@ public class Vacancy {
         try {
             url = new URL(this.vacancyURL);
             huc = (HttpURLConnection) url.openConnection();
-            huc.setRequestMethod("HEAD");   // faster because we it doesn't download the response body
+            huc.setRequestMethod("HEAD");   // faster because it doesn't download the response body
             responseCode = huc.getResponseCode();
 
-            if (responseCode == 200) return true;    //website is good
-            else throw new VacancyURLMalformedException(this.vacancyURL, responseCode);
+            if (responseCode == 200) { //website is good
+                return true;
+            }
+            else {
+                throw new VacancyURLMalformedException(this.vacancyURL, responseCode);
+            }
         } catch (IOException e) {
             throw new VacancyURLMalformedException(this.vacancyURL);
         }

@@ -23,50 +23,56 @@ public class VacancyService {
 
 
     //******** Adding ********//
+    // Adding vacancy and accompanying skills and relations to the database //
     public Vacancy add(Vacancy vacancy) {
+        //replacing the skills with existing skills from the database if present
+        Set<Skill> existingSkills = skillService.linkToExistingSkills(vacancy.getSkills());
+        existingSkills.forEach(skill -> skill.addVacancy(vacancy)); // add the vacancy to the skill
+        vacancy.setSkills(existingSkills); // add the skills to the vacancy
 
-        Set<Skill> ExistingSkills = skillService.linkToExistingSkills(vacancy.getSkills(), vacancy);
-        vacancy.setSkills(ExistingSkills);
-
+        //saving the vacancy if it has a correct URL
         if (vacancy.checkURL()) return vacancyRepository.saveAndFlush(vacancy);
         else return null;
     }
 
     //******** Getting ********//
-    public List<Vacancy> getAllJobs() {
+    public List<Vacancy> getAllVacancies() {
         return vacancyRepository.findAll();
     }
 
-    public Optional<Vacancy> getByID(UUID id) {
+    public Optional<Vacancy> getVacancyByID(UUID id) {
         return vacancyRepository.findById(id);
     }
 
-    public Set<Vacancy> getJobsWithSkill(String skill) {
+    public Set<Vacancy> getVacanciesBySkill(String skill) {
         return skillService.getVacanciesBySkill(skill);
     }
 
-    public List<Vacancy> getJobsByBroker(String broker) {
+    public List<Vacancy> getVacanciesByBroker(String broker) {
         return vacancyRepository.findByBrokerEquals(broker);
     }
 
-    public Optional<Vacancy> getExistingRecord(String url) {
+    public Optional<Vacancy> getExistingVacancy(String url) {
         return vacancyRepository.findByVacancyURLEquals(url);
     }
 
 
     //******** Deleting ********//
+    // Deletes vacancy and accompanying skills and relations from the database //
     public void delete(UUID id) {
         Vacancy vacancyToDelete = vacancyRepository.findById(id).orElseThrow(() -> new VacancyNotFoundException(id));
-        Set<Skill> skillsToDelete = new HashSet<Skill>(vacancyToDelete.getSkills());
+        Set<Skill> skillsToDelete = new HashSet<Skill>(vacancyToDelete.getSkills()); // saves the skills of the vacancy
 
-        vacancyRepository.deleteById(id);
-        System.out.println(skillsToDelete);
-        skillService.deleteSkillsIfNoRelations(skillsToDelete);
+        skillsToDelete.forEach(skill -> skill.removeVacancy(vacancyToDelete)); // remove all vacancy relations
 
+        vacancyRepository.deleteById(id); //deletes the vacancy and all relations to the skills
+
+        skillService.deleteSkillsIfNoRelations(skillsToDelete); //deletes the skills if there are no more relations pointing to it
     }
 
 
     //******** Updating ********//
+    // Updates Vacancy with a given new vacancy (can write to all 3 tables)//
     public Vacancy replace(UUID id, Vacancy newJob) {
         return vacancyRepository.findById(id)
                 .map(job -> {
@@ -81,7 +87,7 @@ public class VacancyService {
                     job.setPostingDate(newJob.getPostingDate());
                     job.setAbout(newJob.getAbout());
 
-                    skillService.updateSkills(newJob.getSkills(), job);
+                    skillService.updateSkills(newJob.getSkills(), job); // updates the skills of the job with the new skills
 
                     return vacancyRepository.save(job);
                 })

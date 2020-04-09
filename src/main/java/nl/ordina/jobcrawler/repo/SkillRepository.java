@@ -23,6 +23,4 @@ public interface SkillRepository extends JpaRepository<Skill, UUID> {
     @Modifying
     void removeRelationsById(UUID skillID, UUID jobID);
 
-    void deleteByName(String name);
-
 }
