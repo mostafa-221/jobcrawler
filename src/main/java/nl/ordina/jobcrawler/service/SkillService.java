@@ -123,7 +123,7 @@ public class SkillService {
         System.out.println("** skills to be added " + skillsToAdd);
 
         removeSkillsFromVacancy(skillsToRemove, vacancy);
-//        skillRepository.saveAll(skillsToAdd);
+        skillRepository.saveAll(skillsToAdd);
         addSkillsToVacancy(skillsToAdd, vacancy);
     }
 
