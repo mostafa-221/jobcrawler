@@ -3,7 +3,7 @@ package nl.ordina.jobcrawler;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
-@Value
+@Value  // makes getters and makes attributes private final
 @AllArgsConstructor
 public class SearchRequest {
 
