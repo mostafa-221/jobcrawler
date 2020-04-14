@@ -85,7 +85,7 @@ public class JobcrawlerController {
 
 
     //******** Updating ********//
-    // takes all the attributes of the new job and puts them in the job of the ID
+    // takes all the attributes of the new job and puts them in the job of the ID, therefore also updates the skills
     @PutMapping("{id}")
     Vacancy replaceVacancy(@PathVariable UUID id, @RequestBody Vacancy newVacancy) {
         return vacancyService.replace(id, newVacancy);
