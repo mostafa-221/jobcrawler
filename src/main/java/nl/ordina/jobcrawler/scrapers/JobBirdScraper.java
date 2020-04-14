@@ -104,29 +104,53 @@ public class JobBirdScraper extends VacancyScraper {
         elements = doc.select("div.card-body");
         //System.out.println(elements.toString());
 
-        // Search the childnodes for the tag "<strong>Uren per week:</strong>
-        // in principle, the text is free format with a few common headings
-        for (Element e: elements) {
-            for (Element child: e.children()) {
-                //System.out.println(child.toString());
-                if (child.toString().contains("Uren per week")) {
-                    System.out.println(child.toString());
-                    String uren = child.text();
-                    System.out.println(uren);
-                    String[] urenArr = uren.split(":");
-                    if (urenArr.length > 1) {
-                        uren = urenArr[1];
-                        vacancy.setHours(uren.trim());
+
+        String hours = getHoursFromPage(elements);
+        vacancy.setHours(hours);
+    }
+
+    /*
+     *  Retrieve the hours respectively the minimum allowed hours from the relevant
+     *  part of the page
+     */
+    private String getHoursFromPage(Elements elements) {
+        try {
+            // Search the childnodes for the tag "<strong>Uren per week:</strong>
+            // in principle, the text is free format with a few common headings
+            for (Element e: elements) {
+                for (Element child: e.children()) {
+                    //System.out.println(child.toString());
+                    String minString = "<strong>Minimum aantal uren per week</strong>";
+                    if (child.toString().contains("Uren per week")) {
+                        String uren = child.text();
+                        System.out.println(uren);
+                        String[] urenArr = uren.split(":");
+                        if (urenArr.length > 1) {
+                            uren = urenArr[1];
+                            return uren.trim();
+                        }
+                    } else if (child.toString().contains(minString)) {
+                        String sElement = child.toString();
+                        int index = child.toString().indexOf(minString);
+                        index += minString.length();
+                        String sRest = sElement.substring(index);
+                        index = sRest.indexOf("<");
+                        String sUren = sRest.substring(0, index);
+                        return sUren;
                     }
                 }
             }
+        } catch (Exception e) {
+            // nothing, it will not always parse.
+            return "0";
         }
-
+        return "0"; // catch all when working hours not mentioned on the page
     }
 
     @Override
     protected List<String> getVacancySpecifics(Document doc) {
         return null;
+        // this method is simply not used (yet)
     }
 
     @Override
