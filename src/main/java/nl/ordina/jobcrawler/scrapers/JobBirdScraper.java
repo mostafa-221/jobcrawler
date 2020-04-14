@@ -107,6 +107,29 @@ public class JobBirdScraper extends VacancyScraper {
 
         String hours = getHoursFromPage(elements);
         vacancy.setHours(hours);
+
+
+        String publishDate = getPublishDate(doc);
+        vacancy.setPostingDate(publishDate);
+    }
+
+    private String getPublishDate(Document doc) {
+        String result = "";
+        Elements elements = doc.select("span.job-result__place");
+        if (!elements.isEmpty()) {
+            Element parent = elements.get(0).parent().parent();
+            for (Element e: parent.children()) {
+                System.out.println(e.text());
+            }
+            Elements timeElements = parent.select("time");
+            System.out.println( timeElements.toString());
+
+            if (!timeElements.isEmpty()) {
+                Element timeElement = timeElements.get(0);
+                result = timeElement.attr("datetime");
+            }
+        }
+        return result;
     }
 
     /*
