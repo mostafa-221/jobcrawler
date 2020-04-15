@@ -37,14 +37,15 @@ public class JobcrawlerController {
     }
 
 
-    //******** Adding ********//
+    //******** Adding jobs to database ********//
     @PostMapping("/addJobWithJson")
     public Vacancy addJob(@Valid @RequestBody Vacancy job) {
         return vacancyService.add(job);
     }
 
 
-    //******** Getting ********//
+    //******** Getting from database ********//
+    // getting jobs by ID
     @GetMapping("/getByID/{id}")
     public Vacancy getByID(@PathVariable("id") UUID id) {
         // Retrieve a vacancy by its ID (UUID). If Vacancy is not found it throws a 'VacancyNotFoundException' (HttpStatus.NOT_FOUND).
@@ -52,23 +53,27 @@ public class JobcrawlerController {
         return vacancy.orElseThrow(() -> new VacancyNotFoundException("Vacancy with id: " + id + " not found."));
     }
 
+    // getting jobs by broker
     @GetMapping("/getJobsByBroker/{broker}")
     public List<Vacancy> getJobsByBroker(@PathVariable("broker") String broker) {
         // Retrieve all vacancies from a specific broker. Currently case sensitive
         return vacancyService.getVacanciesByBroker(broker);
     }
 
+    // getting all jobs from database
     @GetMapping("/getAllJobs")
     public List<Vacancy> getAllJobs() {
         // Retrieve all vacancies that are available in the database
         return vacancyService.getAllVacancies();
     }
 
+    // getting all skills from database
     @GetMapping(path = "skills")
     public List<Skill> getAllSkills() {
         return skillService.getAllSkills();
     }
 
+    // getting jobs by skill
     @GetMapping("/getJobsWithSkill/{skill}")
     public Set<Vacancy> getJobsWithSkill(@PathVariable("skill") String skill) {
         // Only show vacancies which needs a specific skill that's requested via a get method
@@ -76,7 +81,8 @@ public class JobcrawlerController {
     }
 
 
-    //******** Deleting ********//
+    //******** Deleting jobs from database ********//
+    // will delete skills that have no reference anymore
     @DeleteMapping("/delete/{id}")
     public void deleteVacancyById(@PathVariable("id") UUID id) {
         // Delete vacancy by id (UUID)
