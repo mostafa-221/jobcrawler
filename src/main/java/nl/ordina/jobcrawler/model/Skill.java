@@ -9,12 +9,13 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+//@Data gives StackOverflowError
 @Entity
-@ToString
 @Getter
 @Setter
 @RequiredArgsConstructor
-//@Data gives StackOverflowError
+@AllArgsConstructor
+@Builder
 public class Skill {
 
 
