@@ -94,7 +94,7 @@ public class Vacancy {
             huc.setRequestMethod("HEAD");   // faster because it doesn't download the response body
             responseCode = huc.getResponseCode();
 
-            if (responseCode != 200) { //website is good
+            if (responseCode != 200) { //website is not good
                 throw new VacancyURLMalformedException(this.vacancyURL, responseCode);
             }
         } catch (IOException e) {
