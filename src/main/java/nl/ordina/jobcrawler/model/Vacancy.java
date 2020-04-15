@@ -23,8 +23,8 @@ import java.util.UUID;
 @Entity
 public class Vacancy {
     /* this class will be saved in a table called vacancy
-    *   a linking table called vacancy_skills will contain vacancy ID's and their corresponding skill ID's
-    * */
+     *   a linking table called vacancy_skills will contain vacancy ID's and their corresponding skill ID's
+     * */
 
     @Id
     @GeneratedValue(generator = "UUID")
@@ -47,7 +47,7 @@ public class Vacancy {
             joinColumns = @JoinColumn(name = "vacancy_id"),
             inverseJoinColumns = @JoinColumn(name = "skill_id"))
     @JsonIgnoreProperties("vacancies") // so that when printing a vacancy, it doesn't list all the vacancies of a skill (so no looping)
-    Set<Skill> skills;  //a set is a collection that has no duplicates
+            Set<Skill> skills;  //a set is a collection that has no duplicates
 
     public void addSkill(String skillsToBeAdded) {
         Skill skill = new Skill(skillsToBeAdded);
@@ -80,7 +80,7 @@ public class Vacancy {
     }
 
 
-    public Boolean checkURL() {
+    public void checkURL() {
         if (!this.vacancyURL.startsWith("http"))
             this.vacancyURL = "https://" + this.vacancyURL; //adding the protocol, if not present
 
@@ -94,10 +94,7 @@ public class Vacancy {
             huc.setRequestMethod("HEAD");   // faster because it doesn't download the response body
             responseCode = huc.getResponseCode();
 
-            if (responseCode == 200) { //website is good
-                return true;
-            }
-            else {
+            if (responseCode != 200) { //website is good
                 throw new VacancyURLMalformedException(this.vacancyURL, responseCode);
             }
         } catch (IOException e) {

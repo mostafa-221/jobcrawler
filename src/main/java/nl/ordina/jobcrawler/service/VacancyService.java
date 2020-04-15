@@ -30,9 +30,10 @@ public class VacancyService {
         existingSkills.forEach(skill -> skill.addVacancy(vacancy)); // add the vacancy to the skill
         vacancy.setSkills(existingSkills); // add the skills to the vacancy
 
-        //saving the vacancy if it has a correct URL
-        if (vacancy.checkURL()) return vacancyRepository.saveAndFlush(vacancy);
-        else return null;
+
+        vacancy.checkURL(); //checking the url, if it is malformed it will throw a VacancyURLMalformedException
+        return vacancyRepository.saveAndFlush(vacancy); // save and send to the database
+
     }
 
     //******** Getting ********//
