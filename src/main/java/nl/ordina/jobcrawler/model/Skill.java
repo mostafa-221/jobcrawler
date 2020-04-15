@@ -16,7 +16,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 //@Data gives StackOverflowError
 public class Skill {
-
+    /* this class will be saved in a table called skill
+     * */
 
     @GeneratedValue
     @Id

@@ -22,7 +22,9 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 public class Vacancy {
-
+    /* this class will be saved in a table called vacancy
+    *   a linking table called vacancy_skills will contain vacancy ID's and their corresponding skill ID's
+    * */
 
     @Id
     @GeneratedValue(generator = "UUID")
