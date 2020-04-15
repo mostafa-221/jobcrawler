@@ -37,7 +37,7 @@ public class VacancyStarter {
         this.yachtVacancyScraper = yachtVacancyScraper;
     }
 
-    @Scheduled(cron = "0 0/1 * * * *")
+    @Scheduled(cron = "0 0/15 * * * *")
     public void cronJobSch() throws IOException {
         // This function gets executed every 15 minutes
         log.info("CRON Scheduled");
