@@ -1,5 +1,6 @@
 package nl.ordina.jobcrawler.controller;
 
+import nl.ordina.jobcrawler.model.Skill;
 import nl.ordina.jobcrawler.model.Vacancy;
 import nl.ordina.jobcrawler.model.VacancyURLs;
 import nl.ordina.jobcrawler.service.ConnectionDocumentService;
@@ -14,8 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -35,7 +35,7 @@ public class YachtVacancyScraperTest {
     private final YachtVacancyScraper yachtVacancyScraper = new YachtVacancyScraper(connectionDocumentService);
     // Need to mock YachtVacancyScraper to not let it search on the real SEARCH_URL but on the included .html file. Otherwise test might fail soon as site can change anytime.
     private final YachtVacancyScraper yachtVacancyScraperMock = mock(YachtVacancyScraper.class);
-    private Vacancy vacancy = new Vacancy();
+    private static Vacancy vacancy;
 
     private static Document overviewDoc;
     private static Document vacancyDoc;
@@ -53,6 +53,10 @@ public class YachtVacancyScraperTest {
 
         File vacancyDocHtml = getFile("/yacht/yachtvacancy.html");
         vacancyDoc = Jsoup.parse(vacancyDocHtml, "UTF-8");
+
+        vacancy = Vacancy.builder()
+                .skills(new HashSet<>())
+                .build();
     }
 
 
@@ -90,7 +94,7 @@ public class YachtVacancyScraperTest {
          */
         final String url = "https://www.yacht.nl/vacatures/9079222/data-analist---modeler";
         final Document removedVacancyDoc = Jsoup.connect(url).get();
-        if(removedVacancyDoc.text().toLowerCase().contains("sorry"))
+        if (removedVacancyDoc.text().toLowerCase().contains("sorry"))
             throw new HttpStatusException("Error 404 - Not found", 404, url);
     }
 
@@ -146,14 +150,14 @@ public class YachtVacancyScraperTest {
     @Test
     public void vacancySkillSet_Test() {
         yachtVacancyScraper.setVacancySkillSet(vacancyDoc, vacancy);
-        final List<String> vacancySkillSet = vacancy.getSkillSet();
+        final Set<Skill> vacancySkillSet = vacancy.getSkills();
         assertEquals(12, vacancySkillSet.size());
     }
 
     @Test
     public void vacancySkillSet_NonYachtSite_Test() {
         yachtVacancyScraper.setVacancySkillSet(nuDoc, vacancy);
-        final List<String> vacancySkillSet = vacancy.getSkillSet();
+        final Set<Skill> vacancySkillSet = vacancy.getSkills();
         assertEquals(0, vacancySkillSet.size());
     }
 
