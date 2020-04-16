@@ -4,38 +4,34 @@ import nl.ordina.jobcrawler.model.Vacancy;
 import org.jsoup.nodes.Document;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
 public class VacancyScraperTest {
 
     private static VacancyScraper vacancyScraper;
 
-    private static Vacancy vacancy1;
-    private static Vacancy vacancy2;
-
     @BeforeClass
     public static void init() throws IOException {
         vacancyScraper = mock(VacancyScraper.class);
-        vacancy1 = new Vacancy();
-        vacancy2 = new Vacancy();
+        Vacancy vacancy1 = new Vacancy();
+        Vacancy vacancy2 = new Vacancy();
         List<Vacancy> vacancyList = new ArrayList<>();
         vacancyList.add(vacancy1);
         vacancyList.add(vacancy2);
 
         when(vacancyScraper.getVacancies()).thenReturn(vacancyList);
-        when(vacancyScraper.getTotalNumberOfPages(Mockito.any())).thenReturn(1);
         when(vacancyScraper.getSEARCH_URL()).thenReturn("https://google.nl");
+    }
+
+    @Test
+    public void getSEARCH_URL_Test() {
+        assertEquals(vacancyScraper.getSEARCH_URL(), "https://google.nl");
     }
 
     @Test
@@ -45,13 +41,10 @@ public class VacancyScraperTest {
     }
 
     @Test
-    public void getSEARCH_URL_Test() {
-        assertEquals(vacancyScraper.getSEARCH_URL(), "https://google.nl");
+    public void getDocument_Test() throws IOException {
+        Document doc = vacancyScraper.getDocument(vacancyScraper.getSEARCH_URL());
+        assertNull(doc);
+        verify(vacancyScraper, times(1)).getDocument(vacancyScraper.getSEARCH_URL());
     }
 
-    @Test
-    public void getTotalNumberOfPages_Test() {
-        assertNotNull(vacancyScraper.getTotalNumberOfPages(Mockito.any()));
-        assertEquals(vacancyScraper.getTotalNumberOfPages(Mockito.any()), 1);
-    }
 }
