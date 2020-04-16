@@ -8,13 +8,10 @@ import nl.ordina.jobcrawler.repo.SkillRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
-public class SkillService {
+public class SkillService implements nl.ordina.jobcrawler.service.Service<Skill> {
 
     private SkillRepository skillRepository;
 
@@ -23,21 +20,61 @@ public class SkillService {
         this.skillRepository = skillRepository;
     }
 
-    //******** Getting ********//
-    public List<Skill> getAllSkills() {
+
+    //******** Repository methods, to be changed with DTO layer ********//
+    @Override
+    public List<Skill> getAll() {
         return skillRepository.findAll();
     }
 
-    public Optional<Skill> getSkillByName(Skill skill) {
-        return skillRepository.findByName(skill.getName());
+    @Override
+    public Optional<Skill> getById(UUID id) {
+        return skillRepository.findById(id);
+    }
+
+    public Optional<Skill> getByName(String skillName) {
+        return skillRepository.findByName(skillName);
+    }
+
+    @Override
+    public void deleteById(UUID id) {
+        skillRepository.deleteById(id);
+    }
+
+    @Override
+    public Skill add(Skill skill) {
+        return skillRepository.save(skill);
+    }
+
+    @Override
+    public Skill update(UUID id, Skill newSkill){
+        // To be implemented
+        return null;
+    }
+
+    public int countRelationsById(UUID id){
+        return skillRepository.countRelationsById(id);
+    }
+
+    public void removeRelationsById(UUID skillId, UUID vacancyId){
+        skillRepository.removeRelationsById(skillId, vacancyId);
     }
 
     public Set<Vacancy> getVacanciesBySkill(String skillName) {
         // searches for a skill, if not found throws a skill not found exception
-        Skill skill = skillRepository.findByName(skillName).orElseThrow(() -> new SkillNotFoundException(skillName));
+        Skill skill = getByName(skillName).orElseThrow(() -> new SkillNotFoundException(skillName));
         return skill.getVacancies();
     }
 
+
+    //******** functional methods, will handle only data integrity when DTO layer is present ********//
+
+    //******** Adding ********//
+    // takes skills, links them to existing ones if available and adds them to a vacancy //
+    public void addSkillsToVacancy(Set<Skill> skills, Vacancy vacancy) {
+        skills = linkToExistingSkills(skills);
+        vacancy.addSkills(skills);
+    }
 
     //******** linking ********//
     // links the skills of the vacancy to existing entries in the database //
@@ -48,7 +85,7 @@ public class SkillService {
 
         for (Skill skill : skills) {
             System.out.println("** Checking if skill is in database for " + skill.getName());
-            Optional<Skill> existingSkill = getSkillByName(skill); //here happens a search query
+            Optional<Skill> existingSkill = getByName(skill.getName()); //here happens a search query
 
             if (existingSkill.isPresent()) {
                 System.out.println("** Existing skill: " + existingSkill.get().getName() + "\t" + existingSkill.get().getId());
@@ -61,40 +98,28 @@ public class SkillService {
         return newSkills;
     }
 
-
     //******** Deleting ********//
     // Deletes from the skill table if no relations are found in the linking table
     public void deleteSkillsIfNoRelations(Set<Skill> skillsToDelete) {
         for (Skill skill : skillsToDelete) {
-            int relations = skillRepository.countRelationsById(skill.getId());  //counts the entries in the relation table
+            int relations = countRelationsById(skill.getId());  //counts the entries in the relation table
             System.out.println("** Skill " + skill.getName() + " has " + relations + " relation(s)");
             if (relations == 0) {
                 System.out.println("** Deleting skill " + skill.getName());
-                skillRepository.deleteById(skill.getId()); // deletes the skill from the skill table
+                deleteById(skill.getId()); // deletes the skill from the skill table
             }
         }
     }
 
-
-    //******** Adding ********//
-    // takes skills and adds it to a vacancy //
-    public void addSkillsToVacancy(Set<Skill> skills, Vacancy vacancy) { ;
-        skills = linkToExistingSkills(skills);
-        vacancy.addSkills(skills);
-    }
-
-
-    //******** Deleting ********//
     // takes skills and removes them from a vacancy //
     public void removeSkillsFromVacancy(Set<Skill> skills, Vacancy vacancy) {
         for (Skill skill : skills) {
             // remove the relationships, this can also be done using the vacancyRepository
-            skillRepository.removeRelationsById(skill.getId(), vacancy.getId());
+            removeRelationsById(skill.getId(), vacancy.getId());
         }
         vacancy.removeSkills(skills);
         deleteSkillsIfNoRelations(skills);
     }
-
 
     //******** Updating ********//
     // Takes a new set of skills to replace old ones from a vacancy

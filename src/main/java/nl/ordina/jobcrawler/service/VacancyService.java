@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
-public class VacancyService {
+public class VacancyService implements nl.ordina.jobcrawler.service.Service<Vacancy> {
 
     private VacancyRepository vacancyRepository;
     private SkillService skillService;
@@ -24,6 +24,7 @@ public class VacancyService {
 
     //******** Adding ********//
     // Adding vacancy and accompanying skills and relations to the database //
+    @Override
     public Vacancy add(Vacancy vacancy) {
         //replacing the skills with existing skills from the database if present
         Set<Skill> existingSkills = skillService.linkToExistingSkills(vacancy.getSkills());
@@ -37,30 +38,21 @@ public class VacancyService {
     }
 
     //******** Getting ********//
-    public List<Vacancy> getAllVacancies() {
+    @Override
+    public List<Vacancy> getAll() {
         return vacancyRepository.findAll();
     }
 
-    public Optional<Vacancy> getVacancyByID(UUID id) {
+    @Override
+    public Optional<Vacancy> getById(UUID id) {
         return vacancyRepository.findById(id);
-    }
-
-    public Set<Vacancy> getVacanciesBySkill(String skill) {
-        return skillService.getVacanciesBySkill(skill);
-    }
-
-    public List<Vacancy> getVacanciesByBroker(String broker) {
-        return vacancyRepository.findByBrokerEquals(broker);
-    }
-
-    public Optional<Vacancy> getExistingVacancy(String url) {
-        return vacancyRepository.findByVacancyURLEquals(url);
     }
 
 
     //******** Deleting ********//
     // Deletes vacancy and accompanying skills and relations from the database //
-    public void delete(UUID id) {
+    @Override
+    public void deleteById(UUID id) {
         Vacancy vacancyToDelete = vacancyRepository.findById(id).orElseThrow(() -> new VacancyNotFoundException(id));
         Set<Skill> skillsToDelete = new HashSet<Skill>(vacancyToDelete.getSkills()); // saves the skills of the vacancy
 
@@ -74,7 +66,8 @@ public class VacancyService {
 
     //******** Updating ********//
     // Updates Vacancy with a given new vacancy (can write to all 3 tables)//
-    public Vacancy replace(UUID id, Vacancy newJob) {
+    @Override
+    public Vacancy update(UUID id, Vacancy newJob) {
         return vacancyRepository.findById(id)
                 .map(job -> {
                     System.out.println("** Job before modification: \n" + job);
@@ -95,6 +88,21 @@ public class VacancyService {
                 .orElseThrow(() -> new VacancyNotFoundException(id));
 
     }
+
+
+    //******** methods not implemented from the interface ********//
+    public Set<Vacancy> getBySkill(String skill) {
+        return skillService.getVacanciesBySkill(skill);
+    }
+
+    public List<Vacancy> getByBroker(String broker) {
+        return vacancyRepository.findByBrokerEquals(broker);
+    }
+
+    public Optional<Vacancy> getByURL(String url) {
+        return vacancyRepository.findByVacancyURLEquals(url);
+    }
+
 
 
 }

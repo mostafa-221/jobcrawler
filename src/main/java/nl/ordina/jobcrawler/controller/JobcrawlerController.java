@@ -33,7 +33,7 @@ public class JobcrawlerController {
 
     @PostMapping("/searchrequest")
     public SearchResult searchRequest(@RequestBody SearchRequest request) {
-        return new SearchResult(request, vacancyService.getAllVacancies());
+        return new SearchResult(request, vacancyService.getAll());
     }
 
 
@@ -49,7 +49,7 @@ public class JobcrawlerController {
     @GetMapping("/getByID/{id}")
     public Vacancy getByID(@PathVariable("id") UUID id) {
         // Retrieve a vacancy by its ID (UUID). If Vacancy is not found it throws a 'VacancyNotFoundException' (HttpStatus.NOT_FOUND).
-        Optional<Vacancy> vacancy = vacancyService.getVacancyByID(id);
+        Optional<Vacancy> vacancy = vacancyService.getById(id);
         return vacancy.orElseThrow(() -> new VacancyNotFoundException("Vacancy with id: " + id + " not found."));
     }
 
@@ -57,27 +57,27 @@ public class JobcrawlerController {
     @GetMapping("/getJobsByBroker/{broker}")
     public List<Vacancy> getJobsByBroker(@PathVariable("broker") String broker) {
         // Retrieve all vacancies from a specific broker. Currently case sensitive
-        return vacancyService.getVacanciesByBroker(broker);
+        return vacancyService.getByBroker(broker);
     }
 
     // getting all jobs from database
     @GetMapping("/getAllJobs")
     public List<Vacancy> getAllJobs() {
         // Retrieve all vacancies that are available in the database
-        return vacancyService.getAllVacancies();
+        return vacancyService.getAll();
     }
 
     // getting all skills from database
     @GetMapping(path = "skills")
     public List<Skill> getAllSkills() {
-        return skillService.getAllSkills();
+        return skillService.getAll();
     }
 
     // getting jobs by skill
     @GetMapping("/getJobsWithSkill/{skill}")
     public Set<Vacancy> getJobsWithSkill(@PathVariable("skill") String skill) {
         // Only show vacancies which needs a specific skill that's requested via a get method
-        return vacancyService.getVacanciesBySkill(skill);
+        return vacancyService.getBySkill(skill);
     }
 
 
@@ -86,7 +86,7 @@ public class JobcrawlerController {
     @DeleteMapping("/delete/{id}")
     public void deleteVacancyById(@PathVariable("id") UUID id) {
         // Delete vacancy by id (UUID)
-        vacancyService.delete(id);
+        vacancyService.deleteById(id);
     }
 
 
@@ -94,7 +94,7 @@ public class JobcrawlerController {
     // takes all the attributes of the new job and puts them in the job of the ID, therefore also updates the skills
     @PutMapping("{id}")
     Vacancy replaceVacancy(@PathVariable UUID id, @RequestBody Vacancy newVacancy) {
-        return vacancyService.replace(id, newVacancy);
+        return vacancyService.update(id, newVacancy);
     }
 
 

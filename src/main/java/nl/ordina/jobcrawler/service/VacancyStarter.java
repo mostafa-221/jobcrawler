@@ -47,7 +47,7 @@ public class VacancyStarter {
         int newVacancy = 0;
         for (Vacancy vacancy : allVacancies) {
             try {
-                Optional<Vacancy> existCheck = vacancyService.getExistingVacancy(vacancy.getVacancyURL());
+                Optional<Vacancy> existCheck = vacancyService.getByURL(vacancy.getVacancyURL());
                 if (existCheck.isPresent()) {
                     existVacancy++;
                 } else {
