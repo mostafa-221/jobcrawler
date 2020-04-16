@@ -1,18 +1,14 @@
 package nl.ordina.jobcrawler;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Value;
 
-@Data
-@Builder
+@Value  // makes getters and makes attributes private final
 @AllArgsConstructor
-@NoArgsConstructor
 public class SearchRequest {
 
-    private String location;
-    private String distance;
-    private String keywords;
+    String location;
+    String distance;
+    String keywords;
 
 }

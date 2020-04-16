@@ -23,12 +23,11 @@ Upon fetching the vacancies it runs a check to verify if the vacancy is already 
 @Component
 public class VacancyStarter {
 
-    @Autowired
-    private VacancyService vacancyService;
-
     private final MylerVacancyScraper mylerVacancyScraper;
     private final HuxleyITVacancyScraper huxleyITVacancyScraper;
     private final YachtVacancyScraper yachtVacancyScraper;
+    @Autowired
+    private VacancyService vacancyService;
 
     @Autowired
     public VacancyStarter(MylerVacancyScraper mylerVacancyScraper, HuxleyITVacancyScraper huxleyITVacancyScraper, YachtVacancyScraper yachtVacancyScraper) {
@@ -50,18 +49,18 @@ public class VacancyStarter {
         allVacancies.addAll(huxleyITVacancyScraper.getVacancies());
         int existVacancy = 0;
         int newVacancy = 0;
-        for(Vacancy vacancy : allVacancies) {
+        for (Vacancy vacancy : allVacancies) {
             try {
-                Optional<Vacancy> existCheck = vacancyService.getExistingRecord(vacancy.getVacancyURL());
+                Optional<Vacancy> existCheck = vacancyService.getExistingVacancy(vacancy.getVacancyURL());
                 if (existCheck.isPresent()) {
                     existVacancy++;
                 } else {
                     vacancyService.add(vacancy);
                     newVacancy++;
                 }
-            } catch(IncorrectResultSizeDataAccessException ie) {
+            } catch (IncorrectResultSizeDataAccessException ie) {
                 log.error("Record exists multiple times in database already!");
-            } catch(Exception e) {
+            } catch (Exception e) {
                 log.error(e.getMessage());
             }
         }

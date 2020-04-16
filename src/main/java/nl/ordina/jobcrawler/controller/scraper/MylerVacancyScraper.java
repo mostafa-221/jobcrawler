@@ -32,16 +32,16 @@ public class MylerVacancyScraper extends VacancyScraper {
         //  Returns a List with VacancyURLs
         List<VacancyURLs> vacancyURLs = new ArrayList<>();
         int totalNumberOfPages = 1;
-        for(int pageNumber = 1; pageNumber <= totalNumberOfPages; pageNumber++) {
+        for (int pageNumber = 1; pageNumber <= totalNumberOfPages; pageNumber++) {
             Document doc = getDocument(getSEARCH_URL());
-            if(doc == null)
+            if (doc == null)
                 continue;
 
-            if(pageNumber == 1)
+            if (pageNumber == 1)
                 totalNumberOfPages = getTotalNumberOfPages(doc);
 
             Elements urls = doc.getElementsByClass("headfirst-plugin-item").select("a");
-            for(Element url : urls) {
+            for (Element url : urls) {
                 String vacancyUrl = url.attr("href");
                 vacancyURLs.add(new VacancyURLs(vacancyUrl));
 //                vacancyURLs.add(VacancyURLs.builder().url(vacancyUrl).build());
