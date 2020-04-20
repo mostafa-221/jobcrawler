@@ -37,6 +37,7 @@ public class Vacancy {
     private String vacancyNumber;
     private String hours;
     private String location;
+    private String salary;
     private String postingDate;
     @Column(columnDefinition = "TEXT")
     private String about;

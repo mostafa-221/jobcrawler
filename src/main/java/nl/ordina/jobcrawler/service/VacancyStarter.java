@@ -1,8 +1,9 @@
 package nl.ordina.jobcrawler.service;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.ordina.jobcrawler.controller.MylerVacancyScraper;
-import nl.ordina.jobcrawler.controller.YachtVacancyScraper;
+import nl.ordina.jobcrawler.controller.scraper.HuxleyITVacancyScraper;
+import nl.ordina.jobcrawler.controller.scraper.MylerVacancyScraper;
+import nl.ordina.jobcrawler.controller.scraper.YachtVacancyScraper;
 import nl.ordina.jobcrawler.model.Vacancy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -23,13 +24,15 @@ Upon fetching the vacancies it runs a check to verify if the vacancy is already 
 public class VacancyStarter {
 
     private final MylerVacancyScraper mylerVacancyScraper;
+    private final HuxleyITVacancyScraper huxleyITVacancyScraper;
     private final YachtVacancyScraper yachtVacancyScraper;
     @Autowired
     private VacancyService vacancyService;
 
     @Autowired
-    public VacancyStarter(MylerVacancyScraper mylerVacancyScraper, YachtVacancyScraper yachtVacancyScraper) {
+    public VacancyStarter(MylerVacancyScraper mylerVacancyScraper, HuxleyITVacancyScraper huxleyITVacancyScraper, YachtVacancyScraper yachtVacancyScraper) {
         this.mylerVacancyScraper = mylerVacancyScraper;
+        this.huxleyITVacancyScraper = huxleyITVacancyScraper;
         this.yachtVacancyScraper = yachtVacancyScraper;
     }
 
@@ -43,6 +46,7 @@ public class VacancyStarter {
     private void scrape() throws IOException {
         List<Vacancy> allVacancies = yachtVacancyScraper.getVacancies();
         allVacancies.addAll(mylerVacancyScraper.getVacancies());
+        allVacancies.addAll(huxleyITVacancyScraper.getVacancies());
         int existVacancy = 0;
         int newVacancy = 0;
         for (Vacancy vacancy : allVacancies) {
