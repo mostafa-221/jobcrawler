@@ -21,7 +21,7 @@ public class HuxleyITResponse {
     private Integer hits;
     private ArrayList<Map<String, Object>> vacanciesData;
 
-    /*
+    /**
         This annotation indicates to Jackson that something must be executed upon the "result" parameter of the returned JSON.
 
         This method extracts the needed vacancy data from the "result" data and stores it as List of key-value pairs to return.

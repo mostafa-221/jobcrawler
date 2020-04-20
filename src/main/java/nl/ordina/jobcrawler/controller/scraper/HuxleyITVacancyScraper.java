@@ -15,7 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import java.io.IOException;
 import java.util.*;
 
-/*
+/**
     Instead of scraping the page HTML for urls, this scraper gets the vacancy data directly from the HuxleyIT API.
 
     The reason for this is that the HuxleyIT website does not have the possibility of showing different result pages purely by changing the page number in the url.
@@ -102,7 +102,7 @@ public class HuxleyITVacancyScraper extends VacancyScraper {
     }
 
     /*
-        Because this scraper extends the abstract VacancyScraper class, it is obligated to provide a method implementation for these functions.
+        Because this scraper extends the abstract VacancyScraper class, it is mandatory to provide a method implementation for these functions.
         However, these methods are not used by this specific scraper, because the HuxleyIT vacancies are being read from the API directly, and not scraped from HTML.
 
         This is why all these method implementations are empty.
