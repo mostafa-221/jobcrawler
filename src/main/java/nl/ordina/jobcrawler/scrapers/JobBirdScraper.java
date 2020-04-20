@@ -1,5 +1,6 @@
 package nl.ordina.jobcrawler.scrapers;
 
+import lombok.extern.slf4j.Slf4j;
 import nl.ordina.jobcrawler.model.Vacancy;
 import nl.ordina.jobcrawler.model.VacancyURLs;
 import nl.ordina.jobcrawler.service.ConnectionDocumentService;
@@ -17,10 +18,12 @@ MylerVacancyScraper.java takes care of scraping vacancies from myler.nl
 At this moment getVacancies() returns a list with Vacancies that only exist of a vacancyURL and the broker. No details available (yet).
  */
 
+@Slf4j
 @Component
 public class JobBirdScraper extends VacancyScraper {
 
-    private static final String SEARCH_URL = "https://www.jobbird.com/nl/vacature?s=java&rad=30&ot=date";
+    //private static final String SEARCH_URL = "https://www.jobbird.com/nl/vacature?s=java&rad=30&ot=date";
+    private static final String SEARCH_URL = "https://www.jobbird.com/nl/vacature?s=java";
     private static final String BROKER = "Jobbird";
 
     public JobBirdScraper(ConnectionDocumentService connectionDocumentService) {
@@ -28,16 +31,35 @@ public class JobBirdScraper extends VacancyScraper {
     }
 
 
+    private String createSearchURL(int aPagenr) throws Exception {
+        if (aPagenr == 1) {
+            return SEARCH_URL + "&rad=30&ot=date";
+        } else
+        if (aPagenr > 1) {
+            return SEARCH_URL + "&rad=30&page=" + aPagenr + "&ot=date";
+        } else {
+            throw new Exception("JobBirdScraper:createSearchURL: pagenr must be 1 or greater");
+        }
+    }
 
     @Override
     protected List<VacancyURLs> getVacancyURLs() throws IOException {
         //  Returns a List with VacancyURLs
-       ArrayList<VacancyURLs> URLs = new ArrayList<>();
-       Document doc = getDocument(getSEARCH_URL());
-       int totalNrOfPages = getTotalNumberOfPages(doc);
+        ArrayList<VacancyURLs> URLs = new ArrayList<>();
 
-       // on each page including this first one are vacancies to be found
-        URLs = retrieveVacancyURLsFromDoc(doc);
+        try {
+            // on each page including this first one are vacancies to be found
+            Document doc = getDocument(createSearchURL(1));
+            int totalNrOfPages = getTotalNumberOfPages(doc);
+            for (int i=1; i<=totalNrOfPages; i++) {
+                if (i>1)
+                    doc = getDocument(createSearchURL(i));
+                URLs.addAll(retrieveVacancyURLsFromDoc(doc));
+            }
+
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
         return URLs;
     }
 
@@ -56,7 +78,7 @@ public class JobBirdScraper extends VacancyScraper {
         Elements httplinks = lijst.select("a[href]");
         for (Element e: httplinks) {
             String sLink = e.attr("abs:href");
-            System.out.println(sLink);
+            log.debug(sLink);
             result.add(new VacancyURLs(sLink));
         }
 
@@ -77,18 +99,21 @@ public class JobBirdScraper extends VacancyScraper {
         int count = 0;
         for (Element child: children) {
             String text = child.text();
-            System.out.println(text);
             if (!text.equalsIgnoreCase("volgende")) count++;
         }
+        log.info("jobbird: total number of pages is " + count);
         return count;
     }
 
     @Override
     protected void setVacancyTitle(Document doc, Vacancy vacancy) {
+
         Element vacancyHeader = doc.select("h1.no-margin").first();
 
         if(vacancyHeader != null) {
-            vacancy.setTitle(vacancyHeader.text());
+            String title = vacancyHeader.text();
+            vacancy.setTitle(title);
+            log.info("vacancy found: "  + title);
         }
     }
 
@@ -102,12 +127,9 @@ public class JobBirdScraper extends VacancyScraper {
             }
         }
         elements = doc.select("div.card-body");
-        //System.out.println(elements.toString());
-
 
         String hours = getHoursFromPage(elements);
         vacancy.setHours(hours);
-
 
         String publishDate = getPublishDate(doc);
         vacancy.setPostingDate(publishDate);
@@ -118,11 +140,9 @@ public class JobBirdScraper extends VacancyScraper {
         Elements elements = doc.select("span.job-result__place");
         if (!elements.isEmpty()) {
             Element parent = elements.get(0).parent().parent();
-            for (Element e: parent.children()) {
-                System.out.println(e.text());
-            }
+
             Elements timeElements = parent.select("time");
-            System.out.println( timeElements.toString());
+            log.debug( timeElements.toString());
 
             if (!timeElements.isEmpty()) {
                 Element timeElement = timeElements.get(0);
@@ -142,11 +162,9 @@ public class JobBirdScraper extends VacancyScraper {
             // in principle, the text is free format with a few common headings
             for (Element e: elements) {
                 for (Element child: e.children()) {
-                    //System.out.println(child.toString());
                     String minString = "<strong>Minimum aantal uren per week</strong>";
                     if (child.toString().contains("Uren per week")) {
                         String uren = child.text();
-                        System.out.println(uren);
                         String[] urenArr = uren.split(":");
                         if (urenArr.length > 1) {
                             uren = urenArr[1];
@@ -176,9 +194,34 @@ public class JobBirdScraper extends VacancyScraper {
         // this method is simply not used (yet)
     }
 
+
+    /*
+    *   The job bird vacancy page structure is quite loose.
+    *   A number of vacancy page are in Dutch and quite often, the "About" can be found between
+    *   a line (div) "Functieomschrijving" just after  <div id="jobContent"  class = "card-body>
+    *  and a heading <h3>Vaardigheden</h3>
+    *
+    *   A number of vacancy pages have the about section
+    *
+    *  we cannot be sure about the exact layout, so it would be possible to extract the portion just
+    *  after the jobContent when the first line contains Functieomschrijving, read until Vaardigheden.
+    *
+    *
+    *  In other cases it is not so simple. When aforementioned receipt does not work we can
+    *  we can do the following:
+    *
+    * gather all elements until one of the following occurs:
+    *  - english offer: A sentence containing skills
+    *
+    *
+    * For the time being, the About contains all text contained within the jobcontainer card div element
+    *   <div class="jobContainer card">
+    *
+    * */
     @Override
     protected void setVacancyAbout(Document doc, Vacancy vacancy) {
-
+        Elements abou1tElements = doc.select("div.jobContainer");
+        vacancy.setAbout(abou1tElements.text());
     }
 
     @Override
