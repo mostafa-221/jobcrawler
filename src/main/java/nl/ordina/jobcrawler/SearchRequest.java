@@ -1,19 +1,18 @@
 package nl.ordina.jobcrawler;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+// on the server jackson gives an error that this class does not have a default constructor, which cannot exist with a final variable
+//@Value  // makes getters and makes attributes private final
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
 public class SearchRequest {
 
-    private final String location;
-    private final String distance;
-    private final String keywords;
-
-    public SearchRequest(String location, String distance, String keywords) {
-        this.location = location;
-        this.distance = distance;
-        this.keywords = keywords;
-    }
-
-    public String getLocation() {return this.location;}
-    public String getDistance() {return this.distance;}
-    public String getKeywords() {return this.keywords;}
+    private String location;
+    private String distance;
+    private String keywords;
 
 }

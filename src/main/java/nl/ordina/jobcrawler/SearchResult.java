@@ -17,7 +17,12 @@ public class SearchResult {
         this.vacancies = vacancies;
     }
 
-    public String[] getQueries() { return queries; }
-    public List<Vacancy> getVacancies() { return  vacancies; }
+    public String[] getQueries() {
+        return queries;
+    }
+
+    public List<Vacancy> getVacancies() {
+        return vacancies;
+    }
 
 }

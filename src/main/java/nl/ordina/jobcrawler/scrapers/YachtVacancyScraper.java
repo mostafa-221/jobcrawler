@@ -139,13 +139,13 @@ public class YachtVacancyScraper extends VacancyScraper {
             if(skillSet.select("ul li").size() > 0) {
                 Elements skills = skillSet.select("ul li");
                 for(Element skill : skills)
-                    vacancy.getSkillSet().add(skill.text());
+                    vacancy.addSkill(skill.text());
             } else {
                 if(!skillSet.text().isEmpty()) {
                     if(skillSet.text().startsWith("• ")) {
-                        vacancy.getSkillSet().add(skillSet.text().substring(2));
+                        vacancy.addSkill(skillSet.text().substring(2));
                     } else {
-                        vacancy.getSkillSet().add(skillSet.text());
+                        vacancy.addSkill(skillSet.text());
                     }
                 }
             }

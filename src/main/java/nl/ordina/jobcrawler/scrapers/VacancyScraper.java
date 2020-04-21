@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 // All vacancy scrapers have the following functions in common
@@ -45,7 +46,7 @@ abstract class VacancyScraper {
                         .vacancyURL(vacancyURL.getUrl())
                         .broker(BROKER)
                         .hours(vacancyURL.getHours())
-                        .skillSet(new ArrayList<>())
+                        .skills(new HashSet<>())
                         .build();
                 setVacancyTitle(doc, vacancy);
                 setVacancySpecifics(doc, vacancy);

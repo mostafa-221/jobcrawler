@@ -1,9 +1,10 @@
 package nl.ordina.jobcrawler.service;
 
 import lombok.extern.slf4j.Slf4j;
+import nl.ordina.jobcrawler.model.Vacancy;
+import nl.ordina.jobcrawler.scrapers.HuxleyITVacancyScraper;
 import nl.ordina.jobcrawler.scrapers.JobBirdScraper;
 import nl.ordina.jobcrawler.scrapers.YachtVacancyScraper;
-import nl.ordina.jobcrawler.model.Vacancy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -22,16 +23,21 @@ Upon fetching the vacancies it runs a check to verify if the vacancy is already 
 @Component
 public class VacancyStarter {
 
+
     @Autowired
     private VacancyService vacancyService;
 
-    private final JobBirdScraper jobBirdScraper;
     private final YachtVacancyScraper yachtVacancyScraper;
 
+    private final HuxleyITVacancyScraper huxleyITVacancyScraper;
+
+    private final JobBirdScraper jobBirdScraper;
+
     @Autowired
-    public VacancyStarter(JobBirdScraper jobBirdScraper, YachtVacancyScraper yachtVacancyScraper) {
-        this.jobBirdScraper = jobBirdScraper;
+    public VacancyStarter(YachtVacancyScraper yachtVacancyScraper, HuxleyITVacancyScraper huxleyITVacancyScraper, JobBirdScraper jobBirdScraper) {
         this.yachtVacancyScraper = yachtVacancyScraper;
+        this.huxleyITVacancyScraper = huxleyITVacancyScraper;
+        this.jobBirdScraper = jobBirdScraper;
     }
 
     @Scheduled(cron = "0 0/15 * * * *")
@@ -44,20 +50,21 @@ public class VacancyStarter {
     public void scrape() throws IOException {
         List<Vacancy> allVacancies = yachtVacancyScraper.getVacancies();
         allVacancies.addAll(jobBirdScraper.getVacancies());
+        allVacancies.addAll(huxleyITVacancyScraper.getVacancies());
         int existVacancy = 0;
         int newVacancy = 0;
-        for(Vacancy vacancy : allVacancies) {
+        for (Vacancy vacancy : allVacancies) {
             try {
-                Optional<Vacancy> existCheck = vacancyService.getExistingRecord(vacancy.getVacancyURL());
+                Optional<Vacancy> existCheck = vacancyService.getExistingVacancy(vacancy.getVacancyURL());
                 if (existCheck.isPresent()) {
                     existVacancy++;
                 } else {
                     vacancyService.add(vacancy);
                     newVacancy++;
                 }
-            } catch(IncorrectResultSizeDataAccessException ie) {
+            } catch (IncorrectResultSizeDataAccessException ie) {
                 log.error("Record exists multiple times in database already!");
-            } catch(Exception e) {
+            } catch (Exception e) {
                 log.error(e.getMessage());
             }
         }
