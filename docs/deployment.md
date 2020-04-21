@@ -81,13 +81,13 @@ To open the page of the container
         
     heroku open
 
-To execute single lines
+To execute a comand
     
     heroku run <command>
     
 To open a bash of the container
 	 
-	 heroku run bash
+	heroku run bash
 	 
 ## Sources
 [Getting started on Heroku with Java](https://devcenter.heroku.com/articles/getting-started-with-java) \
