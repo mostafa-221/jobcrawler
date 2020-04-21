@@ -46,7 +46,7 @@ backend: https://dashboard.heroku.com/apps/api-jobcrawler
 click on the tap deploy, scroll down to manual deploy, choose a branch and deploy it. 
 
 
-## Deploy local changes (wont be pushed to the repo, at least at the time being)
+## Deploy local changes (won't be pushed to the repo)
 first add files and commit the changes to your local git with 
     
     git commit -am “message”
