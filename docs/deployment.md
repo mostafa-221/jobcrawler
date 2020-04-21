@@ -37,7 +37,7 @@ and inside the front project folder execute
 
     git remote add heroku https://git.heroku.com/jobcrawler-site.git
 
-## deploy from a repo branch
+## Deploy from a repo branch
 I think it is easiest to go the heroku dashboard/managing pages of projects to deploy from the git repository. 
 
 Frontend: https://dashboard.heroku.com/apps/jobcrawler-site \
