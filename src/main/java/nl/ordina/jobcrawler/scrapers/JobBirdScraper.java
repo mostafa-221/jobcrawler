@@ -22,7 +22,16 @@ At this moment getVacancies() returns a list with Vacancies that only exist of a
 @Component
 public class JobBirdScraper extends VacancyScraper {
 
-    //private static final String SEARCH_URL = "https://www.jobbird.com/nl/vacature?s=java&rad=30&ot=date";
+    /*  Search URL will be completed later: either a page is added to the URL or not.
+
+        First page:
+
+        SEARCH_URL = "https://www.jobbird.com/nl/vacature?s=java&rad=30&ot=date";
+
+        Later pages, for example page 3:
+
+        SEARCH_URL = "https://www.jobbird.com/nl/vacature?s=java&page=3&rad=30&ot=date";
+     */
     private static final String SEARCH_URL = "https://www.jobbird.com/nl/vacature?s=java";
     private static final String BROKER = "Jobbird";
 
@@ -52,8 +61,9 @@ public class JobBirdScraper extends VacancyScraper {
             Document doc = getDocument(createSearchURL(1));
             int totalNrOfPages = getTotalNumberOfPages(doc);
             for (int i=1; i<=totalNrOfPages; i++) {
-                if (i>1)
+                if (i>1) {
                     doc = getDocument(createSearchURL(i));
+                }
                 URLs.addAll(retrieveVacancyURLsFromDoc(doc));
             }
 
