@@ -1,4 +1,5 @@
-#Heroku server deployment 
+# Heroku server deployment 
+
 This document will walk you through a number of steps to get started with the heroku server. Make sure you accept the invitation and make an account first.
 - Downloading the command-line tool
 - Making a link to the heroku server
