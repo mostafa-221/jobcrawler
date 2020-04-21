@@ -16,7 +16,7 @@ If you have [Homebrew](https://brew.sh/), you can install the command line tool 
     
 Else you can dowload the package from the [website](https://devcenter.heroku.com/articles/getting-started-with-java#set-up).
 
-##Link the command-line tool to your account
+## Link the command-line tool to your account
 execute
 
     heroku login 
