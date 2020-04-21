@@ -33,7 +33,7 @@ so inside the backend project folder execute
 
     git remote add heroku https://git.heroku.com/api-jobcrawler.git
 
-and inside the front project folder execute 
+and inside the frontend project folder execute 
 
     git remote add heroku https://git.heroku.com/jobcrawler-site.git
 
