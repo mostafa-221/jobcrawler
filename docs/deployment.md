@@ -9,7 +9,7 @@ This document will walk you through a number of steps to get started with the he
 - Useful commands
 
 
-##Download the heroku command line 
+## Download the heroku command line 
 If you have [Homebrew](https://brew.sh/), you can install the command line tool by executing 
 
     brew install heroku/brew/heroku
@@ -24,7 +24,7 @@ execute
 and follow the procedures.
 
 
-##Make a link between the heroku server and the current project directory
+## Make a link between the heroku server and the current project directory
 In the directory of a project run 
 
     git remote add heroku <heroku-git-link>
@@ -37,7 +37,7 @@ and inside the front project folder execute
 
     git remote add heroku https://git.heroku.com/jobcrawler-site.git
 
-##deploy from a repo branch
+## deploy from a repo branch
 I think it is easiest to go the heroku dashboard/managing pages of projects to deploy from the git repository. 
 
 Frontend: https://dashboard.heroku.com/apps/jobcrawler-site \
@@ -46,7 +46,7 @@ backend: https://dashboard.heroku.com/apps/api-jobcrawler
 click on the tap deploy, scroll down to manual deploy, choose a branch and deploy it. 
 
 
-##Deploy local changes (wont be pushed to the repo, at least at the time being)
+## Deploy local changes (wont be pushed to the repo, at least at the time being)
 first add files and commit the changes to your local git with 
     
     git commit -am “message”
@@ -59,13 +59,13 @@ then push the changes to the master branch of heroku
 
 **Note**: if you are trying many things until it works, if you push directly to the repo, this will push all the commits you did. Ideally we would want to see a single commit. You can either squash your commits to combine all commits into one commit, or you can clone the project in a new directory run git status on the one that works, apply the changes to the new directory and commit and push from the new one. 
 
-##Reading errors and logs of the server
+## Reading errors and logs of the server
 In the directory that has a link to a remote heroku server run
 
     heroku logs –tail
 to see the console of the app along with other login and http request information.
 
-##Useful commands 
+## Useful commands 
 To start the container, if it is not running, first you have to specify that you want a single container to run with
     
     heroku ps:scale web=1
