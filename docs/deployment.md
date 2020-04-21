@@ -87,4 +87,9 @@ To execute single lines
 To open a bash of the container
 	 
 	 heroku run bash
+	 
+## Sources
+[Getting started on Heroku with Java](https://devcenter.heroku.com/articles/getting-started-with-java) \
+[How to link a folder with an existing Heroku app](https://stackoverflow.com/questions/5129598/how-to-link-a-folder-with-an-existing-heroku-app)
+
 	
