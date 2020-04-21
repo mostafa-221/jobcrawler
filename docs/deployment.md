@@ -81,7 +81,7 @@ To open the page of the container
         
     heroku open
 
-To execute a comand
+To execute a command
     
     heroku run <command>
     
