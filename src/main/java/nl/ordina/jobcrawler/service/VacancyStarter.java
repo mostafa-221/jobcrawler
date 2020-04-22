@@ -11,8 +11,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /*
 This 'starter' class uses the @Scheduled annotation. Every 15 minutes it executes the cronJobSch() function to retrieve all vacancies.
@@ -72,5 +74,21 @@ public class VacancyStarter {
         log.info(existVacancy + " existing vacancies found.");
         log.info("Finished scraping");
         allVacancies.clear();
+    }
+
+    @Scheduled(cron = "0 * * * * *")
+    public void deleteNonExistingVacancies(){
+        log.info("Started deleting non-existing jobs");
+        List<Vacancy> allVacancies = vacancyService.getAllVacancies();
+        List<Vacancy> vacanciesToDelete = allVacancies.stream()
+                .filter(vacancy -> !vacancy.checkURL()) //if the url is not good anymore add it in the vacanciesToDelete
+                .collect(Collectors.toList());
+
+        log.info(vacanciesToDelete.size() + " vacancy to delete.");
+
+        for(Vacancy vacancyToDelete: vacanciesToDelete){
+            vacancyService.delete(vacancyToDelete.getId());
+        }
+        log.info("Finished deleting non-existing jobs");
     }
 }
