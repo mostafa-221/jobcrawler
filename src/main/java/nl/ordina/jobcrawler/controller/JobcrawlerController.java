@@ -18,7 +18,7 @@ import java.util.Set;
 import java.util.UUID;
 
 
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin
 @RestController
 public class JobcrawlerController {
 

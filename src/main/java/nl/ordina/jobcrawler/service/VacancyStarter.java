@@ -1,10 +1,10 @@
 package nl.ordina.jobcrawler.service;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.ordina.jobcrawler.controller.scraper.HuxleyITVacancyScraper;
-import nl.ordina.jobcrawler.controller.scraper.MylerVacancyScraper;
-import nl.ordina.jobcrawler.controller.scraper.YachtVacancyScraper;
 import nl.ordina.jobcrawler.model.Vacancy;
+import nl.ordina.jobcrawler.scrapers.HuxleyITVacancyScraper;
+import nl.ordina.jobcrawler.scrapers.JobBirdScraper;
+import nl.ordina.jobcrawler.scrapers.YachtVacancyScraper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -23,17 +23,21 @@ Upon fetching the vacancies it runs a check to verify if the vacancy is already 
 @Component
 public class VacancyStarter {
 
-    private final MylerVacancyScraper mylerVacancyScraper;
-    private final HuxleyITVacancyScraper huxleyITVacancyScraper;
-    private final YachtVacancyScraper yachtVacancyScraper;
+
     @Autowired
     private VacancyService vacancyService;
 
+    private final YachtVacancyScraper yachtVacancyScraper;
+
+    private final HuxleyITVacancyScraper huxleyITVacancyScraper;
+
+    private final JobBirdScraper jobBirdScraper;
+
     @Autowired
-    public VacancyStarter(MylerVacancyScraper mylerVacancyScraper, HuxleyITVacancyScraper huxleyITVacancyScraper, YachtVacancyScraper yachtVacancyScraper) {
-        this.mylerVacancyScraper = mylerVacancyScraper;
-        this.huxleyITVacancyScraper = huxleyITVacancyScraper;
+    public VacancyStarter(YachtVacancyScraper yachtVacancyScraper, HuxleyITVacancyScraper huxleyITVacancyScraper, JobBirdScraper jobBirdScraper) {
         this.yachtVacancyScraper = yachtVacancyScraper;
+        this.huxleyITVacancyScraper = huxleyITVacancyScraper;
+        this.jobBirdScraper = jobBirdScraper;
     }
 
     @Scheduled(cron = "0 0/15 * * * *")
@@ -43,9 +47,9 @@ public class VacancyStarter {
         scrape();
     }
 
-    private void scrape() throws IOException {
+    public void scrape() throws IOException {
         List<Vacancy> allVacancies = yachtVacancyScraper.getVacancies();
-        allVacancies.addAll(mylerVacancyScraper.getVacancies());
+        allVacancies.addAll(jobBirdScraper.getVacancies());
         allVacancies.addAll(huxleyITVacancyScraper.getVacancies());
         int existVacancy = 0;
         int newVacancy = 0;
