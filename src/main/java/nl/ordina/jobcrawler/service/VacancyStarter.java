@@ -76,7 +76,7 @@ public class VacancyStarter {
         allVacancies.clear();
     }
 
-    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "0 0 * * * *") // at second 0, minute 0 run this function
     public void deleteNonExistingVacancies(){
         log.info("Started deleting non-existing jobs");
         List<Vacancy> allVacancies = vacancyService.getAllVacancies();
