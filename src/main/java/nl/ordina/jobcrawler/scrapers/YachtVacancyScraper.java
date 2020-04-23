@@ -1,5 +1,6 @@
 package nl.ordina.jobcrawler.scrapers;
 
+import nl.ordina.jobcrawler.controller.exception.VacancyURLMalformedException;
 import nl.ordina.jobcrawler.model.Vacancy;
 import nl.ordina.jobcrawler.model.VacancyURLs;
 import nl.ordina.jobcrawler.service.ConnectionDocumentService;
@@ -150,6 +151,18 @@ public class YachtVacancyScraper extends VacancyScraper {
                 }
             }
 
+        }
+    }
+
+    // A Yacht vacancy that does not exist anymore still gives status 200.
+    // It also displays a 'sorry' message on that page. Difference between this 'sorry' page and a working vacancy page is that the 'sorry' page does not contain a class named description.
+    // We try to select the description class in this function. If the size is > 0 it returns true as vacancy still exist. Otherwise it returns false and vacancy will be removed.
+    public boolean doesVacancyExist(String url) {
+        try {
+            Document doc = getDocument(url);
+            return doc.select(".description").size() > 0;
+        } catch (IOException e) {
+            throw new VacancyURLMalformedException("Website could not be reached");
         }
     }
 
