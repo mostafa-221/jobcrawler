@@ -10,7 +10,6 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@ToString
 @Getter
 @Setter
 @RequiredArgsConstructor
@@ -23,10 +22,10 @@ public class Skill {
     @Id
     private UUID id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = false, columnDefinition = "TEXT")
     private String name;
 
-    @ManyToMany(mappedBy = "skills")
+    @ManyToMany(mappedBy = "skills", fetch = FetchType.EAGER)
     @JsonIgnoreProperties("skills")
     Set<Vacancy> vacancies = new HashSet<>();
 
