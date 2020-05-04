@@ -62,7 +62,7 @@ then push the changes to the master branch of heroku
 ## Reading errors and logs of the server
 In the directory that has a link to a remote heroku server run
 
-    heroku logs –tail
+    heroku logs --tail
 to see the console of the app along with other login and http request information.
 
 ## Useful commands 
