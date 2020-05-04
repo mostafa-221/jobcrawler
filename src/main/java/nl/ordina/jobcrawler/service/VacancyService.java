@@ -5,7 +5,6 @@ import nl.ordina.jobcrawler.controller.exception.VacancyURLMalformedException;
 import nl.ordina.jobcrawler.model.Skill;
 import nl.ordina.jobcrawler.model.Vacancy;
 import nl.ordina.jobcrawler.repo.VacancyRepository;
-import nl.ordina.jobcrawler.service.exception.DuplicateRecordFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +32,7 @@ public class VacancyService {
         vacancy.setSkills(existingSkills); // add the skills to the vacancy
 
 
-        if (vacancy.checkURL()){    //checking the url, if it is malformed it will throw a VacancyURLMalformedException
+        if (vacancy.hasValidURL()){    //checking the url, if it is malformed it will throw a VacancyURLMalformedException
             return vacancyRepository.saveAndFlush(vacancy);
         } else {
             throw new VacancyURLMalformedException("Website could not be reached");

@@ -76,10 +76,11 @@ public class VacancyStarter {
         List<Vacancy> allVacancies = vacancyService.getAllVacancies();
         List<Vacancy> vacanciesToDelete = allVacancies.stream()
                 .filter(vacancy -> {
-                    if (vacancy.getBroker().equals("Yacht"))
+                    if ("Yacht".equals(vacancy.getBroker())) {
                         return !yachtVacancyScraper.doesVacancyExist(vacancy.getVacancyURL());
-                    else
-                        return !vacancy.checkURL();
+                    } else {
+                        return !vacancy.hasValidURL();
+                    }
                 }) //if the url is not good anymore add it in the vacanciesToDelete
                 .collect(Collectors.toList());
 

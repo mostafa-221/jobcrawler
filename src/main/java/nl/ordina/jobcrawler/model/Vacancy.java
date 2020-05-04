@@ -82,7 +82,7 @@ public class Vacancy {
     }
 
 
-    public boolean checkURL() {
+    public boolean hasValidURL() {
         if (!this.vacancyURL.startsWith("http"))
             this.vacancyURL = "https://" + this.vacancyURL; //adding the protocol, if not present
 
