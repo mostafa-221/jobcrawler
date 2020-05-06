@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /*
 This 'starter' class uses the @Scheduled annotation. Every 15 minutes it executes the cronJobSch() function to retrieve all vacancies.
@@ -40,14 +41,9 @@ public class VacancyStarter {
         this.jobBirdScraper = jobBirdScraper;
     }
 
-    @Scheduled(cron = "0 0/15 * * * *")
-    public void cronJobSch() throws IOException {
-        // This function gets executed every 15 minutes
-        log.info("CRON Scheduled");
-        scrape();
-    }
-
+    @Scheduled(cron = "0 0 12,18 * * *") // Runs two times a day. At 12pm and 6pm
     public void scrape() throws IOException {
+        log.info("CRON Scheduled -- Scrape vacancies");
         List<Vacancy> allVacancies = yachtVacancyScraper.getVacancies();
         allVacancies.addAll(jobBirdScraper.getVacancies());
         allVacancies.addAll(huxleyITVacancyScraper.getVacancies());
@@ -72,5 +68,27 @@ public class VacancyStarter {
         log.info(existVacancy + " existing vacancies found.");
         log.info("Finished scraping");
         allVacancies.clear();
+    }
+
+    @Scheduled(cron = "0 30 11,17 * * *") // Runs two times a day. At 11.30am and 5.30pm.
+    public void deleteNonExistingVacancies() {
+        log.info("CRON Scheduled -- Started deleting non-existing jobs");
+        List<Vacancy> allVacancies = vacancyService.getAllVacancies();
+        List<Vacancy> vacanciesToDelete = allVacancies.stream()
+                .filter(vacancy -> {
+                    if ("Yacht".equals(vacancy.getBroker())) {
+                        return !yachtVacancyScraper.doesVacancyExist(vacancy.getVacancyURL());
+                    } else {
+                        return !vacancy.hasValidURL();
+                    }
+                }) //if the url is not good anymore add it in the vacanciesToDelete
+                .collect(Collectors.toList());
+
+        log.info(vacanciesToDelete.size() + " vacancy to delete.");
+
+        for (Vacancy vacancyToDelete : vacanciesToDelete) {
+            vacancyService.delete(vacancyToDelete.getId());
+        }
+        log.info("Finished deleting non-existing jobs");
     }
 }
