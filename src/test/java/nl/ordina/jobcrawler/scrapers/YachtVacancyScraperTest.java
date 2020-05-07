@@ -54,6 +54,7 @@ public class YachtVacancyScraperTest {
 
     private static Document overviewDoc;
     private static Document vacancyDoc;
+    private static Document removedVacancyDoc;
 
 
     @BeforeClass
@@ -64,6 +65,9 @@ public class YachtVacancyScraperTest {
 
         File vacancyDocHtml = getFile("/yacht/yachtvacancy.html");
         vacancyDoc = Jsoup.parse(vacancyDocHtml, "UTF-8");
+
+        File removedVacancyHtml = getFile("/yacht/yachtremovedvacancy.html");
+        removedVacancyDoc = Jsoup.parse(removedVacancyHtml, "UTF-8");
 
         vacancy = Vacancy.builder()
                 .skills(new HashSet<>())
@@ -86,33 +90,29 @@ public class YachtVacancyScraperTest {
     }
 
     @Test
-    public void getVacancyURLs_Test() {
-        final Elements vacancyLinkElements = overviewDoc.select("div.results article h2 a[href]");
-        assertEquals(15, vacancyLinkElements.size());
+    public void getVacancyURLs_returns_vacancies_from_html_document() throws IOException {
+        when(connectionDocumentServiceMock.getConnection(anyString())).thenReturn(overviewDoc);
+
+        List<VacancyURLs> vacancyURLs = yachtVacancyScraper.getVacancyURLs();
+
+        assertEquals(480, vacancyURLs.size());
+        verify(connectionDocumentServiceMock, times(32)).getConnection(anyString());
     }
 
     @Test
-    public void getVacancyURLs_NonYachtSite_Test() throws IOException {
-//        final Elements vacancyLinkElements = nuDoc.select("div.results article h2 a[href]");
-//        assertEquals(0, vacancyLinkElements.size());
-    }
-
-    @Test(expected = HttpStatusException.class)
-    public void getVacancy_RemovedVacancy_Test() throws IOException {
-        /*
-         * Defined url below is a vacancy that does not exist anymore on Yacht.
-         * Does not throw status 404, so we need to throw a 404 ourselves. Might be doable by searching for the word 'sorry'
-         */
-        final String url = "https://www.yacht.nl/vacatures/9079222/data-analist---modeler";
-        final Document removedVacancyDoc = Jsoup.connect(url).get();
-        if (removedVacancyDoc.text().toLowerCase().contains("sorry"))
-            throw new HttpStatusException("Error 404 - Not found", 404, url);
+    public void getTotalNumberOfPages_returns_1() {
+        Elements elements = new Elements();
+        when(documentMock.select(anyString())).thenReturn(elements);
+        final int numberOfPages = yachtVacancyScraper.getTotalNumberOfPages(documentMock);
+        assertEquals(1, numberOfPages);
+        verify(documentMock, times(2)).select(anyString());
     }
 
     @Test
     public void getTotalNumberOfPages_Test() {
-        final Integer numberOfPages = yachtVacancyScraper.getTotalNumberOfPages(overviewDoc);
-//        assertEquals(32, numberOfPages);
+        final int numberOfPages = yachtVacancyScraper.getTotalNumberOfPages(overviewDoc);
+
+        assertEquals(32, numberOfPages);
     }
 
     @Test
@@ -173,6 +173,18 @@ public class YachtVacancyScraperTest {
 //        yachtVacancyScraper.setVacancySkillSet(nuDoc, vacancy);
 //        final Set<Skill> vacancySkillSet = vacancy.getSkills();
 //        assertEquals(0, vacancySkillSet.size());
+    }
+
+    @Test(expected = HttpStatusException.class)
+    public void getVacancy_RemovedVacancy_Test() throws IOException {
+        /*
+         * Defined url below is a vacancy that does not exist anymore on Yacht.
+         * Does not throw status 404, so we need to throw a 404 ourselves. Might be doable by searching for the word 'sorry'
+         */
+        final String url = "https://www.yacht.nl/vacatures/9079222/data-analist---modeler";
+        final Document removedVacancyDoc = Jsoup.connect(url).get();
+        if (removedVacancyDoc.text().toLowerCase().contains("sorry"))
+            throw new HttpStatusException("Error 404 - Not found", 404, url);
     }
 
 
