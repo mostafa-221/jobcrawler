@@ -37,11 +37,13 @@ public class Vacancy {
     private String vacancyNumber;
     private String hours;
     private String location;
+    private String salary;
     private String postingDate;
     @Column(columnDefinition = "TEXT")
     private String about;
 
-    @ManyToMany(cascade = CascadeType.PERSIST)  //saves the skills when a vacancy gets saved
+    // Without eager fetch type, the program gives an error when executing the scheduled deleting of jobs, any other ideas?
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)  //saves the skills when a vacancy gets saved
     @JoinTable(
             name = "vacancy_skills",
             joinColumns = @JoinColumn(name = "vacancy_id"),
@@ -80,7 +82,7 @@ public class Vacancy {
     }
 
 
-    public void checkURL() {
+    public boolean hasValidURL() {
         if (!this.vacancyURL.startsWith("http"))
             this.vacancyURL = "https://" + this.vacancyURL; //adding the protocol, if not present
 
@@ -94,9 +96,8 @@ public class Vacancy {
             huc.setRequestMethod("HEAD");   // faster because it doesn't download the response body
             responseCode = huc.getResponseCode();
 
-            if (responseCode != 200) { //website is not good
-                throw new VacancyURLMalformedException(this.vacancyURL, responseCode);
-            }
+            return responseCode == 200; //return if the website is good
+
         } catch (IOException e) {
             throw new VacancyURLMalformedException(this.vacancyURL);
         }

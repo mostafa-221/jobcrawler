@@ -1,4 +1,4 @@
-package nl.ordina.jobcrawler.controller;
+package nl.ordina.jobcrawler.scrapers;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.ordina.jobcrawler.model.Vacancy;
@@ -35,7 +35,7 @@ abstract class VacancyScraper {
     public List<Vacancy> getVacancies() throws IOException {
         log.info(String.format("%s -- Start scraping", BROKER.toUpperCase()));
         /*
-        getVacancies retrieves all vanacyURLs via the getVacancyURLs method and set the various elements of Vacancy below.
+        getVacancies retrieves all vacancyURLs via the getVacancyURLs method and set the various elements of Vacancy below.
          */
         List<Vacancy> vacancies = new ArrayList<>();
         List<VacancyURLs> vacancyURLs = getVacancyURLs();
@@ -68,8 +68,24 @@ abstract class VacancyScraper {
 
     abstract protected void setVacancyTitle(Document doc, Vacancy vacancy);
 
+    /**************************************************************************
+     * Scrapes the
+     *    postingdate,
+     *    nr of hours (if not set yet from the set of urls)
+     *    location (town or municipality) of the vacancy
+     * Input:
+     *        Doc  - the detail page for the vacancy
+     *        Vacancy - the job vacancy corresponging to this page
+     * Output:
+     *        Sets the corresponding values in the vacancy
+     ***************************************************************************/
     abstract protected void setVacancySpecifics(Document doc, Vacancy vacancy);
 
+
+    /**************************************************************************
+     *  Retrieves the relevant portion of the page that contains information
+     *  of the specifics
+     **************************************************************************/
     abstract protected List<String> getVacancySpecifics(Document doc);
 
     abstract protected void setVacancyAbout(Document doc, Vacancy vacancy);
