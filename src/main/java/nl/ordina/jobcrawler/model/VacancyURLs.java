@@ -11,7 +11,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class VacancyURLs {
     private String url;
+    private String title;
     private String hours;
+    private String location;
+    private String vacancyNumber;
+    private String postingDate;
 
     public VacancyURLs(String url) {
         this.url = url;
