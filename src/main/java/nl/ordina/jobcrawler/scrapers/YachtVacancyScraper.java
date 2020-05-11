@@ -91,6 +91,7 @@ public class YachtVacancyScraper extends VacancyScraper {
         return response.getBody();
     }
 
+    // The getTotalNumberOfPages method is not used by this scraper. As the YachtVacancyScraper extends VacancyScraper it is required to provide an implementation for this method.
     @Override
     protected int getTotalNumberOfPages(Document doc) {
         return 1;
