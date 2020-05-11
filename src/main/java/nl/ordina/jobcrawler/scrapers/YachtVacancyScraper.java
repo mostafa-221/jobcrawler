@@ -1,7 +1,6 @@
 package nl.ordina.jobcrawler.scrapers;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.ordina.jobcrawler.controller.exception.VacancyURLMalformedException;
 import nl.ordina.jobcrawler.model.Vacancy;
 import nl.ordina.jobcrawler.model.VacancyURLs;
 import nl.ordina.jobcrawler.service.ConnectionDocumentService;
@@ -15,7 +14,6 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
 import java.util.*;
 
 
@@ -91,17 +89,19 @@ public class YachtVacancyScraper extends VacancyScraper {
         return response.getBody();
     }
 
-    // The getTotalNumberOfPages method is not used by this scraper. As the YachtVacancyScraper extends VacancyScraper it is required to provide an implementation for this method.
+    // getTotalNumberOfPages method is not used by this scraper. As we extend the abstract class VacancyScraper it is required to override this method and provide a return value.
     @Override
     protected int getTotalNumberOfPages(Document doc) {
         return 1;
     }
 
+    // We retrieve the vacancy title in an earlier stage as the title is returned in the get request (scrapeVacancies(int pageNumber) method). Decided to show the title of the vacancy when this method is called. That way it is clear the scraper is doing it's job.
     @Override
     protected void setVacancyTitle(Document doc, Vacancy vacancy) {
         log.info("YACHT -- Scraping: " + vacancy.getTitle());
     }
 
+    // setVacancySpecifics method is not used for this scraper. As we extend the abstract class VacancyScraper it is required to override this method.
     @Override
     protected void setVacancySpecifics(Document doc, Vacancy vacancy) {
     }
