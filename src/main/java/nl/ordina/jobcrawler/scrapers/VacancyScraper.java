@@ -46,6 +46,10 @@ abstract class VacancyScraper {
                         .vacancyURL(vacancyURL.getUrl())
                         .broker(BROKER)
                         .hours(vacancyURL.getHours())
+                        .location(vacancyURL.getLocation())
+                        .postingDate(vacancyURL.getPostingDate())
+                        .vacancyNumber(vacancyURL.getVacancyNumber())
+                        .title(vacancyURL.getTitle())
                         .skills(new HashSet<>())
                         .build();
                 setVacancyTitle(doc, vacancy);
