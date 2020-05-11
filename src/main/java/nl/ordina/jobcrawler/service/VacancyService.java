@@ -1,10 +1,10 @@
 package nl.ordina.jobcrawler.service;
 
 import nl.ordina.jobcrawler.controller.exception.VacancyNotFoundException;
+import nl.ordina.jobcrawler.controller.exception.VacancyURLMalformedException;
 import nl.ordina.jobcrawler.model.Skill;
 import nl.ordina.jobcrawler.model.Vacancy;
 import nl.ordina.jobcrawler.repo.VacancyRepository;
-import nl.ordina.jobcrawler.service.exception.DuplicateRecordFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,14 +26,26 @@ public class VacancyService {
     //******** Adding ********//
     // Adding vacancy and accompanying skills and relations to the database //
     public Vacancy add(Vacancy vacancy) {
+        /**
+         * The function below which is commented out, is used to prevent duplicate skills in the skills table.
+         * For some reason it throws a hibernate exception; detached entity passed to persist
+         * javax.persistence.PersistenceException
+         * We can solve this using an EntityManager. Implementing this will take some time while after the mvp we might put the entire vacancy body into a single column. By commenting out the lines below we allow duplicates.
+         * The unique parameter in Skill.java is set to false. Someone using the application won't notice the difference.
+         */
+        
         //replacing the skills with existing skills from the database if present
-        Set<Skill> existingSkills = skillService.linkToExistingSkills(vacancy.getSkills());
-        existingSkills.forEach(skill -> skill.addVacancy(vacancy)); // add the vacancy to the skill
-        vacancy.setSkills(existingSkills); // add the skills to the vacancy
+//        Set<Skill> existingSkills = skillService.linkToExistingSkills(vacancy.getSkills());
+//        existingSkills.forEach(skill -> skill.addVacancy(vacancy)); // add the vacancy to the skill
+//        vacancy.setSkills(existingSkills); // add the skills to the vacancy
 
 
-        vacancy.checkURL(); //checking the url, if it is malformed it will throw a VacancyURLMalformedException
-        return vacancyRepository.saveAndFlush(vacancy); // save and send to the database
+        if (vacancy.hasValidURL()){    //checking the url, if it is malformed it will throw a VacancyURLMalformedException
+            return vacancyRepository.saveAndFlush(vacancy);
+        } else {
+            throw new VacancyURLMalformedException("Website could not be reached");
+        }
+
 
     }
 
