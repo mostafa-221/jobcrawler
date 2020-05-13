@@ -8,10 +8,12 @@ import nl.ordina.jobcrawler.model.Skill;
 import nl.ordina.jobcrawler.model.Vacancy;
 import nl.ordina.jobcrawler.service.SkillService;
 import nl.ordina.jobcrawler.service.VacancyService;
+import nl.ordina.jobcrawler.service.VacancyStarter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -24,11 +26,13 @@ public class JobcrawlerController {
 
     private VacancyService vacancyService;
     private SkillService skillService;
+    private VacancyStarter vacancyStarter;
 
     @Autowired
-    public JobcrawlerController(VacancyService vacancyService, SkillService skillService) {
+    public JobcrawlerController(VacancyService vacancyService, SkillService skillService, VacancyStarter vacancyStarter) {
         this.vacancyService = vacancyService;
         this.skillService = skillService;
+        this.vacancyStarter = vacancyStarter;
     }
 
     @PostMapping("/searchrequest")
@@ -95,6 +99,24 @@ public class JobcrawlerController {
     @PutMapping("{id}")
     Vacancy replaceVacancy(@PathVariable UUID id, @RequestBody Vacancy newVacancy) {
         return vacancyService.replace(id, newVacancy);
+    }
+
+    /**
+     * start the scraping of jobs
+     */
+    @PutMapping("/scrape")
+    void scrape () {
+        /* made in a new thread so that the sender of the request does not have to wait for a response until the
+         * scraping is finished.
+         */
+        Thread newThread = new Thread(() -> {
+            try {
+                vacancyStarter.scrape();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        newThread.start();
     }
 
 
