@@ -93,11 +93,16 @@ public class Vacancy {
         try {
             url = new URL(this.vacancyURL);
             huc = (HttpURLConnection) url.openConnection();
+            /*
+             * Added a user agent as huxley gives a 403 forbidden error
+             * This user agent will make it as if we are making the request from a modern browser
+             */
+
             huc.setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
             huc.setRequestMethod("HEAD");   // faster because it doesn't download the response body
             responseCode = huc.getResponseCode();
 
-            return responseCode == 200; //return if the website is good
+            return responseCode == 200; //returns true if the website has a 200 OK response
 
         } catch (IOException e) {
             throw new VacancyURLMalformedException(this.vacancyURL);
