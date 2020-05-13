@@ -96,6 +96,8 @@ public class Vacancy {
             huc.setRequestMethod("HEAD");   // faster because it doesn't download the response body
             responseCode = huc.getResponseCode();
 
+            System.out.println(responseCode + "..\t" + this.vacancyURL);
+
             return responseCode == 200; //return if the website is good
 
         } catch (IOException e) {
