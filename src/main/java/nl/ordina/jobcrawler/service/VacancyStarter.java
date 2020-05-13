@@ -47,10 +47,13 @@ public class VacancyStarter {
         List<Vacancy> allVacancies = yachtVacancyScraper.getVacancies();
         allVacancies.addAll(jobBirdScraper.getVacancies());
         allVacancies.addAll(huxleyITVacancyScraper.getVacancies());
+
         int existVacancy = 0;
         int newVacancy = 0;
+        int i = 0;
         for (Vacancy vacancy : allVacancies) {
             try {
+                System.out.println(i++ + ")" + vacancy.getBroker());
                 Optional<Vacancy> existCheck = vacancyService.getExistingVacancy(vacancy.getVacancyURL());
                 if (existCheck.isPresent()) {
                     existVacancy++;
