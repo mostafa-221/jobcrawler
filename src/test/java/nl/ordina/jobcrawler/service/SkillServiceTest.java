@@ -11,8 +11,7 @@ import org.mockito.Mockito;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -95,8 +94,9 @@ class SkillServiceTest {
         /* uses from repository methods: findByName */
         Mockito.when(skillRepositoryMock.findByName(skillName)).thenReturn(Optional.ofNullable(skill));
         Set<Vacancy> result = skillService.getVacanciesBySkill(skillName);
-        assertTrue(result.contains(vacancy)
-                && result.size() == 1);
+
+        assertTrue(result.contains(vacancy));
+        assertEquals(1, result.size());
     }
 
     @Test
@@ -115,7 +115,8 @@ class SkillServiceTest {
         Set<Skill> result = skillService.linkToExistingSkills(newSkills);
 
         // check if the result contains the skill saved in the "database", and only that
-        assertTrue(result.contains(skill) && result.size() == 1);
+        assertTrue(result.contains(skill));
+        assertEquals(1, result.size());
     }
 
     @Test
@@ -161,9 +162,9 @@ class SkillServiceTest {
         skillService.addSkillsToVacancy(skillSet, vacancy);
         Set<Skill> newSkills = vacancy.getSkills();
 
-        assertTrue(newSkills.size() == 2
-                && newSkills.contains(skill)
-                && newSkills.contains(newSkill));
+        assertTrue(newSkills.contains(skill));
+        assertTrue(newSkills.contains(newSkill));
+        assertEquals(2, newSkills.size());
 
     }
 
@@ -186,9 +187,9 @@ class SkillServiceTest {
         skillService.addSkillsToVacancy(skillSet, vacancy);
         Set<Skill> newSkills = vacancy.getSkills();
 
-        assertTrue(newSkills.size() == 2
-                && newSkills.contains(skill)
-                && newSkills.contains(newSkill));
+        assertTrue(newSkills.contains(skill));
+        assertTrue(newSkills.contains(newSkill));
+        assertEquals(2, newSkills.size());
 
     }
 
@@ -264,7 +265,8 @@ class SkillServiceTest {
 
         Set<Skill> result = newVacancy.getSkills();
 
-        assertTrue(result.contains(skill) && result.size() == 1);
+        assertTrue(result.contains(skill) );
+        assertEquals(1, result.size());
     }
 
     @Test
@@ -298,6 +300,7 @@ class SkillServiceTest {
 
         Set<Skill> result = newVacancy.getSkills();
 
-        assertTrue(result.contains(newSkill) && result.size() == 1);
+        assertTrue(result.contains(newSkill));
+        assertEquals(1, result.size());
     }
 }
