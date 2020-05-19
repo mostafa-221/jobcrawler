@@ -3,6 +3,7 @@ package nl.ordina.jobcrawler.service;
 import nl.ordina.jobcrawler.model.Skill;
 import nl.ordina.jobcrawler.model.Vacancy;
 import nl.ordina.jobcrawler.repo.SkillRepository;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -19,8 +20,8 @@ import static org.mockito.Mockito.verify;
 
 class SkillServiceTest {
 
-    private SkillRepository skillRepositoryMock;
-    private SkillService skillService;
+    static private SkillRepository skillRepositoryMock;
+    static private SkillService skillService;
 
     private Vacancy vacancy;
     private List<Vacancy> vacanciesDB;  // fake "database" for vacancy
@@ -28,10 +29,14 @@ class SkillServiceTest {
     private Skill skill;
     private List<Skill> skillDB;    // fake "database" for skill
 
+    @BeforeAll
+    static void beforeAll() {
+        skillRepositoryMock = Mockito.mock(SkillRepository.class);
+        skillService = new SkillService(skillRepositoryMock);
+    }
+
     @BeforeEach
     void init() {
-        this.skillRepositoryMock = Mockito.mock(SkillRepository.class);
-        this.skillService = new SkillService(skillRepositoryMock);
 
         vacancy = Vacancy.builder() // making a vacancy
                 .id(UUID.randomUUID())
