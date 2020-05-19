@@ -1,10 +1,11 @@
-package nl.ordina.jobcrawler.service;
+package nl.ordina.jobcrawler.scrapers;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.ordina.jobcrawler.model.Vacancy;
-import nl.ordina.jobcrawler.scrapers.HuxleyITVacancyScraper;
-import nl.ordina.jobcrawler.scrapers.JobBirdScraper;
-import nl.ordina.jobcrawler.scrapers.YachtVacancyScraper;
+import nl.ordina.jobcrawler.scrapers.huxley.HuxleyITVacancyScraper;
+import nl.ordina.jobcrawler.scrapers.jobbird.JobBirdScraper;
+import nl.ordina.jobcrawler.scrapers.yacht.YachtVacancyScraper;
+import nl.ordina.jobcrawler.service.VacancyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;

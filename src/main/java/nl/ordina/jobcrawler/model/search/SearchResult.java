@@ -1,4 +1,4 @@
-package nl.ordina.jobcrawler;
+package nl.ordina.jobcrawler.model.search;
 
 import nl.ordina.jobcrawler.model.Vacancy;
 

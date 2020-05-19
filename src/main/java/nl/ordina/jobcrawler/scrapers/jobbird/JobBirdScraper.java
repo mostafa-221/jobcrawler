@@ -1,15 +1,14 @@
-package nl.ordina.jobcrawler.scrapers;
+package nl.ordina.jobcrawler.scrapers.jobbird;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.ordina.jobcrawler.model.Vacancy;
 import nl.ordina.jobcrawler.model.VacancyURLs;
-import nl.ordina.jobcrawler.service.ConnectionDocumentService;
+import nl.ordina.jobcrawler.scrapers.VacancyScraper;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,8 +48,8 @@ public class JobBirdScraper extends VacancyScraper {
     private static final int MAX_NR_OF_PAGES = 25;  // 25 seems enough for demo purposes, can be up to approx 60
                                                // at a certain point the vacancy date will be missing
 
-    public JobBirdScraper(ConnectionDocumentService connectionDocumentService) {
-        super(connectionDocumentService, SEARCH_URL, BROKER);
+    public JobBirdScraper() {
+        super(SEARCH_URL, BROKER);
     }
 
 

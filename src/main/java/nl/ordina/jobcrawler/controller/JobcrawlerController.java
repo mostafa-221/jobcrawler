@@ -1,14 +1,14 @@
 package nl.ordina.jobcrawler.controller;
 
 
-import nl.ordina.jobcrawler.SearchRequest;
-import nl.ordina.jobcrawler.SearchResult;
+import nl.ordina.jobcrawler.model.search.SearchRequest;
+import nl.ordina.jobcrawler.model.search.SearchResult;
 import nl.ordina.jobcrawler.controller.exception.VacancyNotFoundException;
 import nl.ordina.jobcrawler.model.Skill;
 import nl.ordina.jobcrawler.model.Vacancy;
 import nl.ordina.jobcrawler.service.SkillService;
 import nl.ordina.jobcrawler.service.VacancyService;
-import nl.ordina.jobcrawler.service.VacancyStarter;
+import nl.ordina.jobcrawler.scrapers.VacancyStarter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

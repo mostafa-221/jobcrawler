@@ -1,9 +1,9 @@
-package nl.ordina.jobcrawler.scrapers;
+package nl.ordina.jobcrawler.scrapers.huxley;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.ordina.jobcrawler.model.Vacancy;
 import nl.ordina.jobcrawler.model.VacancyURLs;
-import nl.ordina.jobcrawler.service.ConnectionDocumentService;
+import nl.ordina.jobcrawler.scrapers.VacancyScraper;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -33,8 +33,8 @@ public class HuxleyITVacancyScraper extends VacancyScraper {
     private static final String BROKER = "HuxleyIT";
 
     @Autowired
-    public HuxleyITVacancyScraper(ConnectionDocumentService connectionDocumentService) {
-        super(connectionDocumentService, SEARCH_URL, BROKER);
+    public HuxleyITVacancyScraper() {
+        super(SEARCH_URL, BROKER);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package nl.ordina.jobcrawler.scrapers;
+package nl.ordina.jobcrawler.scrapers.huxley;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

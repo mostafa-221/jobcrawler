@@ -1,9 +1,9 @@
-package nl.ordina.jobcrawler.scrapers;
+package nl.ordina.jobcrawler.scrapers.yacht;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.ordina.jobcrawler.model.Vacancy;
 import nl.ordina.jobcrawler.model.VacancyURLs;
-import nl.ordina.jobcrawler.service.ConnectionDocumentService;
+import nl.ordina.jobcrawler.scrapers.VacancyScraper;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -26,8 +26,8 @@ public class YachtVacancyScraper extends VacancyScraper {
     private static final String BROKER = "Yacht";
 
     @Autowired
-    public YachtVacancyScraper(ConnectionDocumentService connectionDocumentService) {
-        super(connectionDocumentService, SEARCH_URL, BROKER);
+    public YachtVacancyScraper() {
+        super(SEARCH_URL, BROKER);
     }
 
     /**

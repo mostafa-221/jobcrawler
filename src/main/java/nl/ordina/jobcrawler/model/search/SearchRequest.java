@@ -1,4 +1,4 @@
-package nl.ordina.jobcrawler;
+package nl.ordina.jobcrawler.model.search;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

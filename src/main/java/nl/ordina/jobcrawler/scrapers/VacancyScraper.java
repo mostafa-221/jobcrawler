@@ -3,7 +3,6 @@ package nl.ordina.jobcrawler.scrapers;
 import lombok.extern.slf4j.Slf4j;
 import nl.ordina.jobcrawler.model.Vacancy;
 import nl.ordina.jobcrawler.model.VacancyURLs;
-import nl.ordina.jobcrawler.service.ConnectionDocumentService;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -15,15 +14,13 @@ import java.util.List;
 // All vacancy scrapers have the following functions in common
 
 @Slf4j
-abstract class VacancyScraper {
+public abstract class VacancyScraper {
 
     private final String SEARCH_URL;
     private final String BROKER;
 
-    private final ConnectionDocumentService connectionDocumentService;
 
-    public VacancyScraper(@Autowired ConnectionDocumentService connectionDocumentService, String url, String broker) {
-        this.connectionDocumentService = connectionDocumentService;
+    public VacancyScraper(@Autowired String url, String broker) {
         this.SEARCH_URL = url;
         this.BROKER = broker;
     }
@@ -40,7 +37,7 @@ abstract class VacancyScraper {
         List<Vacancy> vacancies = new ArrayList<>();
         List<VacancyURLs> vacancyURLs = getVacancyURLs();
         for (VacancyURLs vacancyURL : vacancyURLs) {
-            Document doc = connectionDocumentService.getConnection(vacancyURL.getUrl());
+            Document doc = JSoupUtil.getConnection(vacancyURL.getUrl());
             if (doc != null) {
                 Vacancy vacancy = Vacancy.builder()
                         .vacancyURL(vacancyURL.getUrl())
@@ -63,7 +60,7 @@ abstract class VacancyScraper {
     }
 
     protected Document getDocument(String url) throws IOException {
-        return connectionDocumentService.getConnection(url);
+        return JSoupUtil.getConnection(url);
     }
 
     abstract protected List<VacancyURLs> getVacancyURLs() throws IOException;

@@ -1,4 +1,4 @@
-package nl.ordina.jobcrawler.scrapers;
+package nl.ordina.jobcrawler.scrapers.yacht;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
