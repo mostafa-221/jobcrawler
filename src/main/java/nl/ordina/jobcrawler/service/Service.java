@@ -6,19 +6,18 @@ import java.util.Optional;
 import java.util.UUID;
 
 // Maybe another name can be chosen as to not interfere
-public interface Service<T> {
+public abstract class Service<T> {
     //******** Adding to database ********//
-    T add(T t);
+    abstract T add(T t);
 
     //******** Getting from database ********//
-    List<T> getAll();
+    abstract List<T> getAll();
 
-    Optional<T> getById(UUID id);
-
+    abstract Optional<T> getById(UUID id);
 
     //******** Deleting from database ********//
-    void deleteById(UUID id);
+    abstract void deleteById(UUID id);
 
     //******** Updating entries ********//
-    T update(UUID id, T newT);
+    abstract T update(UUID id, T newT);
 }

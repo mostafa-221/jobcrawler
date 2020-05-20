@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
-public class VacancyService implements nl.ordina.jobcrawler.service.Service<Vacancy> {
+public class VacancyService extends nl.ordina.jobcrawler.service.Service<Vacancy> {
 
     private VacancyRepository vacancyRepository;
     private SkillService skillService;
