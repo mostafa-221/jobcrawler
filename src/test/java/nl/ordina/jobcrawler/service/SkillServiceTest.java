@@ -66,6 +66,14 @@ class SkillServiceTest {
         skillDB.add(skill); // putting the vacancy in the fake skill "database"
     }
 
+    Skill skillFactory(String skillName){
+        return Skill.builder()
+                .id(UUID.randomUUID())
+                .name(skillName)
+                .vacancies(new HashSet<Vacancy>())
+                .build();
+    }
+
     @Test
     void getAllSkills() {
         /* uses from repository methods: findAll */
@@ -105,10 +113,7 @@ class SkillServiceTest {
         Mockito.when(skillRepositoryMock.findByName(skillName)).thenReturn(Optional.ofNullable(skill));
 
         // make a new skill that only has the name of the existing skill
-        Skill newSkill = Skill.builder()
-                .name(skillName)
-                .vacancies(new HashSet<Vacancy>())
-                .build();
+        Skill newSkill = skillFactory(skillName);
         Set<Skill> newSkills = new HashSet<Skill>();
         newSkills.add(newSkill);
 
@@ -146,11 +151,7 @@ class SkillServiceTest {
         /* uses from repository methods: findByName */
 
         // make new skill
-        Skill newSkill = Skill.builder()
-                .id(UUID.randomUUID())
-                .name("skill2")
-                .vacancies(new HashSet<Vacancy>())
-                .build();
+        Skill newSkill = skillFactory("skill2");
         skillDB.add(newSkill);  // add it to the database
 
         Set<Skill> skillSet = new HashSet<Skill>();
@@ -173,11 +174,7 @@ class SkillServiceTest {
         /* uses from repository methods: findByName */
 
         // make new skill
-        Skill newSkill = Skill.builder()
-                .id(UUID.randomUUID())
-                .name("skill2")
-                .vacancies(new HashSet<Vacancy>())
-                .build();
+        Skill newSkill = skillFactory("skill2");
 
         Set<Skill> skillSet = new HashSet<Skill>();
         skillSet.add(newSkill);
@@ -251,10 +248,7 @@ class SkillServiceTest {
                 .skills(new HashSet<Skill>())
                 .build();
 
-        Skill newSkill = Skill.builder()
-                .name(skillName)
-                .vacancies(new HashSet<Vacancy>())
-                .build();
+        Skill newSkill = skillFactory(skillName);
 
         Set<Skill> newSkills = new HashSet<Skill>();
         newSkills.add(newSkill);
@@ -286,10 +280,7 @@ class SkillServiceTest {
                 .skills(new HashSet<Skill>())
                 .build();
 
-        Skill newSkill = Skill.builder()
-                .name(skillName)
-                .vacancies(new HashSet<Vacancy>())
-                .build();
+        Skill newSkill = skillFactory(skillName);
 
         Set<Skill> newSkills = new HashSet<Skill>();
         newSkills.add(newSkill);
