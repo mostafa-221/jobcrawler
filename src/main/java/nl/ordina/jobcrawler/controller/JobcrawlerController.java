@@ -6,8 +6,13 @@ import nl.ordina.jobcrawler.SearchResult;
 import nl.ordina.jobcrawler.controller.exception.VacancyNotFoundException;
 import nl.ordina.jobcrawler.model.Skill;
 import nl.ordina.jobcrawler.model.Vacancy;
+import nl.ordina.jobcrawler.scrapers.HuxleyITVacancyScraper;
+import nl.ordina.jobcrawler.scrapers.JobBirdScraper;
+import nl.ordina.jobcrawler.scrapers.YachtVacancyScraper;
+import nl.ordina.jobcrawler.service.ConnectionDocumentService;
 import nl.ordina.jobcrawler.service.SkillService;
 import nl.ordina.jobcrawler.service.VacancyService;
+import nl.ordina.jobcrawler.service.VacancyStarter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,6 +56,19 @@ public class JobcrawlerController {
         // Retrieve a vacancy by its ID (UUID). If Vacancy is not found it throws a 'VacancyNotFoundException' (HttpStatus.NOT_FOUND).
         Optional<Vacancy> vacancy = vacancyService.getVacancyByID(id);
         return vacancy.orElseThrow(() -> new VacancyNotFoundException("Vacancy with id: " + id + " not found."));
+    }
+
+    @GetMapping("/scrape")
+    public void scrape() throws Exception {
+        ConnectionDocumentService connectionDocumentService = new ConnectionDocumentService();
+         final YachtVacancyScraper yachtVacancyScraper = new YachtVacancyScraper(connectionDocumentService);
+
+         final HuxleyITVacancyScraper huxleyITVacancyScraper = new HuxleyITVacancyScraper(connectionDocumentService);
+
+         final JobBirdScraper jobBirdScraper = new JobBirdScraper(connectionDocumentService);
+
+        VacancyStarter vc = new VacancyStarter(yachtVacancyScraper, huxleyITVacancyScraper, jobBirdScraper);
+        vc.scrape();
     }
 
     // getting jobs by broker

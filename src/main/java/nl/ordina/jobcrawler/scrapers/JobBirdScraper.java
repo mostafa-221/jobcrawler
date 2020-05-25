@@ -52,7 +52,7 @@ public class JobBirdScraper extends VacancyScraper {
     }
 
     @Override
-    protected List<VacancyURLs> getVacancyURLs() throws IOException {
+    public List<VacancyURLs> getVacancyURLs() throws IOException {
         //  Returns a List with VacancyURLs
         ArrayList<VacancyURLs> URLs = new ArrayList<>();
 
@@ -77,7 +77,7 @@ public class JobBirdScraper extends VacancyScraper {
     /*
     *    Retrieve the links to the individual pages for each assignment
     */
-    private ArrayList<VacancyURLs> retrieveVacancyURLsFromDoc(Document doc) {
+    protected ArrayList<VacancyURLs> retrieveVacancyURLsFromDoc(Document doc) {
         ArrayList<VacancyURLs> result = new ArrayList<>();
         Elements elements = doc.select("div.jobResults");
         Element element = elements.first();
@@ -104,8 +104,20 @@ public class JobBirdScraper extends VacancyScraper {
     @Override
     protected int getTotalNumberOfPages(Document doc) {
         Elements elements = doc.select("span.page-link");
-        Element parent = elements.first().parent().parent();
-        Elements children = parent.children();
+
+        Elements children;
+        // if elements not found or structure not as expected, return 0
+        try {
+            Element parent = elements.first();
+            parent = parent.parent();
+            parent = parent.parent();
+            children = parent.children();
+        } catch (Exception e) {
+            log.error("getTotalNumberOfPages: unexpected page structure");
+            return 0;
+        }
+
+
         int count = 0;
         for (Element child: children) {
             String text = child.text();
@@ -116,7 +128,7 @@ public class JobBirdScraper extends VacancyScraper {
     }
 
     @Override
-    protected void setVacancyTitle(Document doc, Vacancy vacancy) {
+    protected void setVacancyTitle(Document doc, Vacancy vacancy) throws HTMLStructureException {
 
         Element vacancyHeader = doc.select("h1.no-margin").first();
 
@@ -124,6 +136,8 @@ public class JobBirdScraper extends VacancyScraper {
             String title = vacancyHeader.text();
             vacancy.setTitle(title);
             log.info("vacancy found: "  + title);
+        } else {
+            throw new HTMLStructureException("title missing");
         }
     }
 
@@ -207,31 +221,22 @@ public class JobBirdScraper extends VacancyScraper {
 
     /*
     *   The job bird vacancy page structure is quite loose.
-    *   A number of vacancy page are in Dutch and quite often, the "About" can be found between
-    *   a line (div) "Functieomschrijving" just after  <div id="jobContent"  class = "card-body>
-    *  and a heading <h3>Vaardigheden</h3>
-    *
-    *   A number of vacancy pages have the about section
-    *
-    *  we cannot be sure about the exact layout, so it would be possible to extract the portion just
-    *  after the jobContent when the first line contains Functieomschrijving, read until Vaardigheden.
-    *
-    *
-    *  In other cases it is not so simple. When aforementioned receipt does not work we can
-    *  we can do the following:
-    *
-    * gather all elements until one of the following occurs:
-    *  - english offer: A sentence containing skills
-    *
-    *
     * For the time being, the About contains all text contained within the jobcontainer card div element
     *   <div class="jobContainer card">
     *
+    * It is vital that the about section contains all relevant information. If this jobcontainer card div element
+    * is not found, the page structure has been altered in a way that the jobbird scraper can no longer
+    * do any useful work - in this case, it is better to generate an exception.
+    *
     * */
     @Override
-    protected void setVacancyAbout(Document doc, Vacancy vacancy) {
-        Elements abou1tElements = doc.select("div.jobContainer");
-        vacancy.setAbout(abou1tElements.text());
+    protected void setVacancyAbout(Document doc, Vacancy vacancy) throws HTMLStructureException {
+        try {
+            Elements abou1tElements = doc.select("div.jobContainer");
+            vacancy.setAbout(abou1tElements.text());
+        } catch (Exception e) { // page structure altered, no longer purposeful work for jobbird scraper
+            throw new HTMLStructureException("jobbird about section altered, skipping jobbird vacancy");
+        }
     }
 
     @Override

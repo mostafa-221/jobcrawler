@@ -32,7 +32,7 @@ abstract class VacancyScraper {
         return SEARCH_URL;
     }
 
-    public List<Vacancy> getVacancies() throws IOException {
+    public List<Vacancy> getVacancies() throws IOException, HTMLStructureException {
         log.info(String.format("%s -- Start scraping", BROKER.toUpperCase()));
         /*
         getVacancies retrieves all vacancyURLs via the getVacancyURLs method and set the various elements of Vacancy below.
@@ -66,7 +66,7 @@ abstract class VacancyScraper {
 
     abstract protected int getTotalNumberOfPages(Document doc);
 
-    abstract protected void setVacancyTitle(Document doc, Vacancy vacancy);
+    abstract protected void setVacancyTitle(Document doc, Vacancy vacancy) throws HTMLStructureException;
 
     /**************************************************************************
      * Scrapes the
@@ -88,7 +88,7 @@ abstract class VacancyScraper {
      **************************************************************************/
     abstract protected List<String> getVacancySpecifics(Document doc);
 
-    abstract protected void setVacancyAbout(Document doc, Vacancy vacancy);
+    abstract protected void setVacancyAbout(Document doc, Vacancy vacancy) throws HTMLStructureException;
 
     abstract protected void setVacancySkillSet(Document doc, Vacancy vacancy);
 

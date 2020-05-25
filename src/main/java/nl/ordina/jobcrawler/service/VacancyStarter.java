@@ -1,6 +1,7 @@
 package nl.ordina.jobcrawler.service;
 
 import lombok.extern.slf4j.Slf4j;
+import nl.ordina.jobcrawler.scrapers.HTMLStructureException;
 import nl.ordina.jobcrawler.model.Vacancy;
 import nl.ordina.jobcrawler.scrapers.HuxleyITVacancyScraper;
 import nl.ordina.jobcrawler.scrapers.JobBirdScraper;
@@ -11,6 +12,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,9 +50,22 @@ public class VacancyStarter {
     }
 
     public void scrape() throws IOException {
-        List<Vacancy> allVacancies = yachtVacancyScraper.getVacancies();
-        allVacancies.addAll(jobBirdScraper.getVacancies());
+        List<Vacancy> allVacancies = new ArrayList<>();
+        try {
+            allVacancies = jobBirdScraper.getVacancies();
+        } catch (HTMLStructureException e) {
+            log.error(e.getLocalizedMessage());
+        }
+
         allVacancies.addAll(huxleyITVacancyScraper.getVacancies());
+
+        try {
+            allVacancies.addAll(yachtVacancyScraper.getVacancies());
+        } catch (HTMLStructureException e) {
+            log.error(e.getLocalizedMessage());
+        }
+
+
         int existVacancy = 0;
         int newVacancy = 0;
         for (Vacancy vacancy : allVacancies) {
