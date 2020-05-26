@@ -3,7 +3,6 @@ package scrapers;
 import nl.ordina.jobcrawler.model.Vacancy;
 import nl.ordina.jobcrawler.scrapers.HTMLStructureException;
 import nl.ordina.jobcrawler.scrapers.JobBirdScraper;
-import nl.ordina.jobcrawler.service.ConnectionDocumentService;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -32,8 +31,6 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class JobBirdScraperTest  {
 
-    @Mock
-    ConnectionDocumentService connectionDocumentServiceMock;
 
     @InjectMocks
     private JobBirdScraperTestHelp jobBirdScraperTestHelp;
@@ -62,7 +59,7 @@ public class JobBirdScraperTest  {
 
     @Test
     public void getSEARCH_URL_test() {
-        jobBirdScraperTestHelp    = new JobBirdScraperTestHelp(connectionDocumentServiceMock);
+        jobBirdScraperTestHelp    = new JobBirdScraperTestHelp();
         // check if the search url is still the same
         String sUrl =  jobBirdScraperTestHelp.getSEARCH_URL();
         Assert.assertEquals(sUrl, "https://www.jobbird.com/nl/vacature?s=java");
@@ -107,7 +104,7 @@ public class JobBirdScraperTest  {
     // build mock document by using elements with html doc structure for 2 pages, check the happy flow
     @Test
     public void getTotalnrOfPagesTest_HappyFlow() {
-        jobBirdScraperTestHelp    = new JobBirdScraperTestHelp(connectionDocumentServiceMock);
+        jobBirdScraperTestHelp    = new JobBirdScraperTestHelp();
 
         try {
             Element el1 = new Element("el1");

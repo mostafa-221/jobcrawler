@@ -9,7 +9,6 @@ import nl.ordina.jobcrawler.model.Vacancy;
 import nl.ordina.jobcrawler.scrapers.HuxleyITVacancyScraper;
 import nl.ordina.jobcrawler.scrapers.JobBirdScraper;
 import nl.ordina.jobcrawler.scrapers.YachtVacancyScraper;
-import nl.ordina.jobcrawler.service.ConnectionDocumentService;
 import nl.ordina.jobcrawler.service.SkillService;
 import nl.ordina.jobcrawler.service.VacancyService;
 import nl.ordina.jobcrawler.service.VacancyStarter;
@@ -61,18 +60,7 @@ public class JobcrawlerController {
         return vacancy.orElseThrow(() -> new VacancyNotFoundException("Vacancy with id: " + id + " not found."));
     }
 
-    @GetMapping("/scrape")
-    public void scrape() throws Exception {
-        ConnectionDocumentService connectionDocumentService = new ConnectionDocumentService();
-         final YachtVacancyScraper yachtVacancyScraper = new YachtVacancyScraper(connectionDocumentService);
 
-         final HuxleyITVacancyScraper huxleyITVacancyScraper = new HuxleyITVacancyScraper(connectionDocumentService);
-
-         final JobBirdScraper jobBirdScraper = new JobBirdScraper(connectionDocumentService);
-
-        VacancyStarter vc = new VacancyStarter(yachtVacancyScraper, huxleyITVacancyScraper, jobBirdScraper);
-        vc.scrape();
-    }
 
     // getting jobs by broker
     @GetMapping("/getJobsByBroker/{broker}")
