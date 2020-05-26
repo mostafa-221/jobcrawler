@@ -105,17 +105,6 @@ public class HuxleyITVacancyScraper extends VacancyScraper {
         return response.getBody();
     }
 
-    /*
-        Because this scraper extends the abstract VacancyScraper class, it is mandatory to provide a method implementation for these functions.
-        However, these methods are not used by this specific scraper, because the HuxleyIT vacancies are being read from the API directly, and not scraped from HTML.
-
-        This is why all these method implementations are empty.
-     */
-
-    @Override
-    protected int getTotalNumberOfPages(Document doc) {
-        return 1;
-    }
 
     @Override
     protected List<VacancyURLs> getVacancyURLs() throws IOException {

@@ -66,8 +66,6 @@ abstract class VacancyScraper {
 
     abstract protected List<VacancyURLs> getVacancyURLs() throws IOException;
 
-    abstract protected int getTotalNumberOfPages(Document doc);
-
     abstract protected void setVacancyTitle(Document doc, Vacancy vacancy);
 
     /**************************************************************************

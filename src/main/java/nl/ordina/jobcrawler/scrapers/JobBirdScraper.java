@@ -127,7 +127,6 @@ public class JobBirdScraper extends VacancyScraper {
      * these are <li elements with as attribute value the number of the page
      * continue until the page link with the text "next"
      */
-    @Override
     protected int getTotalNumberOfPages(Document doc) {
         Elements elements = doc.select("span.page-link");
         Element parent = elements.first().parent().parent();
