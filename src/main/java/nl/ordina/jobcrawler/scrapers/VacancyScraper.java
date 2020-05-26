@@ -3,9 +3,8 @@ package nl.ordina.jobcrawler.scrapers;
 import lombok.extern.slf4j.Slf4j;
 import nl.ordina.jobcrawler.model.Vacancy;
 import nl.ordina.jobcrawler.model.VacancyURLs;
-import nl.ordina.jobcrawler.service.ConnectionDocumentService;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,15 +16,18 @@ import java.util.List;
 @Slf4j
 abstract class VacancyScraper {
 
+    private static final String userAgent = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36 ArabotScraper";
+
     private final String SEARCH_URL;
     private final String BROKER;
 
-    private final ConnectionDocumentService connectionDocumentService;
-
-    public VacancyScraper(@Autowired ConnectionDocumentService connectionDocumentService, String url, String broker) {
-        this.connectionDocumentService = connectionDocumentService;
+    public VacancyScraper(String url, String broker) {
         this.SEARCH_URL = url;
         this.BROKER = broker;
+    }
+
+    public static Document getDocument(final String url) throws IOException {
+        return Jsoup.connect(url).userAgent(userAgent).get();
     }
 
     public String getSEARCH_URL() {
@@ -40,7 +42,7 @@ abstract class VacancyScraper {
         List<Vacancy> vacancies = new ArrayList<>();
         List<VacancyURLs> vacancyURLs = getVacancyURLs();
         for (VacancyURLs vacancyURL : vacancyURLs) {
-            Document doc = connectionDocumentService.getConnection(vacancyURL.getUrl());
+            Document doc = getDocument(vacancyURL.getUrl());
             if (doc != null) {
                 Vacancy vacancy = Vacancy.builder()
                         .vacancyURL(vacancyURL.getUrl())
@@ -60,10 +62,6 @@ abstract class VacancyScraper {
             }
         }
         return vacancies;
-    }
-
-    protected Document getDocument(String url) throws IOException {
-        return connectionDocumentService.getConnection(url);
     }
 
     abstract protected List<VacancyURLs> getVacancyURLs() throws IOException;
