@@ -1,8 +1,8 @@
 package nl.ordina.jobcrawler.scrapers;
 
+import lombok.extern.slf4j.Slf4j;
 import nl.ordina.jobcrawler.model.Vacancy;
 import nl.ordina.jobcrawler.model.VacancyURLs;
-import nl.ordina.jobcrawler.service.ConnectionDocumentService;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -23,6 +23,7 @@ import java.util.*;
     Because the API already provides all vacancy details, we decided to use this data instead of separately scrape the vacancy detail page.
 */
 
+@Slf4j
 @Component
 public class HuxleyITVacancyScraper extends VacancyScraper {
 
@@ -31,8 +32,8 @@ public class HuxleyITVacancyScraper extends VacancyScraper {
     private static final String BROKER = "HuxleyIT";
 
     @Autowired
-    public HuxleyITVacancyScraper(ConnectionDocumentService connectionDocumentService) {
-        super(connectionDocumentService, SEARCH_URL, BROKER);
+    public HuxleyITVacancyScraper() {
+        super(SEARCH_URL, BROKER);
     }
 
     @Override
@@ -43,6 +44,8 @@ public class HuxleyITVacancyScraper extends VacancyScraper {
             - The first time to read how many vacancies are stored.
             - The second time to get ALL stored vacancies by supplying this number as wanted number of results.
          */
+        log.info(String.format("%s -- Start scraping", BROKER.toUpperCase()));
+
         int totalVacancies = scrapeVacancies(0).getHits();
         List<Map<String, Object>> vacanciesData = scrapeVacancies(totalVacancies).getVacanciesData();
 
@@ -60,6 +63,7 @@ public class HuxleyITVacancyScraper extends VacancyScraper {
                     .build();
 
             vacancies.add(vacancy);
+            log.info("vacancy found: "  + vacancy.getTitle());
         }
 
         return vacancies;
