@@ -64,7 +64,7 @@ abstract class VacancyScraper {
         return vacancies;
     }
 
-    abstract protected List<VacancyURLs> getVacancyURLs() throws IOException;
+    abstract protected List<VacancyURLs> getVacancyURLs();
 
     abstract protected void setVacancyTitle(Document doc, Vacancy vacancy);
 
@@ -80,13 +80,6 @@ abstract class VacancyScraper {
      *        Sets the corresponding values in the vacancy
      ***************************************************************************/
     abstract protected void setVacancySpecifics(Document doc, Vacancy vacancy);
-
-
-    /**************************************************************************
-     *  Retrieves the relevant portion of the page that contains information
-     *  of the specifics
-     **************************************************************************/
-    abstract protected List<String> getVacancySpecifics(Document doc);
 
     abstract protected void setVacancyAbout(Document doc, Vacancy vacancy);
 

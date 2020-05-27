@@ -71,6 +71,16 @@ public class YachtVacancyScraper extends VacancyScraper {
         return vacancyURLs;
     }
 
+    @Override
+    protected void setVacancyTitle(Document doc, Vacancy vacancy) {
+        log.info("YACHT -- Scraping: " + vacancy.getTitle());
+    }
+
+    @Override
+    protected void setVacancySpecifics(Document doc, Vacancy vacancy) {
+
+    }
+
     /**
      * This method does a get request to Yacht to retrieve the vacancies from a specific page.
      * @param pageNumber Pagenumber of which the vacancy data should be retrieved
@@ -86,24 +96,6 @@ public class YachtVacancyScraper extends VacancyScraper {
                 = restTemplate.getForEntity(getSEARCH_URL() + "&pagina=" + pageNumber, YachtVacancyResponse.class);
 
         return response.getBody();
-    }
-
-
-
-    // We retrieve the vacancy title in an earlier stage as the title is returned in the get request (scrapeVacancies(int pageNumber) method). Decided to show the title of the vacancy when this method is called. That way it is clear the scraper is doing it's job.
-    @Override
-    protected void setVacancyTitle(Document doc, Vacancy vacancy) {
-        log.info("YACHT -- Scraping: " + vacancy.getTitle());
-    }
-
-    // setVacancySpecifics method is not used for this scraper. As we extend the abstract class VacancyScraper it is required to override this method.
-    @Override
-    protected void setVacancySpecifics(Document doc, Vacancy vacancy) {
-    }
-
-    @Override
-    protected List<String> getVacancySpecifics(Document doc) {
-        return new ArrayList<>();
     }
 
     /**

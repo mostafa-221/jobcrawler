@@ -37,7 +37,7 @@ public class HuxleyITVacancyScraper extends VacancyScraper {
     }
 
     @Override
-    public List<Vacancy> getVacancies() throws IOException {
+    public List<Vacancy> getVacancies() {
         /*
             The HuxleyIT API wants to know a total number of vacancies to return. When called, it also returns the total number of vacancies stored.
             In order to get all vacancies that are stored, the API is called twice:
@@ -107,7 +107,7 @@ public class HuxleyITVacancyScraper extends VacancyScraper {
 
 
     @Override
-    protected List<VacancyURLs> getVacancyURLs() throws IOException {
+    protected List<VacancyURLs> getVacancyURLs() {
         return new ArrayList<>();
     }
 
@@ -119,11 +119,6 @@ public class HuxleyITVacancyScraper extends VacancyScraper {
     @Override
     protected void setVacancySpecifics(Document doc, Vacancy vacancy) {
 
-    }
-
-    @Override
-    protected List<String> getVacancySpecifics(Document doc) {
-        return new ArrayList<>();
     }
 
     @Override

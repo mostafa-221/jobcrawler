@@ -161,8 +161,6 @@ public class JobBirdScraper extends VacancyScraper {
         return result;
     }
 
-
-    @Override
     protected void setVacancyTitle(Document doc, Vacancy vacancy) {
 
         Element vacancyHeader = doc.select("h1.no-margin").first();
@@ -174,7 +172,6 @@ public class JobBirdScraper extends VacancyScraper {
         }
     }
 
-    @Override
     protected void setVacancySpecifics(Document doc, Vacancy vacancy) {
         Elements elements = doc.select("span.job-result__place");
         if (!elements.isEmpty()) {
@@ -244,13 +241,6 @@ public class JobBirdScraper extends VacancyScraper {
         }
         return "0"; // catch all when working hours not mentioned on the page
     }
-
-    @Override
-    protected List<String> getVacancySpecifics(Document doc) {
-        return null;
-        // this method is simply not used (yet)
-    }
-
 
     /*
     *   The job bird vacancy page structure is quite loose.
