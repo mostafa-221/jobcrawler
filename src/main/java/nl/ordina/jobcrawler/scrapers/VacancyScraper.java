@@ -13,16 +13,15 @@ import java.util.List;
 @Slf4j
 abstract class VacancyScraper {
 
-    private static final String userAgent = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36 ArabotScraper";
-
     private final String SEARCH_URL;
 
     public VacancyScraper(String url) {
         this.SEARCH_URL = url;
     }
 
-    public static Document getDocument(final String url) {
+    public Document getDocument(final String url) {
         try {
+            String userAgent = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36 ArabotScraper";
             return Jsoup.connect(url).userAgent(userAgent).get();
         } catch (IOException e) {
             e.printStackTrace();
