@@ -2,8 +2,6 @@ package nl.ordina.jobcrawler.scrapers;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.ordina.jobcrawler.model.Vacancy;
-import nl.ordina.jobcrawler.model.VacancyURLs;
-import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -12,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -33,7 +30,7 @@ public class HuxleyITVacancyScraper extends VacancyScraper {
 
     @Autowired
     public HuxleyITVacancyScraper() {
-        super(SEARCH_URL, BROKER);
+        super(SEARCH_URL);
     }
 
     @Override
@@ -52,7 +49,7 @@ public class HuxleyITVacancyScraper extends VacancyScraper {
         List<Vacancy> vacancies = new ArrayList<>();
         for(Map<String, Object> vacancyData : vacanciesData) {
             Vacancy vacancy = Vacancy.builder()
-                    .vacancyURL(VACANCY_URL_PREFIX + (String)vacancyData.get("jobReference"))
+                    .vacancyURL(VACANCY_URL_PREFIX + vacancyData.get("jobReference"))
                     .title((String)vacancyData.get("title"))
                     .broker(BROKER)
                     .vacancyNumber((String)vacancyData.get("jobReference"))
@@ -63,9 +60,9 @@ public class HuxleyITVacancyScraper extends VacancyScraper {
                     .build();
 
             vacancies.add(vacancy);
-            log.info("vacancy found: "  + vacancy.getTitle());
+            log.info(String.format("%s - Vacancy found: %s", BROKER, vacancy.getTitle()));
         }
-
+        log.info(String.format("%s -- Returning scraped vacancies", BROKER));
         return vacancies;
     }
 
@@ -103,32 +100,6 @@ public class HuxleyITVacancyScraper extends VacancyScraper {
 
         // Return the result
         return response.getBody();
-    }
-
-
-    @Override
-    protected List<VacancyURLs> getVacancyURLs() {
-        return new ArrayList<>();
-    }
-
-    @Override
-    protected void setVacancyTitle(Document doc, Vacancy vacancy) {
-
-    }
-
-    @Override
-    protected void setVacancySpecifics(Document doc, Vacancy vacancy) {
-
-    }
-
-    @Override
-    protected void setVacancyAbout(Document doc, Vacancy vacancy) {
-
-    }
-
-    @Override
-    protected void setVacancySkillSet(Document doc, Vacancy vacancy) {
-
     }
 
 }
