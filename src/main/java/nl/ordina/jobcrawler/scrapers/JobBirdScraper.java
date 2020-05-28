@@ -44,10 +44,18 @@ public class JobBirdScraper extends VacancyScraper {
     private static final int MAX_NR_OF_PAGES = 25;  // 25 seems enough for demo purposes, can be up to approx 60
     // at a certain point the vacancy date will be missing
 
+    /**
+     * Default constructor that calls the constructor from the abstract class.
+     */
     public JobBirdScraper() {
         super(SEARCH_URL);
     }
 
+    /**
+     * Default function to start scraping vacancies.
+     *
+     * @return List with vacancies.
+     */
     @Override
     public List<Vacancy> getVacancies() {
         log.info(String.format("%s -- Start scraping", BROKER.toUpperCase()));
@@ -77,6 +85,13 @@ public class JobBirdScraper extends VacancyScraper {
         return vacancies;
     }
 
+    /**
+     * Create seach url based on pageNumber.
+     *
+     * @param pageNumber number that's needed to create search url.
+     * @return String, full search url for specific page.
+     * @throws Exception when pageNumber is below 1.
+     */
     private String createSearchURL(int pageNumber) throws Exception {
         if (pageNumber < 1) {
             throw new Exception("JobBirdScraper:createSearchURL: pagenr must be 1 or greater");
@@ -85,6 +100,11 @@ public class JobBirdScraper extends VacancyScraper {
     }
 
 
+    /**
+     * Retrieve all vacancyURLs from JobBird.
+     *
+     * @return A list of Strings containing the urls to the vacancies.
+     */
     protected List<String> getVacancyURLs() {
         //  Returns a List with VacancyURLs
         ArrayList<String> vacancyURLs = new ArrayList<>();
@@ -185,8 +205,13 @@ public class JobBirdScraper extends VacancyScraper {
         return result;
     }
 
+    /**
+     * Retrieve the vacancy title
+     *
+     * @param doc Document which is needed to retrieve vacancy title
+     * @return String vacancy title
+     */
     private String getVacancyTitle(Document doc) {
-
         Element vacancyHeader = doc.select("h1.no-margin").first();
 
         if (vacancyHeader != null) {
@@ -196,6 +221,12 @@ public class JobBirdScraper extends VacancyScraper {
         return "";
     }
 
+    /**
+     * Retrieve location from vacancy
+     *
+     * @param doc Document which is needed to retrieve vacancy location
+     * @return String vacancy location
+     */
     private String getLocation(Document doc) {
         Elements elements = doc.select("span.job-result__place");
         if (!elements.isEmpty()) {
@@ -208,6 +239,12 @@ public class JobBirdScraper extends VacancyScraper {
         return "";
     }
 
+    /**
+     * Retrieve publishing date from vacancy
+     *
+     * @param doc Document which is needed to retrieve publishing date
+     * @return String publish date
+     */
     private String getPublishDate(Document doc) {
         String result = "";
         Elements elements = doc.select("span.job-result__place");
@@ -225,9 +262,11 @@ public class JobBirdScraper extends VacancyScraper {
         return result;
     }
 
-    /*
-     *  Retrieve the hours respectively the minimum allowed hours from the relevant
-     *  part of the page
+    /**
+     * Retrieve the hours respectively the minimum allowed hours frm the relevant part of the page.
+     *
+     * @param doc Document which is needed to retrieve hours
+     * @return String hours
      */
     private String getHoursFromPage(Document doc) {
         try {
@@ -285,6 +324,12 @@ public class JobBirdScraper extends VacancyScraper {
      *   <div class="jobContainer card">
      *
      * */
+
+    /**
+     * Retrieve the vacancy body to store in postgres database
+     * @param doc Document which is needed to retrieve the body
+     * @return String vacancy body
+     */
     private String getVacancyAbout(Document doc) {
         Elements aboutElements = doc.select("div.jobContainer");
         return aboutElements.text();

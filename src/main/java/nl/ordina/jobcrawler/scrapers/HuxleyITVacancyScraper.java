@@ -13,12 +13,12 @@ import org.springframework.web.client.RestTemplate;
 import java.util.*;
 
 /**
-    Instead of scraping the page HTML for urls, this scraper gets the vacancy data directly from the HuxleyIT API.
-
-    The reason for this is that the HuxleyIT website does not have the possibility of showing different result pages purely by changing the page number in the url.
-    Getting this data by directly calling the API proved to not only provide the pages data, but all details of all vacancies as well.
-    Because the API already provides all vacancy details, we decided to use this data instead of separately scrape the vacancy detail page.
-*/
+ * Instead of scraping the page HTML for urls, this scraper gets the vacancy data directly from the HuxleyIT API.
+ * <p>
+ * The reason for this is that the HuxleyIT website does not have the possibility of showing different result pages purely by changing the page number in the url.
+ * Getting this data by directly calling the API proved to not only provide the pages data, but all details of all vacancies as well.
+ * Because the API already provides all vacancy details, we decided to use this data instead of separately scrape the vacancy detail page.
+ */
 
 @Slf4j
 @Component
@@ -28,11 +28,19 @@ public class HuxleyITVacancyScraper extends VacancyScraper {
     private static final String VACANCY_URL_PREFIX = "https://www.huxley.com/nl-nl/job/kyc/";
     private static final String BROKER = "HuxleyIT";
 
+    /**
+     * Default constructor that calls the constructor from the abstract class.
+     */
     @Autowired
     public HuxleyITVacancyScraper() {
         super(SEARCH_URL);
     }
 
+    /**
+     * Default function to start scraping vacancies.
+     *
+     * @return List with vacancies.
+     */
     @Override
     public List<Vacancy> getVacancies() {
         /*
@@ -47,16 +55,16 @@ public class HuxleyITVacancyScraper extends VacancyScraper {
         List<Map<String, Object>> vacanciesData = scrapeVacancies(totalVacancies).getVacanciesData();
 
         List<Vacancy> vacancies = new ArrayList<>();
-        for(Map<String, Object> vacancyData : vacanciesData) {
+        for (Map<String, Object> vacancyData : vacanciesData) {
             Vacancy vacancy = Vacancy.builder()
                     .vacancyURL(VACANCY_URL_PREFIX + vacancyData.get("jobReference"))
-                    .title((String)vacancyData.get("title"))
+                    .title((String) vacancyData.get("title"))
                     .broker(BROKER)
-                    .vacancyNumber((String)vacancyData.get("jobReference"))
-                    .location((String)vacancyData.get("city"))
-                    .salary((String)vacancyData.get("salaryText"))
-                    .postingDate((String)vacancyData.get("postDate"))
-                    .about((String)vacancyData.get("description"))
+                    .vacancyNumber((String) vacancyData.get("jobReference"))
+                    .location((String) vacancyData.get("city"))
+                    .salary((String) vacancyData.get("salaryText"))
+                    .postingDate((String) vacancyData.get("postDate"))
+                    .about((String) vacancyData.get("description"))
                     .build();
 
             vacancies.add(vacancy);
@@ -66,6 +74,12 @@ public class HuxleyITVacancyScraper extends VacancyScraper {
         return vacancies;
     }
 
+    /**
+     * Retrieve the vacancies from the POST API endpoint.
+     *
+     * @param maxNrOfVacancies Used for sending a post request to retrieve all available vacancies from HuxleyIT
+     * @return HuxleyITResponse with needed attributes to fill the Vacancy entity.
+     */
     private HuxleyITResponse scrapeVacancies(int maxNrOfVacancies) {
         /*
             We are using the Spring RestTemplate for calling the HuxleyIT API POST endpoint, which provides the vacancy data.
