@@ -1,6 +1,8 @@
 package nl.ordina.jobcrawler.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import nl.ordina.jobcrawler.SearchRequest;
+import nl.ordina.jobcrawler.SearchResult;
 import nl.ordina.jobcrawler.controller.exception.SkillNotFoundException;
 import nl.ordina.jobcrawler.controller.exception.VacancyNotFoundException;
 import nl.ordina.jobcrawler.model.Skill;
@@ -8,7 +10,6 @@ import nl.ordina.jobcrawler.model.Vacancy;
 import nl.ordina.jobcrawler.service.SkillService;
 import nl.ordina.jobcrawler.service.VacancyService;
 import nl.ordina.jobcrawler.service.VacancyStarter;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -18,15 +19,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.*;
 
-import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @WebMvcTest
@@ -47,7 +46,7 @@ class JobcrawlerControllerTest {
     private Vacancy mockVacancy;
     private Skill mockSkill;
 
-    private static Vacancy vacancyFactory(final String title){
+    private static Vacancy vacancyFactory(final String title) {
         return Vacancy.builder()
                 .id(UUID.randomUUID())
                 .vacancyURL("example.com")
@@ -62,7 +61,7 @@ class JobcrawlerControllerTest {
                 .build();
     }
 
-    private static Skill skillFactory(final String title){
+    private static Skill skillFactory(final String title) {
         return Skill.builder()
                 .id(UUID.randomUUID())
                 .name(title)
@@ -79,10 +78,8 @@ class JobcrawlerControllerTest {
     }
 
 
-
-
     @Nested
-    class VacancyControllerTest{
+    class VacancyControllerTest {
         @Test
         void addJob() throws Exception {
 //            doReturn(mockVacancy).when(vacancyService).add(mockVacancy); // does not return the vacancy, not sure why
@@ -155,8 +152,6 @@ class JobcrawlerControllerTest {
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(content().string(asJsonString(vacancies)));
 
-            // this is meant for integration testing not unit testing, right?
-            verify(vacancyService, times(1)).getAllVacancies();
         }
 
         @Test
@@ -184,7 +179,9 @@ class JobcrawlerControllerTest {
         void deleteVacancyByIdFound() throws Exception {
             //this line is needed when running the vacancy controller test, not when running the test by itself
             //not sure why
-            doAnswer(invocationOnMock -> {return null;}).when(vacancyService).delete(mockVacancy.getId());
+            doAnswer(invocationOnMock -> {
+                return null;
+            }).when(vacancyService).delete(mockVacancy.getId());
 
             mockMvc.perform(delete("/delete/{id}", mockVacancy.getId()))
                     .andExpect(status().isOk());
@@ -203,7 +200,7 @@ class JobcrawlerControllerTest {
             Vacancy mockVacancy2 = vacancyFactory("vacancy2");
 
             doReturn(mockVacancy2).when(vacancyService).replace(mockVacancy.getId(), mockVacancy2);
-            mockMvc.perform( put("/{id}", mockVacancy.getId())
+            mockMvc.perform(put("/{id}", mockVacancy.getId())
                     .content(asJsonString(mockVacancy2))
                     .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
@@ -215,7 +212,7 @@ class JobcrawlerControllerTest {
         void replaceVacancyNotFound() throws Exception {
             doThrow(new VacancyNotFoundException("")).when(vacancyService).replace(any(UUID.class), any(Vacancy.class));
 
-            mockMvc.perform( put("/{id}", UUID.randomUUID())
+            mockMvc.perform(put("/{id}", UUID.randomUUID())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(asJsonString(vacancyFactory("vacancy2"))))
                     .andExpect(status().isNotFound());
@@ -224,32 +221,53 @@ class JobcrawlerControllerTest {
     }
 
 
-
-
-
     @Nested
-    class SkillControllerTest{
+    class SkillControllerTest {
         @Test
-        void getAllSkills() {
+        void getAllSkills() throws Exception {
+            Skill mockSkill2 = skillFactory("skill2");
+
+            List<Skill> skills = Arrays.asList(mockSkill, mockSkill2);
+
+            doReturn(skills).when(skillService).getAllSkills();
+
+            mockMvc.perform(get("/skills"))
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(content().string(asJsonString(skills)));
         }
     }
 
     @Nested
-    class SearchControllerTest{
+    class SearchControllerTest {
         @Test
-        void searchRequest() {
+        void searchRequest() throws Exception {
+            Vacancy mockVacancy2 = vacancyFactory("vacancy2");
+            List<Vacancy> vacancies = Arrays.asList(mockVacancy, mockVacancy2);
+            doReturn(vacancies).when(vacancyService).getAllVacancies();
+
+            mockMvc.perform(post("/searchrequest")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(asJsonString(new SearchRequest())))
+                    .andExpect(status().isOk())
+                    .andExpect(content().string(asJsonString(new SearchResult(new SearchRequest(), vacancies))));
         }
     }
 
     @Nested
-    class ScraperTest{
+    class ScraperTest {
         @Test
-        void scrape() {
+        void scrape() throws Exception {
+            mockMvc.perform(put("/scrape"))
+                    .andExpect(status().isOk());
+
+            verify(vacancyStarter, times(1)).scrape();
         }
     }
 
     // Maybe replace this with a "result matcher"?
     static private final ObjectMapper objectMapper = new ObjectMapper();
+
     static String asJsonString(final Object obj) {
         try {
             return objectMapper.writeValueAsString(obj);
