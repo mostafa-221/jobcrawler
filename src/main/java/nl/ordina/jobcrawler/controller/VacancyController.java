@@ -16,7 +16,7 @@ import java.util.UUID;
 @RestController
 public class VacancyController {
 
-    private VacancyService vacancyService;
+    private final VacancyService vacancyService;
 
     @Autowired
     public VacancyController(VacancyService vacancyService) {
