@@ -13,10 +13,9 @@ import java.util.UUID;
 @Getter
 @Setter
 @RequiredArgsConstructor
-//@Data gives StackOverflowError
+@AllArgsConstructor
+@Builder
 public class Skill {
-    /* this class will be saved in a table called skill
-     * */
 
     @GeneratedValue
     @Id
