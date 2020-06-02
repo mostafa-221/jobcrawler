@@ -36,11 +36,6 @@ import java.util.List;
 @Component
 public class JobBirdScraper extends VacancyScraper {
 
-    private static final String SEARCH_URL = "https://www.jobbird.com/nl/vacature?s=java&rad=30&page=";
-    // after the page number, add "&ot=date&c[]=ict";
-
-    private static final String BROKER = "Jobbird";
-
     private static final int MAX_NR_OF_PAGES = 25;  // 25 seems enough for demo purposes, can be up to approx 60
     // at a certain point the vacancy date will be missing
 
@@ -48,7 +43,10 @@ public class JobBirdScraper extends VacancyScraper {
      * Default constructor that calls the constructor from the abstract class.
      */
     public JobBirdScraper() {
-        super(SEARCH_URL);
+        super(
+                "https://www.jobbird.com/nl/vacature?s=java&rad=30&page=", // Required search URL. Can be retrieved using getSEARCH_URL()
+                "Jobbird" // Required broker. Can be retrieved using getBROKER()
+        );
     }
 
     /**
@@ -58,7 +56,7 @@ public class JobBirdScraper extends VacancyScraper {
      */
     @Override
     public List<Vacancy> getVacancies() {
-        log.info(String.format("%s -- Start scraping", BROKER.toUpperCase()));
+        log.info(String.format("%s -- Start scraping", getBROKER().toUpperCase()));
         /*
         getVacancies retrieves all vacancyURLs via the getVacancyURLs method and set the various elements of Vacancy below.
          */
@@ -71,17 +69,17 @@ public class JobBirdScraper extends VacancyScraper {
                         .vacancyURL(vacancyURL)
                         .title(getVacancyTitle(doc))
                         .hours(getHoursFromPage(doc))
-                        .broker(BROKER)
+                        .broker(getBROKER())
                         .location(getLocation(doc))
                         .postingDate(getPublishDate(doc))
                         .about(getVacancyAbout(doc))
                         .build();
 
                 vacancies.add(vacancy);
-                log.info(String.format("%s - Vacancy found: %s", BROKER, vacancy.getTitle()));
+                log.info(String.format("%s - Vacancy found: %s", getBROKER(), vacancy.getTitle()));
             }
         }
-        log.info(String.format("%s -- Returning scraped vacancies", BROKER));
+        log.info(String.format("%s -- Returning scraped vacancies", getBROKER()));
         return vacancies;
     }
 
@@ -96,7 +94,7 @@ public class JobBirdScraper extends VacancyScraper {
         if (pageNumber < 1) {
             throw new Exception("JobBirdScraper:createSearchURL: pagenr must be 1 or greater");
         }
-        return SEARCH_URL + pageNumber + "&ot=date&c[]=ict";
+        return String.format("%s%d&ot=date&c[]=ict", getSEARCH_URL(), pageNumber);
     }
 
 
@@ -182,7 +180,7 @@ public class JobBirdScraper extends VacancyScraper {
             if (!text.equalsIgnoreCase("volgende"))
                 count++;
         }
-        log.info(String.format("%s -- Total number of pages: %d", BROKER, count));
+        log.info(String.format("%s -- Total number of pages: %d", getBROKER(), count));
         return count;
     }
 

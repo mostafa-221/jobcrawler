@@ -10,14 +10,17 @@ import java.util.List;
 abstract class VacancyScraper {
 
     private final String SEARCH_URL;
+    private final String BROKER;
 
     /**
      * Constructor for abstract class VacancyScraper
      *
      * @param url Default seach url for scraper
+     * @param broker Used broker for scraper
      */
-    public VacancyScraper(String url) {
+    public VacancyScraper(String url, String broker) {
         this.SEARCH_URL = url;
+        this.BROKER = broker;
     }
 
     /**
@@ -41,6 +44,13 @@ abstract class VacancyScraper {
      */
     public String getSEARCH_URL() {
         return SEARCH_URL;
+    }
+
+    /**
+     * @return Returns BROKER
+     */
+    public String getBROKER() {
+        return BROKER;
     }
 
     /**

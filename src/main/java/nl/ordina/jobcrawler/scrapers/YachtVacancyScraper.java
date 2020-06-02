@@ -20,13 +20,14 @@ import java.util.*;
 @Component
 public class YachtVacancyScraper extends VacancyScraper {
 
-    private static final String SEARCH_URL = "https://www.yacht.nl/vacatures?_hn:type=resource&_hn:ref=r2_r1_r1&&vakgebiedProf=IT";
     private static final String VACANCY_URL_PREFIX = "https://www.yacht.nl";
-    private static final String BROKER = "Yacht";
 
     @Autowired
     public YachtVacancyScraper() {
-        super(SEARCH_URL);
+        super(
+                "https://www.yacht.nl/vacatures?_hn:type=resource&_hn:ref=r2_r1_r1&&vakgebiedProf=IT", // Required search URL. Can be retrieved using getSEARCH_URL()
+                "Yacht" // Required broker. Can be retrieved using getBROKER()
+        );
     }
 
     /**
@@ -37,7 +38,7 @@ public class YachtVacancyScraper extends VacancyScraper {
 
     @Override
     public List<Vacancy> getVacancies() {
-        log.info(String.format("%s -- Start scraping", BROKER.toUpperCase()));
+        log.info(String.format("%s -- Start scraping", getBROKER().toUpperCase()));
         List<Vacancy> vacancies = new ArrayList<>();
 
         int totalnumberOfPages = 1;
@@ -46,10 +47,10 @@ public class YachtVacancyScraper extends VacancyScraper {
 
             if (pageNumber == 1) {
                 totalnumberOfPages = yachtVacancyResponse.getPages();
-                log.info(String.format("%s -- Total number of pages: %s", BROKER, totalnumberOfPages));
+                log.info(String.format("%s -- Total number of pages: %s", getBROKER(), totalnumberOfPages));
             }
 
-            log.info(String.format("%s -- Retrieving vacancy urls from page: %d of %d", BROKER, yachtVacancyResponse.getCurrentPage(), yachtVacancyResponse.getPages()));
+            log.info(String.format("%s -- Retrieving vacancy urls from page: %d of %d", getBROKER(), yachtVacancyResponse.getCurrentPage(), yachtVacancyResponse.getPages()));
             for (Map<String, Object> vacancyData : yachtVacancyResponse.getVacancies()) {
                 Map<String, Object> vacancyMetaData = (Map<String, Object>) vacancyData.get("meta");
                 String vacancyURL = (String) vacancyData.get("detailUrl");
@@ -59,7 +60,7 @@ public class YachtVacancyScraper extends VacancyScraper {
                         .vacancyURL(VACANCY_URL_PREFIX + vacancyURL)
                         .title((String) vacancyData.get("title"))
                         .hours((String) vacancyMetaData.get("hours"))
-                        .broker(BROKER)
+                        .broker(getBROKER())
                         .vacancyNumber((String) vacancyData.get("vacancyNumber"))
                         .location((String) vacancyMetaData.get("location"))
                         .postingDate((String) vacancyData.get("date"))
@@ -68,10 +69,10 @@ public class YachtVacancyScraper extends VacancyScraper {
                         .build();
 
                 vacancies.add(vacancy);
-                log.info(String.format("%s - Vacancy found: %s", BROKER, vacancy.getTitle()));
+                log.info(String.format("%s - Vacancy found: %s", getBROKER(), vacancy.getTitle()));
             }
         }
-        log.info(String.format("%s -- Returning scraped vacancies", BROKER));
+        log.info(String.format("%s -- Returning scraped vacancies", getBROKER()));
         return vacancies;
     }
 

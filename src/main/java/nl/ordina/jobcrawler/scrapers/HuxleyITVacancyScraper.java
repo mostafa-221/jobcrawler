@@ -24,16 +24,17 @@ import java.util.*;
 @Component
 public class HuxleyITVacancyScraper extends VacancyScraper {
 
-    private static final String SEARCH_URL = "https://api.websites.sthree.com/api/services/app/Search/Search";
     private static final String VACANCY_URL_PREFIX = "https://www.huxley.com/nl-nl/job/kyc/";
-    private static final String BROKER = "HuxleyIT";
 
     /**
      * Default constructor that calls the constructor from the abstract class.
      */
     @Autowired
     public HuxleyITVacancyScraper() {
-        super(SEARCH_URL);
+        super(
+                "https://api.websites.sthree.com/api/services/app/Search/Search", // Required search URL. Can be retrieved using getSEARCH_URL()
+                "HuxleyIT" // Required broker. Can be retrieved using getBROKER()
+        );
     }
 
     /**
@@ -49,7 +50,7 @@ public class HuxleyITVacancyScraper extends VacancyScraper {
             - The first time to read how many vacancies are stored.
             - The second time to get ALL stored vacancies by supplying this number as wanted number of results.
          */
-        log.info(String.format("%s -- Start scraping", BROKER.toUpperCase()));
+        log.info(String.format("%s -- Start scraping", getBROKER().toUpperCase()));
 
         int totalVacancies = scrapeVacancies(0).getHits();
         List<Map<String, Object>> vacanciesData = scrapeVacancies(totalVacancies).getVacanciesData();
@@ -59,7 +60,7 @@ public class HuxleyITVacancyScraper extends VacancyScraper {
             Vacancy vacancy = Vacancy.builder()
                     .vacancyURL(VACANCY_URL_PREFIX + vacancyData.get("jobReference"))
                     .title((String) vacancyData.get("title"))
-                    .broker(BROKER)
+                    .broker(getBROKER())
                     .vacancyNumber((String) vacancyData.get("jobReference"))
                     .location((String) vacancyData.get("city"))
                     .salary((String) vacancyData.get("salaryText"))
@@ -68,9 +69,9 @@ public class HuxleyITVacancyScraper extends VacancyScraper {
                     .build();
 
             vacancies.add(vacancy);
-            log.info(String.format("%s - Vacancy found: %s", BROKER, vacancy.getTitle()));
+            log.info(String.format("%s - Vacancy found: %s", getBROKER(), vacancy.getTitle()));
         }
-        log.info(String.format("%s -- Returning scraped vacancies", BROKER));
+        log.info(String.format("%s -- Returning scraped vacancies", getBROKER()));
         return vacancies;
     }
 
