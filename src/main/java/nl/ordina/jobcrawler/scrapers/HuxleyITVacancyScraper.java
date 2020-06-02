@@ -12,9 +12,9 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 
-/**
+/*
  * Instead of scraping the page HTML for urls, this scraper gets the vacancy data directly from the HuxleyIT API.
- * <p>
+ *
  * The reason for this is that the HuxleyIT website does not have the possibility of showing different result pages purely by changing the page number in the url.
  * Getting this data by directly calling the API proved to not only provide the pages data, but all details of all vacancies as well.
  * Because the API already provides all vacancy details, we decided to use this data instead of separately scrape the vacancy detail page.
