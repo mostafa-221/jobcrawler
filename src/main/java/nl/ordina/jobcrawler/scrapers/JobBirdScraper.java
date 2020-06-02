@@ -201,27 +201,35 @@ public class JobBirdScraper extends VacancyScraper {
         }
         elements = doc.select("div.card-body");
 
-        String hours = getHoursFromPage(elements);
-        vacancy.setHours(hours);
+        if (!elements.isEmpty()) {
+            String hours = getHoursFromPage(elements);
+            vacancy.setHours(hours);
+        }
 
-        String publishDate = getPublishDate(doc);
-        vacancy.setPostingDate(publishDate);
+        elements = doc.select("span.job-result__place");
+        if (!elements.isEmpty()) {
+            String publishDate = getPublishDate(elements);
+            vacancy.setPostingDate(publishDate);
+        }
     }
 
-    private String getPublishDate(Document doc) {
+    private String getPublishDate(Elements elements) {
         String result = "";
-        Elements elements = doc.select("span.job-result__place");
-        if (!elements.isEmpty()) {
-            Element parent = elements.get(0).parent().parent();
 
-            Elements timeElements = parent.select("time");
-            log.debug(timeElements.toString());
+        try { // may not always parse
+                Element parent = elements.get(0).parent().parent();
 
-            if (!timeElements.isEmpty()) {
-                Element timeElement = timeElements.get(0);
-                result = timeElement.attr("datetime");
+                Elements timeElements = parent.select("time");
+                log.debug(timeElements.toString());
+
+                if (!timeElements.isEmpty()) {
+                    Element timeElement = timeElements.get(0);
+                    result = timeElement.attr("datetime");
             }
+        } catch (Exception e) {
+            // nothing, it may not always parse
         }
+
         return result;
     }
 
@@ -249,7 +257,7 @@ public class JobBirdScraper extends VacancyScraper {
                         index += minString.length();
                         String sRest = sElement.substring(index);
                         index = sRest.indexOf("<");
-                        String sUren = sRest.substring(0, index);
+                        String sUren = sRest.substring(0, index).trim();
                         return sUren;
                     }
                 }

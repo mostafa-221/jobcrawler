@@ -164,4 +164,24 @@ public class JobBirdScraperTest  {
                     HTMLStructureException.class);
     }
 
+    @Test
+    public void setVacancySpecifics_happyFlow() throws IOException {
+        String filename = "testfiles/jobbird04_vacancyspecifics.htm";  // should count 5 pages
+        ClassLoader classLoader = new JobBirdScraperTest().getClass().getClassLoader();
+
+        File inputFile = new File(classLoader.getResource(filename).getFile());
+
+        // System.out.println("File found:" + inputFile.exists());
+        // String content = new String(Files.readAllBytes(inputFile.toPath()));
+        // System.out.println(content);
+
+        Document doc = Jsoup.parse(inputFile, "UTF-8", "");
+        Vacancy vacancy = new Vacancy();
+
+        jobBirdScraperTestHelp.setVacancySpecificsHelp(doc, vacancy);
+        assertEquals("Apeldoorn", vacancy.getLocation());
+        assertEquals("32", vacancy.getHours());
+        assertEquals( "2020-05-30", vacancy.getPostingDate());
+    }
+
 }

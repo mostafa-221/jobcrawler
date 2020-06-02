@@ -37,7 +37,15 @@ abstract class VacancyScraper {
     public List<Vacancy> getVacancies() throws IOException, HTMLStructureException {
         log.info(String.format("%s -- Start scraping", BROKER.toUpperCase()));
         /*
-        getVacancies retrieves all vacancyURLs via the getVacancyURLs method and set the various elements of Vacancy below.
+                getVacancies retrieves all vacancyURLs via the getVacancyURLs method and
+                set the various elements of Vacancy below.
+
+                Page structure may have changed. If essential elements are missing the
+                HTMLStructureException is thrown and processing for this broker is ended
+                because this will most probably affect all vacancy pages.
+
+                Essential elements are: title, url, about.
+
          */
         List<Vacancy> vacancies = new ArrayList<>();
         List<VacancyURLs> vacancyURLs = getVacancyURLs();

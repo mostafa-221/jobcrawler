@@ -17,4 +17,8 @@ public class JobBirdScraperTestHelp extends JobBirdScraper {
     public void setVacancyTitleHelp(Document doc, Vacancy vacancy) throws HTMLStructureException {
          setVacancyTitle(doc, vacancy);
     }
+
+    public void setVacancySpecificsHelp(Document doc, Vacancy vacancy) {
+        setVacancySpecifics(doc, vacancy);
+    }
 }
