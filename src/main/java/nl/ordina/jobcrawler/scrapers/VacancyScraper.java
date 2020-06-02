@@ -7,7 +7,7 @@ import org.jsoup.nodes.Document;
 import java.io.IOException;
 import java.util.List;
 
-abstract class VacancyScraper {
+abstract public class VacancyScraper {
 
     private final String SEARCH_URL;
     private final String BROKER;
@@ -58,6 +58,6 @@ abstract class VacancyScraper {
      *
      * @return List of vacancies
      */
-    abstract protected List<Vacancy> getVacancies();
+    abstract public List<Vacancy> getVacancies();
 
 }

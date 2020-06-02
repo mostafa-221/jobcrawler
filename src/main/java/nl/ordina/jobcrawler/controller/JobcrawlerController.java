@@ -110,11 +110,7 @@ public class JobcrawlerController {
          * scraping is finished.
          */
         Thread newThread = new Thread(() -> {
-            try {
                 vacancyStarter.scrape();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         });
         newThread.start();
     }
