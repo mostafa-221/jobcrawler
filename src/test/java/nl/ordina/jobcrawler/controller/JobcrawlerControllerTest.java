@@ -77,23 +77,30 @@ class JobcrawlerControllerTest {
         mockVacancy.addSkill(mockSkill);
     }
 
+    // TODO: make comments
+    // TODO: make a list of all the improvements
 
     @Nested
     class VacancyControllerTest {
         @Test
+        /**
+         * Tests the /addJobWithJson end point, if it adds a vacancy correctly
+         */
         void addJob() throws Exception {
-//            doReturn(mockVacancy).when(vacancyService).add(mockVacancy); // does not return the vacancy, not sure why
             doReturn(mockVacancy).when(vacancyService).add(any(Vacancy.class));
 
             mockMvc.perform(post("/addJobWithJson")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(asJsonString(mockVacancy)))
                     .andExpect(status().isOk())
-//                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(content().string(asJsonString(mockVacancy)));
 
         }
 
+        /**
+         * Tests the /getByID end point, when a vacancy is found
+         */
         @Test
         void getByIDFound() throws Exception {
 
@@ -107,6 +114,9 @@ class JobcrawlerControllerTest {
 
         }
 
+        /**
+         * Tests the /getByID end point, when a vacancy is not found
+         */
         @Test
         void getByIDNotFound() throws Exception {
 
@@ -117,6 +127,9 @@ class JobcrawlerControllerTest {
 
         }
 
+        /**
+         * Tests the /getJobsByBroker end point, when a broker is found
+         */
         @Test
         void getJobsByBroker() throws Exception {
             doReturn(Arrays.asList(mockVacancy)).when(vacancyService).getVacanciesByBroker(mockVacancy.getBroker());
@@ -127,6 +140,9 @@ class JobcrawlerControllerTest {
                     .andExpect(content().string(asJsonString(Arrays.asList(mockVacancy))));
         }
 
+        /**
+         * Tests the /getJobsByBroker end point, when a broker is not found
+         */
         @Test
         void getJobsByBrokerNotFound() throws Exception {
             doReturn(new ArrayList<>()).when(vacancyService).getVacanciesByBroker(any(String.class));
@@ -137,6 +153,9 @@ class JobcrawlerControllerTest {
                     .andExpect(content().string(asJsonString(new ArrayList<>())));
         }
 
+        /**
+         * Tests the /getAllJobs end point, if it returns a list of vacancies
+         */
         @Test
         void getAllJobs() throws Exception {
 
@@ -154,6 +173,9 @@ class JobcrawlerControllerTest {
 
         }
 
+        /**
+         * Tests the /getJobsWithSkill end point, when a skill is found
+         */
         @Test
         void getJobsWithSkillFound() throws Exception {
             Set<Vacancy> vacancySet = new HashSet<>();
@@ -167,6 +189,9 @@ class JobcrawlerControllerTest {
                     .andExpect(content().string(asJsonString(vacancySet)));
         }
 
+        /**
+         * Tests the /getJobsWithSkill end point, when a skill is not found
+         */
         @Test
         void getJobsWithSkillNotFound() throws Exception {
             doThrow(new SkillNotFoundException("")).when(vacancyService).getVacanciesBySkill(any(String.class));
@@ -175,18 +200,25 @@ class JobcrawlerControllerTest {
                     .andExpect(status().isNotFound());
         }
 
+        /**
+         * Tests the /delete end point, when an id is found
+         */
         @Test
         void deleteVacancyByIdFound() throws Exception {
             //this line is needed when running the vacancy controller test, not when running the test by itself
             //not sure why
-            doAnswer(invocationOnMock -> {
-                return null;
-            }).when(vacancyService).delete(mockVacancy.getId());
+//            doAnswer(invocationOnMock -> {
+//                return null;
+//            }).when(vacancyService).delete(mockVacancy.getId());
+            doNothing().when(vacancyService).delete(mockVacancy.getId());
 
             mockMvc.perform(delete("/delete/{id}", mockVacancy.getId()))
                     .andExpect(status().isOk());
         }
 
+        /**
+         * Tests the /delete end point, when an id is not found
+         */
         @Test
         void deleteVacancyByIdNotFound() throws Exception {
             doThrow(new VacancyNotFoundException("")).when(vacancyService).delete(any(UUID.class));
@@ -195,6 +227,10 @@ class JobcrawlerControllerTest {
                     .andExpect(status().isNotFound());
         }
 
+        /**
+         * Tests the /{id} end point, when an id is found
+         * this end point is for updating the vacancies
+         */
         @Test
         void replaceVacancyFound() throws Exception {
             Vacancy mockVacancy2 = vacancyFactory("vacancy2");
@@ -208,6 +244,10 @@ class JobcrawlerControllerTest {
                     .andExpect(content().string(asJsonString(mockVacancy2)));
         }
 
+        /**
+         * Tests the /{id} end point, when an id is not found
+         * this end point is for updating the vacancies
+         */
         @Test
         void replaceVacancyNotFound() throws Exception {
             doThrow(new VacancyNotFoundException("")).when(vacancyService).replace(any(UUID.class), any(Vacancy.class));
@@ -223,6 +263,10 @@ class JobcrawlerControllerTest {
 
     @Nested
     class SkillControllerTest {
+
+        /**
+         * Tests the /skills end point, if it returns a list of vacancies
+         */
         @Test
         void getAllSkills() throws Exception {
             Skill mockSkill2 = skillFactory("skill2");
@@ -240,6 +284,11 @@ class JobcrawlerControllerTest {
 
     @Nested
     class SearchControllerTest {
+
+        /**
+         * Tests the /searchrequest end point,
+         * for now all it needs to do is to return a new SearchResult with all vacancies
+         */
         @Test
         void searchRequest() throws Exception {
             Vacancy mockVacancy2 = vacancyFactory("vacancy2");
@@ -256,6 +305,10 @@ class JobcrawlerControllerTest {
 
     @Nested
     class ScraperTest {
+
+        /**
+         * Tests the /scrape end point, if it calls the VacancyStarter scrape method
+         */
         @Test
         void scrape() throws Exception {
             mockMvc.perform(put("/scrape"))
@@ -266,7 +319,7 @@ class JobcrawlerControllerTest {
     }
 
     // Maybe replace this with a "result matcher"?
-    static private final ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     static String asJsonString(final Object obj) {
         try {
