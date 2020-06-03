@@ -1,6 +1,9 @@
 package nl.ordina.jobcrawler.controller.exception;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
+@ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
 public class VacancyURLMalformedException extends RuntimeException {
     public VacancyURLMalformedException(String url) {
         super("Vacancy URL is malformed or could not be reached " + url);

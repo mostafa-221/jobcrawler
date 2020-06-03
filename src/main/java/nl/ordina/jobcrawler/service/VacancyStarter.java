@@ -4,13 +4,15 @@ import lombok.extern.slf4j.Slf4j;
 import nl.ordina.jobcrawler.model.Vacancy;
 import nl.ordina.jobcrawler.scrapers.HuxleyITVacancyScraper;
 import nl.ordina.jobcrawler.scrapers.JobBirdScraper;
+import nl.ordina.jobcrawler.scrapers.VacancyScraper;
 import nl.ordina.jobcrawler.scrapers.YachtVacancyScraper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
+import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -24,29 +26,22 @@ Upon fetching the vacancies it runs a check to verify if the vacancy is already 
 @Component
 public class VacancyStarter {
 
-
     @Autowired
     private VacancyService vacancyService;
 
-    private final YachtVacancyScraper yachtVacancyScraper;
+    private final List<VacancyScraper> scraperList = new ArrayList<>() {
+        {
+            add(new YachtVacancyScraper());
+            add(new HuxleyITVacancyScraper());
+            add(new JobBirdScraper());
+        }
+    };
 
-    private final HuxleyITVacancyScraper huxleyITVacancyScraper;
-
-    private final JobBirdScraper jobBirdScraper;
-
-    @Autowired
-    public VacancyStarter(YachtVacancyScraper yachtVacancyScraper, HuxleyITVacancyScraper huxleyITVacancyScraper, JobBirdScraper jobBirdScraper) {
-        this.yachtVacancyScraper = yachtVacancyScraper;
-        this.huxleyITVacancyScraper = huxleyITVacancyScraper;
-        this.jobBirdScraper = jobBirdScraper;
-    }
-
+    @PostConstruct
     @Scheduled(cron = "0 0 12,18 * * *") // Runs two times a day. At 12pm and 6pm
-    public void scrape() throws IOException {
+    public void scrape() {
         log.info("CRON Scheduled -- Scrape vacancies");
-        List<Vacancy> allVacancies = yachtVacancyScraper.getVacancies();
-        allVacancies.addAll(jobBirdScraper.getVacancies());
-        allVacancies.addAll(huxleyITVacancyScraper.getVacancies());
+        List<Vacancy> allVacancies = startScraping();
         int existVacancy = 0;
         int newVacancy = 0;
         for (Vacancy vacancy : allVacancies) {
@@ -75,13 +70,7 @@ public class VacancyStarter {
         log.info("CRON Scheduled -- Started deleting non-existing jobs");
         List<Vacancy> allVacancies = vacancyService.getAllVacancies();
         List<Vacancy> vacanciesToDelete = allVacancies.stream()
-                .filter(vacancy -> {
-                    if ("Yacht".equals(vacancy.getBroker())) {
-                        return !yachtVacancyScraper.doesVacancyExist(vacancy.getVacancyURL());
-                    } else {
-                        return !vacancy.hasValidURL();
-                    }
-                }) //if the url is not good anymore add it in the vacanciesToDelete
+                .filter(vacancy -> !vacancy.hasValidURL()) //if the url is not good anymore add it in the vacanciesToDelete
                 .collect(Collectors.toList());
 
         log.info(vacanciesToDelete.size() + " vacancy to delete.");
@@ -90,5 +79,11 @@ public class VacancyStarter {
             vacancyService.delete(vacancyToDelete.getId());
         }
         log.info("Finished deleting non-existing jobs");
+    }
+
+    private List<Vacancy> startScraping() {
+        List<Vacancy> vacanciesList = new ArrayList<>();
+        scraperList.forEach(vacancyScraper -> vacanciesList.addAll(vacancyScraper.getVacancies()));
+        return vacanciesList;
     }
 }

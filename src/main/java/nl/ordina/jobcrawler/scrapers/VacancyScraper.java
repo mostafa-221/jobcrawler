@@ -1,95 +1,63 @@
 package nl.ordina.jobcrawler.scrapers;
 
-import lombok.extern.slf4j.Slf4j;
 import nl.ordina.jobcrawler.model.Vacancy;
-import nl.ordina.jobcrawler.model.VacancyURLs;
-import nl.ordina.jobcrawler.service.ConnectionDocumentService;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
-// All vacancy scrapers have the following functions in common
-
-@Slf4j
-abstract class VacancyScraper {
+abstract public class VacancyScraper {
 
     private final String SEARCH_URL;
     private final String BROKER;
 
-    private final ConnectionDocumentService connectionDocumentService;
-
-    public VacancyScraper(@Autowired ConnectionDocumentService connectionDocumentService, String url, String broker) {
-        this.connectionDocumentService = connectionDocumentService;
+    /**
+     * Constructor for abstract class VacancyScraper
+     *
+     * @param url Default seach url for scraper
+     * @param broker Used broker for scraper
+     */
+    public VacancyScraper(String url, String broker) {
         this.SEARCH_URL = url;
         this.BROKER = broker;
     }
 
+    /**
+     * The getDocument function retrieves the html page from the given url
+     *
+     * @param url Url from page that needs to be retrieved
+     * @return Jsoup Document
+     */
+    public Document getDocument(final String url) {
+        try {
+            String userAgent = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36 ArabotScraper";
+            return Jsoup.connect(url).userAgent(userAgent).get();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * @return Returns SEARCH_URL
+     */
     public String getSEARCH_URL() {
         return SEARCH_URL;
     }
 
-    public List<Vacancy> getVacancies() throws IOException {
-        log.info(String.format("%s -- Start scraping", BROKER.toUpperCase()));
-        /*
-        getVacancies retrieves all vacancyURLs via the getVacancyURLs method and set the various elements of Vacancy below.
-         */
-        List<Vacancy> vacancies = new ArrayList<>();
-        List<VacancyURLs> vacancyURLs = getVacancyURLs();
-        for (VacancyURLs vacancyURL : vacancyURLs) {
-            Document doc = connectionDocumentService.getConnection(vacancyURL.getUrl());
-            if (doc != null) {
-                Vacancy vacancy = Vacancy.builder()
-                        .vacancyURL(vacancyURL.getUrl())
-                        .broker(BROKER)
-                        .hours(vacancyURL.getHours())
-                        .skills(new HashSet<>())
-                        .build();
-                setVacancyTitle(doc, vacancy);
-                setVacancySpecifics(doc, vacancy);
-                setVacancyAbout(doc, vacancy);
-                setVacancySkillSet(doc, vacancy);
-                vacancies.add(vacancy);
-            }
-        }
-        return vacancies;
+    /**
+     * @return Returns BROKER
+     */
+    public String getBROKER() {
+        return BROKER;
     }
 
-    protected Document getDocument(String url) throws IOException {
-        return connectionDocumentService.getConnection(url);
-    }
-
-    abstract protected List<VacancyURLs> getVacancyURLs() throws IOException;
-
-    abstract protected int getTotalNumberOfPages(Document doc);
-
-    abstract protected void setVacancyTitle(Document doc, Vacancy vacancy);
-
-    /**************************************************************************
-     * Scrapes the
-     *    postingdate,
-     *    nr of hours (if not set yet from the set of urls)
-     *    location (town or municipality) of the vacancy
-     * Input:
-     *        Doc  - the detail page for the vacancy
-     *        Vacancy - the job vacancy corresponging to this page
-     * Output:
-     *        Sets the corresponding values in the vacancy
-     ***************************************************************************/
-    abstract protected void setVacancySpecifics(Document doc, Vacancy vacancy);
-
-
-    /**************************************************************************
-     *  Retrieves the relevant portion of the page that contains information
-     *  of the specifics
-     **************************************************************************/
-    abstract protected List<String> getVacancySpecifics(Document doc);
-
-    abstract protected void setVacancyAbout(Document doc, Vacancy vacancy);
-
-    abstract protected void setVacancySkillSet(Document doc, Vacancy vacancy);
+    /**
+     * Method that needs to be overwritten by scrapers extending this class
+     *
+     * @return List of vacancies
+     */
+    abstract public List<Vacancy> getVacancies();
 
 }

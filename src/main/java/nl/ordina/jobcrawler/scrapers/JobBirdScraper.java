@@ -2,149 +2,247 @@ package nl.ordina.jobcrawler.scrapers;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.ordina.jobcrawler.model.Vacancy;
-import nl.ordina.jobcrawler.model.VacancyURLs;
-import nl.ordina.jobcrawler.service.ConnectionDocumentService;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-/*
-MylerVacancyScraper.java takes care of scraping vacancies from myler.nl
-At this moment getVacancies() returns a list with Vacancies that only exist of a vacancyURL and the broker. No details available (yet).
+/*  Search is limited to URLs for ICT jobs with search term "java"
+ *       Search URL will be completed later:a page number is added to the url
+ *       example: page = 5
+ *       https://www.jobbird.com/nl/vacature?s=java&rad=30&page=5&ot=date&c[]=ict
+ *
+ *       on each page including the first, links to vacancies can be found
+ *       stop criterium: either the maximum number of pages (MAXNRPAGES) has been processed or
+ *       the criterium "no more pages"
+ *
+ *       no more pages: when a page is retrieved for a page number higher than the
+ *       highest page number available for the search, the last page and thus the last
+ *       set of urls is returned - we can check whether one of those links is already in the set.
+ *
+ *       for demo purposes, the max nr of pages can be about 20, this suffices
+ *       to max it out, it could be approximately 60, after a certain number of pages
+ *       the vacancy date will be missing
+ *
+ *       In order to be able to check whether the program is still running, the vacancies are logged
+ *       (log.info()). You may want to change this to log.debug().
+ *
  */
 
 @Slf4j
 @Component
 public class JobBirdScraper extends VacancyScraper {
 
-    /*  Search URL will be completed later: either a page is added to the URL or not.
+    private static final int MAX_NR_OF_PAGES = 25;  // 25 seems enough for demo purposes, can be up to approx 60
+    // at a certain point the vacancy date will be missing
 
-        First page:
-
-        SEARCH_URL = "https://www.jobbird.com/nl/vacature?s=java&rad=30&ot=date";
-
-        Later pages, for example page 3:
-
-        SEARCH_URL = "https://www.jobbird.com/nl/vacature?s=java&page=3&rad=30&ot=date";
+    /**
+     * Default constructor that calls the constructor from the abstract class.
      */
-    private static final String SEARCH_URL = "https://www.jobbird.com/nl/vacature?s=java";
-    private static final String BROKER = "Jobbird";
-
-    public JobBirdScraper(ConnectionDocumentService connectionDocumentService) {
-        super(connectionDocumentService, SEARCH_URL, BROKER);
+    public JobBirdScraper() {
+        super(
+                "https://www.jobbird.com/nl/vacature?s=java&rad=30&page=", // Required search URL. Can be retrieved using getSEARCH_URL()
+                "Jobbird" // Required broker. Can be retrieved using getBROKER()
+        );
     }
 
+    /**
+     * Default function to start scraping vacancies.
+     *
+     * @return List with vacancies.
+     */
+    @Override
+    public List<Vacancy> getVacancies() {
+        log.info(String.format("%s -- Start scraping", getBROKER().toUpperCase()));
+        /*
+        getVacancies retrieves all vacancyURLs via the getVacancyURLs method and set the various elements of Vacancy below.
+         */
+        List<Vacancy> vacancies = new ArrayList<>();
+        List<String> vacancyURLs = getVacancyURLs();
+        for (String vacancyURL : vacancyURLs) {
+            Document doc = getDocument(vacancyURL);
+            if (doc != null) {
+                Vacancy vacancy = Vacancy.builder()
+                        .vacancyURL(vacancyURL)
+                        .title(getVacancyTitle(doc))
+                        .hours(getHoursFromPage(doc))
+                        .broker(getBROKER())
+                        .location(getLocation(doc))
+                        .postingDate(getPublishDate(doc))
+                        .about(getVacancyAbout(doc))
+                        .build();
 
-    private String createSearchURL(int aPagenr) throws Exception {
-        if (aPagenr == 1) {
-            return SEARCH_URL + "&rad=30&ot=date";
-        } else
-        if (aPagenr > 1) {
-            return SEARCH_URL + "&rad=30&page=" + aPagenr + "&ot=date";
-        } else {
+                vacancies.add(vacancy);
+                log.info(String.format("%s - Vacancy found: %s", getBROKER(), vacancy.getTitle()));
+            }
+        }
+        log.info(String.format("%s -- Returning scraped vacancies", getBROKER()));
+        return vacancies;
+    }
+
+    /**
+     * Create seach url based on pageNumber.
+     *
+     * @param pageNumber number that's needed to create search url.
+     * @return String, full search url for specific page.
+     * @throws Exception when pageNumber is below 1.
+     */
+    private String createSearchURL(int pageNumber) throws Exception {
+        if (pageNumber < 1) {
             throw new Exception("JobBirdScraper:createSearchURL: pagenr must be 1 or greater");
         }
+        return String.format("%s%d&ot=date&c[]=ict", getSEARCH_URL(), pageNumber);
     }
 
-    @Override
-    protected List<VacancyURLs> getVacancyURLs() throws IOException {
+
+    /**
+     * Retrieve all vacancyURLs from JobBird.
+     *
+     * @return A list of Strings containing the urls to the vacancies.
+     */
+    protected List<String> getVacancyURLs() {
         //  Returns a List with VacancyURLs
-        ArrayList<VacancyURLs> URLs = new ArrayList<>();
+        ArrayList<String> vacancyURLs = new ArrayList<>();
 
         try {
-            // on each page including this first one are vacancies to be found
             Document doc = getDocument(createSearchURL(1));
-            int totalNrOfPages = getTotalNumberOfPages(doc);
-            for (int i=1; i<=totalNrOfPages; i++) {
-                if (i>1) {
-                    doc = getDocument(createSearchURL(i));
+
+            boolean continueSearching = true;
+            for (int i = 1; continueSearching && i <= getLastPageToScrape(doc); i++) {
+                String searchURL = createSearchURL(i);
+                doc = getDocument(searchURL);
+
+                ArrayList<String> vacancyUrlsOnPage = retrieveVacancyURLsFromDoc(doc);
+
+                continueSearching = continueSearching(vacancyURLs, vacancyUrlsOnPage);
+
+                if (continueSearching) {
+                    vacancyURLs.addAll(vacancyUrlsOnPage);
                 }
-                URLs.addAll(retrieveVacancyURLsFromDoc(doc));
             }
 
         } catch (Exception e) {
             log.error(e.getMessage());
         }
-        return URLs;
+        return vacancyURLs;
     }
 
-
-    /*
-    *    Retrieve the links to the individual pages for each assignment
-    */
-    private ArrayList<VacancyURLs> retrieveVacancyURLsFromDoc(Document doc) {
-        ArrayList<VacancyURLs> result = new ArrayList<>();
-        Elements elements = doc.select("div.jobResults");
-        Element element = elements.first();
-        Element parent = element.parent();
-        Elements lijst = parent.children();
-
-        Elements linklijst = new Elements();
-        Elements httplinks = lijst.select("a[href]");
-        for (Element e: httplinks) {
-            String sLink = e.attr("abs:href");
-            log.debug(sLink);
-            result.add(new VacancyURLs(sLink));
-        }
-
-        return result;
-    }
-
-    /* Find the total number of pages, this can be found via the maneuver block at the bottom of the page
-     * search for <span elements with class "page-link"
-     * from this page link element to the parent of the parent and then look up the children
-     * these are <li elements with as attribute value the number of the page
-     * continue until the page link with the text "next"
+    /**
+     * Continue searching if this page only contains new vacancies. If any of the vacancies is already know, stop searching.
+     *
+     * @param vacancyURLs       known vacancyURLs for this scraping session
+     * @param vacancyUrlsOnPage VanacyURLS on the current page
+     * @return true if none of the vacancies on this page has been encountered before in this scraping session
      */
-    @Override
+    private boolean continueSearching(ArrayList<String> vacancyURLs, ArrayList<String> vacancyUrlsOnPage) {
+        for (String vacancyUrlOnPage : vacancyUrlsOnPage) {
+            if (vacancyURLs.contains(vacancyUrlOnPage)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Get the index of the last page to scrape
+     *
+     * @param doc The HTML document containing the URLs to the vacancies
+     * @return the index of the last page to scrape
+     */
+    private int getLastPageToScrape(Document doc) {
+        int totalNumberOfPages = getTotalNumberOfPages(doc);
+        // TODO: we could get more sophisticated logic in place to limit the number of pages.
+        // For example, we could look at the posting date of each vacancy, and limit it to thirty days.
+        return Math.min(totalNumberOfPages, MAX_NR_OF_PAGES);
+
+    }
+
+    /* Not used - the number of pages in the block under the page is steadily extended
+     * each time the next URL is generated and the corresponding page is fetched.
+     * Instead, a maximum is used for the number of pages accessed.
+     *
+     * Find the total number of pages, this can be found via the maneuver block at the bottom of the page
+     * search for <span elements with class "page-link"
+     * from this page link element to the parent of the parent and then look up the children
+     * these are <li elements with as attribute value the number of the page
+     * continue until the page link with the text "next"
+     */
     protected int getTotalNumberOfPages(Document doc) {
         Elements elements = doc.select("span.page-link");
         Element parent = elements.first().parent().parent();
         Elements children = parent.children();
         int count = 0;
-        for (Element child: children) {
+        for (Element child : children) {
             String text = child.text();
-            if (!text.equalsIgnoreCase("volgende")) count++;
+            if (!text.equalsIgnoreCase("volgende"))
+                count++;
         }
-        log.info("jobbird: total number of pages is " + count);
+        log.info(String.format("%s -- Total number of pages: %d", getBROKER(), count));
         return count;
     }
 
-    @Override
-    protected void setVacancyTitle(Document doc, Vacancy vacancy) {
+    /*
+     *    Retrieve the links to the individual pages for each assignment
+     */
+    private ArrayList<String> retrieveVacancyURLsFromDoc(Document doc) {
+        ArrayList<String> result = new ArrayList<>();
+        Elements elements = doc.select("div.jobResults");
+        Element element = elements.first();
+        Element parent = element.parent();
+        Elements lijst = parent.children();
 
-        Element vacancyHeader = doc.select("h1.no-margin").first();
-
-        if(vacancyHeader != null) {
-            String title = vacancyHeader.text();
-            vacancy.setTitle(title);
-            log.info("vacancy found: "  + title);
+        Elements httplinks = lijst.select("a[href]");
+        for (Element e : httplinks) {
+            String sLink = e.attr("abs:href");
+            result.add(sLink);
         }
+
+        return result;
     }
 
-    @Override
-    protected void setVacancySpecifics(Document doc, Vacancy vacancy) {
+    /**
+     * Retrieve the vacancy title
+     *
+     * @param doc Document which is needed to retrieve vacancy title
+     * @return String vacancy title
+     */
+    private String getVacancyTitle(Document doc) {
+        Element vacancyHeader = doc.select("h1.no-margin").first();
+
+        if (vacancyHeader != null) {
+            return vacancyHeader.text();
+        }
+
+        return "";
+    }
+
+    /**
+     * Retrieve location from vacancy
+     *
+     * @param doc Document which is needed to retrieve vacancy location
+     * @return String vacancy location
+     */
+    private String getLocation(Document doc) {
         Elements elements = doc.select("span.job-result__place");
         if (!elements.isEmpty()) {
             Element jobPlace = elements.get(0);
             if (jobPlace != null) {
-                vacancy.setLocation(jobPlace.text());
+                return jobPlace.text();
             }
         }
-        elements = doc.select("div.card-body");
 
-        String hours = getHoursFromPage(elements);
-        vacancy.setHours(hours);
-
-        String publishDate = getPublishDate(doc);
-        vacancy.setPostingDate(publishDate);
+        return "";
     }
 
+    /**
+     * Retrieve publishing date from vacancy
+     *
+     * @param doc Document which is needed to retrieve publishing date
+     * @return String publish date
+     */
     private String getPublishDate(Document doc) {
         String result = "";
         Elements elements = doc.select("span.job-result__place");
@@ -152,7 +250,7 @@ public class JobBirdScraper extends VacancyScraper {
             Element parent = elements.get(0).parent().parent();
 
             Elements timeElements = parent.select("time");
-            log.debug( timeElements.toString());
+            log.debug(timeElements.toString());
 
             if (!timeElements.isEmpty()) {
                 Element timeElement = timeElements.get(0);
@@ -162,16 +260,19 @@ public class JobBirdScraper extends VacancyScraper {
         return result;
     }
 
-    /*
-     *  Retrieve the hours respectively the minimum allowed hours from the relevant
-     *  part of the page
+    /**
+     * Retrieve the hours respectively the minimum allowed hours frm the relevant part of the page.
+     *
+     * @param doc Document which is needed to retrieve hours
+     * @return String hours
      */
-    private String getHoursFromPage(Elements elements) {
+    private String getHoursFromPage(Document doc) {
         try {
+            Elements elements = doc.select("div.card-body");
             // Search the childnodes for the tag "<strong>Uren per week:</strong>
             // in principle, the text is free format with a few common headings
-            for (Element e: elements) {
-                for (Element child: e.children()) {
+            for (Element e : elements) {
+                for (Element child : e.children()) {
                     String minString = "<strong>Minimum aantal uren per week</strong>";
                     if (child.toString().contains("Uren per week")) {
                         String uren = child.text();
@@ -198,44 +299,37 @@ public class JobBirdScraper extends VacancyScraper {
         return "0"; // catch all when working hours not mentioned on the page
     }
 
-    @Override
-    protected List<String> getVacancySpecifics(Document doc) {
-        return null;
-        // this method is simply not used (yet)
-    }
-
-
     /*
-    *   The job bird vacancy page structure is quite loose.
-    *   A number of vacancy page are in Dutch and quite often, the "About" can be found between
-    *   a line (div) "Functieomschrijving" just after  <div id="jobContent"  class = "card-body>
-    *  and a heading <h3>Vaardigheden</h3>
-    *
-    *   A number of vacancy pages have the about section
-    *
-    *  we cannot be sure about the exact layout, so it would be possible to extract the portion just
-    *  after the jobContent when the first line contains Functieomschrijving, read until Vaardigheden.
-    *
-    *
-    *  In other cases it is not so simple. When aforementioned receipt does not work we can
-    *  we can do the following:
-    *
-    * gather all elements until one of the following occurs:
-    *  - english offer: A sentence containing skills
-    *
-    *
-    * For the time being, the About contains all text contained within the jobcontainer card div element
-    *   <div class="jobContainer card">
-    *
-    * */
-    @Override
-    protected void setVacancyAbout(Document doc, Vacancy vacancy) {
-        Elements abou1tElements = doc.select("div.jobContainer");
-        vacancy.setAbout(abou1tElements.text());
-    }
+     *   The job bird vacancy page structure is quite loose.
+     *   A number of vacancy page are in Dutch and quite often, the "About" can be found between
+     *   a line (div) "Functieomschrijving" just after  <div id="jobContent"  class = "card-body>
+     *  and a heading <h3>Vaardigheden</h3>
+     *
+     *   A number of vacancy pages have the about section
+     *
+     *  we cannot be sure about the exact layout, so it would be possible to extract the portion just
+     *  after the jobContent when the first line contains Functieomschrijving, read until Vaardigheden.
+     *
+     *
+     *  In other cases it is not so simple. When aforementioned receipt does not work we can
+     *  we can do the following:
+     *
+     * gather all elements until one of the following occurs:
+     *  - english offer: A sentence containing skills
+     *
+     *
+     * For the time being, the About contains all text contained within the jobcontainer card div element
+     *   <div class="jobContainer card">
+     *
+     * */
 
-    @Override
-    protected void setVacancySkillSet(Document doc, Vacancy vacancy) {
-
+    /**
+     * Retrieve the vacancy body to store in postgres database
+     * @param doc Document which is needed to retrieve the body
+     * @return String vacancy body
+     */
+    private String getVacancyAbout(Document doc) {
+        Elements aboutElements = doc.select("div.jobContainer");
+        return aboutElements.text();
     }
 }
