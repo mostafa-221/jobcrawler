@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -110,11 +109,7 @@ public class JobcrawlerController {
          * scraping is finished.
          */
         Thread newThread = new Thread(() -> {
-            try {
                 vacancyStarter.scrape();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         });
         newThread.start();
     }
