@@ -33,9 +33,9 @@ public class VacancyStarter {
 
     private final List<VacancyScraper> scraperList = new ArrayList<>() {
         {
+            add(new JobBirdScraper());
             add(new YachtVacancyScraper());
             add(new HuxleyITVacancyScraper());
-            add(new JobBirdScraper());
         }
     };
 
