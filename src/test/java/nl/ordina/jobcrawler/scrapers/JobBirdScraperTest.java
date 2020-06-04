@@ -1,13 +1,11 @@
-package scrapers;
+package nl.ordina.jobcrawler.scrapers;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.ordina.jobcrawler.model.Vacancy;
-import nl.ordina.jobcrawler.scrapers.HTMLStructureException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -28,26 +26,11 @@ public class JobBirdScraperTest  {
 
 
     @InjectMocks
-    private JobBirdScraperTestHelp jobBirdScraperTestHelp;
-
+    private JobBirdScraper jobBirdScraperTestable;
 
     @Mock
     private Document documentMock;
 
-    @Mock
-    Elements elemsMock;
-
-    @Mock
-    Elements elementsMock, childrenMock;
-
-    @Mock
-    Element e2Mock;
-
-    @Mock
-    Element e3Mock;
-
-    @Mock
-    Element e4Mock;
 
 
     private Document getDocFromUrl(String aFilename) throws IOException {
@@ -64,7 +47,7 @@ public class JobBirdScraperTest  {
     @Test
     public void getTotalnrOfPagesTestFile_HappyFlow() throws IOException, HTMLStructureException {
         Document doc = getDocFromUrl("testfiles/jobbird01_should_count_5_pages.htm");
-            int count =  jobBirdScraperTestHelp.retrieveTotalNumberOfPagesHelp(doc);
+            int count =  jobBirdScraperTestable.retrieveTotalNumberOfPages(doc);
             assertEquals(5, count);
     }
 
@@ -78,13 +61,15 @@ public class JobBirdScraperTest  {
         Document doc = Jsoup.parse(inputFile, "UTF-8", "");
 
         assertThatThrownBy(() ->
-                jobBirdScraperTestHelp.retrieveTotalNumberOfPagesHelp(doc)).isInstanceOf(HTMLStructureException.class);
+                jobBirdScraperTestable.retrieveTotalNumberOfPages(doc)).isInstanceOf(HTMLStructureException.class);
     }
 
-    // build mock document by using elements with html doc structure for 2 pages, check the happy flow
+    /* build mock document by using elements with html doc structure for 2 pages, check the happy flow
+     * it turns out it is hard to mock a document by creating it this way,
+     * as a consequence, html files are used instead in the rest of this module
+    */
     @Test
     public void getTotalnrOfPagesTest_HappyFlow() {
-        jobBirdScraperTestHelp    = new JobBirdScraperTestHelp();
 
         try {
             Element el1 = new Element("el1");
@@ -105,7 +90,7 @@ public class JobBirdScraperTest  {
             when (documentMock.select("span.page-link")).thenReturn(children);
 
 //            when (e2Mock.parent()).thenReturn(parent1);
-            int count =  jobBirdScraperTestHelp.retrieveTotalNumberOfPagesHelp(documentMock);
+            int count =  jobBirdScraperTestable.retrieveTotalNumberOfPages(documentMock);
             assertEquals(2, count);
         } catch (Exception E) {
 
@@ -117,7 +102,7 @@ public class JobBirdScraperTest  {
     public void setVacancyTitle_HappyFlow() throws IOException, HTMLStructureException {
         Document doc =  getDocFromUrl("testfiles/jobbird03_vacancy.htm");
         Vacancy vacancy = new Vacancy();
-        String result = jobBirdScraperTestHelp.retrieveVacancyTitleHelp(doc);
+        String result = jobBirdScraperTestable.retrieveVacancyTitle(doc);
         assertEquals("Applications Engineering - Software Engineering Internship (Fall 2020)", result);
     }
 
@@ -129,7 +114,7 @@ public class JobBirdScraperTest  {
     public void setVacancyTitle_invalidPageStructure() throws Exception {
         Document doc = getDocFromUrl("testfiles/jobbird03_vacancy_notitle.htm");
         assertThatThrownBy(() ->
-                jobBirdScraperTestHelp.retrieveVacancyTitleHelp(doc)).isInstanceOf(
+                jobBirdScraperTestable.retrieveVacancyTitle(doc)).isInstanceOf(
                     HTMLStructureException.class);
     }
 
@@ -139,7 +124,10 @@ public class JobBirdScraperTest  {
     @Test
     public void setVacancySpecifics_happyFlow() throws IOException, HTMLStructureException {
         Document doc = getDocFromUrl("testfiles/jobbird04_vacancyspecifics.htm");
-        Vacancy vacancy = jobBirdScraperTestHelp.retrieveVacancySpecificsHelp(doc);
+        Vacancy vacancy = new Vacancy();
+        vacancy.setHours(jobBirdScraperTestable.retrieveHoursFromPage(doc));
+        vacancy.setLocation(jobBirdScraperTestable.retrieveLocation(doc));
+        vacancy.setPostingDate(jobBirdScraperTestable.retrievePublishDate(doc));
         assertEquals("Apeldoorn", vacancy.getLocation());
         assertEquals("32", vacancy.getHours());
         assertEquals( "2020-05-30", vacancy.getPostingDate());
@@ -151,7 +139,10 @@ public class JobBirdScraperTest  {
     @Test
     public void setVacancySpecifics_Missing() throws IOException, HTMLStructureException {
         Document doc = getDocFromUrl("testfiles/jobbird04_vacancyspecifics_missing.htm");
-        Vacancy vacancy = jobBirdScraperTestHelp.retrieveVacancySpecificsHelp(doc);
+        Vacancy vacancy = new Vacancy();
+        vacancy.setHours(jobBirdScraperTestable.retrieveHoursFromPage(doc));
+        vacancy.setLocation(jobBirdScraperTestable.retrieveLocation(doc));
+        vacancy.setPostingDate(jobBirdScraperTestable.retrievePublishDate(doc));
         assertEquals("", vacancy.getLocation());
         assertEquals("0", vacancy.getHours());
         assertEquals("", vacancy.getPostingDate());

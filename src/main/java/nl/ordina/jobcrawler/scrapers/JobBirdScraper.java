@@ -106,7 +106,7 @@ public class JobBirdScraper extends VacancyScraper {
      *
      * @return A list of Strings containing the urls to the vacancies.
      */
-    protected List<String> retrieveVacancyURLs() throws HTMLStructureException {
+     List<String> retrieveVacancyURLs() throws HTMLStructureException {
         //  Returns a List with VacancyURLs
         ArrayList<String> vacancyURLs = new ArrayList<>();
 
@@ -173,7 +173,7 @@ public class JobBirdScraper extends VacancyScraper {
      * these are <li elements with as attribute value the number of the page
      * continue until the page link with the text "next"
      */
-    protected int retrieveTotalNumberOfPages(Document doc) throws HTMLStructureException {
+    int retrieveTotalNumberOfPages(Document doc) throws HTMLStructureException {
         try {
             Elements elements = doc.select("span.page-link");
             Element parent = elements.first().parent().parent();
@@ -221,7 +221,7 @@ public class JobBirdScraper extends VacancyScraper {
      * @param doc Document which is needed to retrieve vacancy title
      * @return String vacancy title
      */
-    protected String retrieveVacancyTitle(Document doc) throws HTMLStructureException {
+    String retrieveVacancyTitle(Document doc) throws HTMLStructureException {
 
         try {
             Element vacancyHeader = doc.select("h1.no-margin").first();
@@ -242,7 +242,7 @@ public class JobBirdScraper extends VacancyScraper {
      * @param doc Document which is needed to retrieve vacancy location
      * @return String vacancy location
      */
-    protected String retrieveLocation(Document doc) {
+    String retrieveLocation(Document doc) {
         Elements elements = doc.select("span.job-result__place");
         if (!elements.isEmpty()) {
             Element jobPlace = elements.get(0);
@@ -263,7 +263,7 @@ public class JobBirdScraper extends VacancyScraper {
      * @param doc Document which is needed to retrieve publishing date
      * @return String publish date
      */
-    protected String retrievePublishDate(Document doc) {
+    String retrievePublishDate(Document doc) {
         String result = "";
         Elements elements = doc.select("span.job-result__place");
         if (!elements.isEmpty()) {
@@ -286,7 +286,7 @@ public class JobBirdScraper extends VacancyScraper {
      * @param doc Document which is needed to retrieve hours
      * @return String hours
      */
-    protected String retrieveHoursFromPage(Document doc) {
+    String retrieveHoursFromPage(Document doc) {
         try {
             Elements elements = doc.select("div.card-body");
             // Search the childnodes for the tag "<strong>Uren per week:</strong>

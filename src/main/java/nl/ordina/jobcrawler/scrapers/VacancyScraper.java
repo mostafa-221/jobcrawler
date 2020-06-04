@@ -32,7 +32,7 @@ abstract public class VacancyScraper {
      * @param url Url from page that needs to be retrieved
      * @return Jsoup Document
      */
-    public Document getDocument(final String url) {
+    public static Document getDocument(final String url) {
         try {
             String userAgent = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36 ArabotScraper";
             return Jsoup.connect(url).userAgent(userAgent).get();
