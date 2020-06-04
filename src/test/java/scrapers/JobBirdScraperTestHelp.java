@@ -10,15 +10,19 @@ public class JobBirdScraperTestHelp extends JobBirdScraper {
 
     }
 
-    public int getTotalNumberOfPagesHelp(Document doc) {
-        return getTotalNumberOfPages(doc);
+    public int retrieveTotalNumberOfPagesHelp(Document doc) throws HTMLStructureException {
+        return retrieveTotalNumberOfPages(doc);
     }
 
-    public void setVacancyTitleHelp(Document doc, Vacancy vacancy) throws HTMLStructureException {
-         setVacancyTitle(doc, vacancy);
+    public String retrieveVacancyTitleHelp(Document doc) throws HTMLStructureException {
+         return retrieveVacancyTitle(doc);
     }
 
-    public void setVacancySpecificsHelp(Document doc, Vacancy vacancy) {
-        setVacancySpecifics(doc, vacancy);
+    public Vacancy retrieveVacancySpecificsHelp(Document doc) throws HTMLStructureException {
+        Vacancy vacancy = new Vacancy();
+        vacancy.setHours(retrieveHoursFromPage(doc));
+        vacancy.setLocation(retrieveLocation(doc));
+        vacancy.setPostingDate(retrievePublishDate(doc));
+        return vacancy;
     }
 }

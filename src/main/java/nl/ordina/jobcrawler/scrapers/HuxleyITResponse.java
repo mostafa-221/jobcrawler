@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import nl.ordina.jobcrawler.model.Vacancy;
 
 import java.util.ArrayList;
 import java.util.Map;

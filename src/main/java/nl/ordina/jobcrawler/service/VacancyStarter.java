@@ -5,6 +5,7 @@ import nl.ordina.jobcrawler.scrapers.HTMLStructureException;
 import nl.ordina.jobcrawler.model.Vacancy;
 import nl.ordina.jobcrawler.scrapers.HuxleyITVacancyScraper;
 import nl.ordina.jobcrawler.scrapers.JobBirdScraper;
+import nl.ordina.jobcrawler.scrapers.VacancyScraper;
 import nl.ordina.jobcrawler.scrapers.YachtVacancyScraper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -12,7 +13,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -31,40 +31,19 @@ public class VacancyStarter {
     @Autowired
     private VacancyService vacancyService;
 
-    private final YachtVacancyScraper yachtVacancyScraper;
-
-    private final HuxleyITVacancyScraper huxleyITVacancyScraper;
-
-    private final JobBirdScraper jobBirdScraper;
-
-    @Autowired
-    public VacancyStarter(YachtVacancyScraper yachtVacancyScraper, HuxleyITVacancyScraper huxleyITVacancyScraper, JobBirdScraper jobBirdScraper) {
-        this.yachtVacancyScraper = yachtVacancyScraper;
-        this.huxleyITVacancyScraper = huxleyITVacancyScraper;
-        this.jobBirdScraper = jobBirdScraper;
-    }
+    private final List<VacancyScraper> scraperList = new ArrayList<>() {
+        {
+            add(new YachtVacancyScraper());
+            add(new HuxleyITVacancyScraper());
+            add(new JobBirdScraper());
+        }
+    };
 
     @PostConstruct
     @Scheduled(cron = "0 0 12,18 * * *") // Runs two times a day. At 12pm and 6pm
-    public void scrape() throws IOException {
+    public void scrape() {
         log.info("CRON Scheduled -- Scrape vacancies");
-
-        List<Vacancy> allVacancies = new ArrayList<>();
-        try {
-            allVacancies = jobBirdScraper.getVacancies();
-        } catch (HTMLStructureException e) {
-            log.error(e.getLocalizedMessage());
-        }
-
-        allVacancies.addAll(huxleyITVacancyScraper.getVacancies());
-
-        try {
-            allVacancies.addAll(yachtVacancyScraper.getVacancies());
-        } catch (HTMLStructureException e) {
-            log.error(e.getLocalizedMessage());
-        }
-
-
+        List<Vacancy> allVacancies = startScraping();
         int existVacancy = 0;
         int newVacancy = 0;
         for (Vacancy vacancy : allVacancies) {
@@ -102,5 +81,11 @@ public class VacancyStarter {
             vacancyService.delete(vacancyToDelete.getId());
         }
         log.info("Finished deleting non-existing jobs");
+    }
+
+    private List<Vacancy> startScraping() {
+        List<Vacancy> vacanciesList = new ArrayList<>();
+        scraperList.forEach(vacancyScraper -> vacanciesList.addAll(vacancyScraper.getVacancies()));
+        return vacanciesList;
     }
 }
