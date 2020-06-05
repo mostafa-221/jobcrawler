@@ -43,6 +43,9 @@ public class YachtVacancyScraperTest {
     private static Document vacancyDoc;
     private static Document removedVacancyDoc;
 
+    private static ResponseEntity<YachtVacancyResponse> jsonResponse;
+    private static ResponseEntity<YachtVacancyResponse> noDataResponse;
+
     @BeforeClass
     public static void init() throws Exception {
         // Grab the file content of the files mentioned below. Parse this file using jsoup as HTML.
@@ -52,20 +55,23 @@ public class YachtVacancyScraperTest {
 
         File removedVacancyHtml = getFile("/yacht/yachtremovedvacancy.html");
         removedVacancyDoc = Jsoup.parse(removedVacancyHtml, "UTF-8");
-    }
 
-    @Test
-    public void scrapeVacancies_should_return_YachtVacancyResponse() throws IOException {
         // Saved .json response in resources folder is being used in this test. Content of this file is needed.
         File jsonFile = getFile("/yacht/getRequestResponse.json");
         // We need to map the data from the jsonFile according to our YachtVacancyResponse.class
         YachtVacancyResponse yachtVacancyResponse = new ObjectMapper().readValue(jsonFile, YachtVacancyResponse.class);
-        // scrapeVacancies() response variable uses the restTemplate.getForEntity method which returns a ResponseEntity, simulated below.
-        ResponseEntity<YachtVacancyResponse> response = new ResponseEntity<>(yachtVacancyResponse, HttpStatus.OK);
+        jsonResponse = new ResponseEntity<>(yachtVacancyResponse, HttpStatus.OK);
 
+        File jsonFileNoData = getFile("/yacht/getRequestResponseNoData.json");
+        YachtVacancyResponse yachtVacancyResponseNoData = new ObjectMapper().readValue(jsonFileNoData, YachtVacancyResponse.class);
+        noDataResponse = new ResponseEntity<>(yachtVacancyResponseNoData, HttpStatus.OK);
+    }
+
+    @Test
+    public void scrapeVacancies_should_return_YachtVacancyResponse() throws IOException {
         // When the restTemplate.getForEntity method is used, regardless of the URL and class, we return our own data.
         when(restTemplateMock.getForEntity(anyString(), any(Class.class)))
-                .thenReturn(response);
+                .thenReturn(jsonResponse);
 
         // Call the function. We can enter any int we want as it should always return our own data.
         YachtVacancyResponse yachtResponse = yachtVacancyScraper.scrapeVacancies(1);
@@ -90,14 +96,9 @@ public class YachtVacancyScraperTest {
 
     @Test
     public void scrapeVacancies_should_not_return_anything_empty_json_body() throws IOException {
-        // Set up data again for this test
-        File jsonFile = getFile("/yacht/getRequestResponseNoData.json");
-        YachtVacancyResponse yachtVacancyResponse = new ObjectMapper().readValue(jsonFile, YachtVacancyResponse.class);
-        ResponseEntity<YachtVacancyResponse> response = new ResponseEntity<>(yachtVacancyResponse, HttpStatus.OK);
-
         // When the restTemplate.getForEntity method is used, regardless of the URL and class, we return our own data.
         when(restTemplateMock.getForEntity(anyString(), any(Class.class)))
-                .thenReturn(response);
+                .thenReturn(noDataResponse);
 
         // Call the function. We can enter any int we want as it should always return our own data.
         YachtVacancyResponse yachtResponse = yachtVacancyScraper.scrapeVacancies(1);
@@ -173,18 +174,11 @@ public class YachtVacancyScraperTest {
 
     @Test
     public void getVacancies_should_return_a_list_of_2_vacancies() throws IOException {
-        // Saved .json response in resources folder is being used in this test. Content of this file is needed.
-        File jsonFile = getFile("/yacht/getRequestResponse.json");
-        // We need to map the data from the jsonFile according to our YachtVacancyResponse.class
-        YachtVacancyResponse yachtVacancyResponse = new ObjectMapper().readValue(jsonFile, YachtVacancyResponse.class);
-        // scrapeVacancies() response variable uses the restTemplate.getForEntity method which returns a ResponseEntity, simulated below.
-        ResponseEntity<YachtVacancyResponse> response = new ResponseEntity<>(yachtVacancyResponse, HttpStatus.OK);
-
         // Spy the scraper as we call methods from its own class.
         YachtVacancyScraper yachtSpy = spy(new YachtVacancyScraper());
 
         // Setup return values for methods in same class.
-        doReturn(response.getBody()).when(yachtSpy).scrapeVacancies(anyInt());
+        doReturn(jsonResponse.getBody()).when(yachtSpy).scrapeVacancies(anyInt());
         doReturn(vacancyDoc).when(yachtSpy).getYachtDocument(anyString());
 
         // Retrieve vacancies
@@ -204,18 +198,11 @@ public class YachtVacancyScraperTest {
 
     @Test(expected = NullPointerException.class)
     public void getVacancies_should_throw_NullPointerException() throws IOException {
-        // Grab the no data .json file to see how getVacancies behaves
-        File jsonFile = getFile("/yacht/getRequestResponseNoData.json");
-        // We need to map the data from the jsonFile according to our YachtVacancyResponse.class
-        YachtVacancyResponse yachtVacancyResponse = new ObjectMapper().readValue(jsonFile, YachtVacancyResponse.class);
-        // scrapeVacancies() response variable uses the restTemplate.getForEntity method which returns a ResponseEntity, simulated below.
-        ResponseEntity<YachtVacancyResponse> response = new ResponseEntity<>(yachtVacancyResponse, HttpStatus.OK);
-
         // Spy the scraper as we call methods from its own class.
         YachtVacancyScraper yachtSpy = spy(new YachtVacancyScraper());
 
         // Setup return values for methods in same class.
-        doReturn(response.getBody()).when(yachtSpy).scrapeVacancies(anyInt());
+        doReturn(noDataResponse.getBody()).when(yachtSpy).scrapeVacancies(anyInt());
 
         // Retrieve vacancies
         // Throws NullPointerException as response.getPages() isn't available.
