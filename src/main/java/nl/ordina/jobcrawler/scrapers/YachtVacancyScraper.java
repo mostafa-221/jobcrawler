@@ -1,8 +1,8 @@
 package nl.ordina.jobcrawler.scrapers;
 
 import lombok.extern.slf4j.Slf4j;
+import nl.ordina.jobcrawler.model.Skill;
 import nl.ordina.jobcrawler.model.Vacancy;
-import nl.ordina.jobcrawler.model.VacancyURLs;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -20,59 +20,66 @@ import java.util.*;
 @Component
 public class YachtVacancyScraper extends VacancyScraper {
 
-    private static final String SEARCH_URL = "https://www.yacht.nl/vacatures?_hn:type=resource&_hn:ref=r2_r1_r1&&vakgebiedProf=IT";
-    private static final String VACANCY_URL_PREFIX = "https://www.yacht.nl/";
-    private static final String BROKER = "Yacht";
+    private static final String VACANCY_URL_PREFIX = "https://www.yacht.nl";
 
     @Autowired
     public YachtVacancyScraper() {
-        super(SEARCH_URL, BROKER);
+        super(
+                "https://www.yacht.nl/vacatures?_hn:type=resource&_hn:ref=r2_r1_r1&&vakgebiedProf=IT", // Required search URL. Can be retrieved using getSEARCH_URL()
+                "Yacht" // Required broker. Can be retrieved using getBROKER()
+        );
     }
 
     /**
      * This method retrieves all URLs and other available data of the page that shows multiple vacancies.
+     *
      * @return List of VacancyURLs with as much details of the vacancy as possible.
      */
+
     @Override
-    protected List<VacancyURLs> getVacancyURLs() {
-        //  Returns a List with VacancyURLs
-        List<VacancyURLs> vacancyURLs = new ArrayList<>();
-        int totalNumberOfPages = 1;
-        for (int pageNumber = 1; pageNumber <= totalNumberOfPages; pageNumber++) {
+    public List<Vacancy> getVacancies() {
+        log.info(String.format("%s -- Start scraping", getBROKER().toUpperCase()));
+        List<Vacancy> vacancies = new ArrayList<>();
+
+        int totalnumberOfPages = 1;
+        for (int pageNumber = 1; pageNumber <= totalnumberOfPages; pageNumber++) {
             YachtVacancyResponse yachtVacancyResponse = scrapeVacancies(pageNumber);
 
             if (pageNumber == 1) {
-                totalNumberOfPages = yachtVacancyResponse.getPages();
-                log.info("YACHT -- Total number of pages: " + totalNumberOfPages);
+                totalnumberOfPages = yachtVacancyResponse.getPages();
+                log.info(String.format("%s -- Total number of pages: %s", getBROKER(), totalnumberOfPages));
             }
 
-            log.info("YACHT -- Retrieving vacancy urls from page: " + yachtVacancyResponse.getCurrentPage() + " of " + yachtVacancyResponse.getPages());
+            log.info(String.format("%s -- Retrieving vacancy urls from page: %d of %d", getBROKER(), yachtVacancyResponse.getCurrentPage(), yachtVacancyResponse.getPages()));
             for (Map<String, Object> vacancyData : yachtVacancyResponse.getVacancies()) {
                 Map<String, Object> vacancyMetaData = (Map<String, Object>) vacancyData.get("meta");
                 String vacancyURL = (String) vacancyData.get("detailUrl");
-                String title = (String) vacancyData.get("title");
-                String hours = (String) vacancyMetaData.get("hours");
-                String location = (String) vacancyMetaData.get("location");
-                String vacancyNumber = (String) vacancyData.get("vacancyNumber");
-                String postingDate = (String) vacancyData.get("date");
-                vacancyURL =  vacancyURL.contains("?") ? vacancyURL.split("\\?")[0] : vacancyURL;
-                vacancyURLs.add(
-                        VacancyURLs.builder()
-                        .url(VACANCY_URL_PREFIX + vacancyURL)
-                        .title(title)
-                        .hours(hours)
-                        .location(location)
-                        .vacancyNumber(vacancyNumber)
-                        .postingDate(postingDate)
-                        .build()
-                );
+                vacancyURL = vacancyURL.contains("?") ? vacancyURL.split("\\?")[0] : vacancyURL;
+                Document vacancyDoc = getDocument(VACANCY_URL_PREFIX + vacancyURL);
+                Vacancy vacancy = Vacancy.builder()
+                        .vacancyURL(VACANCY_URL_PREFIX + vacancyURL)
+                        .title((String) vacancyData.get("title"))
+                        .hours((String) vacancyMetaData.get("hours"))
+                        .broker(getBROKER())
+                        .vacancyNumber((String) vacancyData.get("vacancyNumber"))
+                        .location((String) vacancyMetaData.get("location"))
+                        .postingDate((String) vacancyData.get("date"))
+                        .about(getVacancyAbout(vacancyDoc))
+                        .salary((String) vacancyMetaData.get("salary"))
+                        .skills(getSkills(vacancyDoc))
+                        .build();
+
+                vacancies.add(vacancy);
+                log.info(String.format("%s - Vacancy found: %s", getBROKER(), vacancy.getTitle()));
             }
         }
-        return vacancyURLs;
+        log.info(String.format("%s -- Returning scraped vacancies", getBROKER()));
+        return vacancies;
     }
 
     /**
      * This method does a get request to Yacht to retrieve the vacancies from a specific page.
+     *
      * @param pageNumber Pagenumber of which the vacancy data should be retrieved
      * @return json response from the get request
      */
@@ -88,47 +95,24 @@ public class YachtVacancyScraper extends VacancyScraper {
         return response.getBody();
     }
 
-    // getTotalNumberOfPages method is not used by this scraper. As we extend the abstract class VacancyScraper it is required to override this method and provide a return value.
-    @Override
-    protected int getTotalNumberOfPages(Document doc) {
-        return 1;
-    }
-
-    // We retrieve the vacancy title in an earlier stage as the title is returned in the get request (scrapeVacancies(int pageNumber) method). Decided to show the title of the vacancy when this method is called. That way it is clear the scraper is doing it's job.
-    @Override
-    protected void setVacancyTitle(Document doc, Vacancy vacancy) {
-        log.info("YACHT -- Scraping: " + vacancy.getTitle());
-    }
-
-    // setVacancySpecifics method is not used for this scraper. As we extend the abstract class VacancyScraper it is required to override this method.
-    @Override
-    protected void setVacancySpecifics(Document doc, Vacancy vacancy) {
-    }
-
-    @Override
-    protected List<String> getVacancySpecifics(Document doc) {
-        return new ArrayList<>();
-    }
-
     /**
      * This method selects the vacancy details from the html document
+     *
      * @param doc jsoup document of a vacancy
-     * @param vacancy vacancy object with as much details as possible so far is passed to this method
      */
-    @Override
-    protected void setVacancyAbout(Document doc, Vacancy vacancy) {
+    private String getVacancyAbout(Document doc) {
         // Extracts the about part from the vacancy
         Element vacancyBody = doc.select(".rich-text--vacancy").first();
-        vacancy.setAbout(vacancyBody.text());
+        return vacancyBody.text();
     }
 
     /**
      * This method tries to select the needed skills for a vacancy. This can look different per vacancy for which a few scenarios are coded which covers most of them.
+     *
      * @param doc jsoup document of a vacancy
-     * @param vacancy vacancy object with as much details as possible so far is passed to this method
      */
-    @Override
-    protected void setVacancySkillSet(Document doc, Vacancy vacancy) {
+    private Set<Skill> getSkills(Document doc) {
+        Set<Skill> returnSkillSet = new HashSet<>();
         // The needed skills for a vacancy in Dutch are named 'Functie-eisen'. We'd like to select these skills, starting from the h2 tag that contains those. Let's select everything after that h2 tag
         Elements skillSets = doc.select("h2:contains(Functie-eisen) ~ *");
         for (Element skillSet : skillSets) {
@@ -140,18 +124,19 @@ public class YachtVacancyScraper extends VacancyScraper {
             if (skillSet.select("ul li").size() > 0) {
                 Elements skills = skillSet.select("ul li");
                 for (Element skill : skills)
-                    vacancy.addSkill(skill.text());
+                    returnSkillSet.add(new Skill(skill.text()));
             } else {
                 if (!skillSet.text().isEmpty()) {
                     if (skillSet.text().startsWith("• ")) {
-                        vacancy.addSkill(skillSet.text().substring(2));
+                        returnSkillSet.add(new Skill(skillSet.text().substring(2)));
                     } else {
-                        vacancy.addSkill(skillSet.text());
+                        returnSkillSet.add(new Skill(skillSet.text()));
                     }
                 }
             }
 
         }
+        return returnSkillSet;
     }
 
 }
