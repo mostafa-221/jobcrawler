@@ -138,9 +138,6 @@ public class YachtVacancyScraperTest {
         String vacancyAboutDocMock = yachtVacancyScraper.getVacancyAbout(documentMock);
 
         // Todo: handle nullpointerexception
-
-        //Verify not needed yet as it throws an exception.
-//        verify(documentMock, times(1)).select(anyString());
     }
 
     @Test
