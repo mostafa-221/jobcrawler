@@ -18,13 +18,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(SkillController.class)
-class SkillControllerTest implements ControllerTest {
+class SkillControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
-    SkillService skillService;
+    private SkillService skillService;
 
     private Skill mockSkill;
 
