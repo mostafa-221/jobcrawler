@@ -57,7 +57,7 @@ public class YachtVacancyScraper extends VacancyScraper {
                 Map<String, Object> vacancyMetaData = (Map<String, Object>) vacancyData.get("meta");
                 String vacancyURL = (String) vacancyData.get("detailUrl");
                 vacancyURL = vacancyURL.contains("?") ? vacancyURL.split("\\?")[0] : vacancyURL;
-                Document vacancyDoc = getDocument(VACANCY_URL_PREFIX + vacancyURL);
+                Document vacancyDoc = getYachtDocument(VACANCY_URL_PREFIX + vacancyURL);
                 Vacancy vacancy = Vacancy.builder()
                         .vacancyURL(VACANCY_URL_PREFIX + vacancyURL)
                         .title((String) vacancyData.get("title"))
@@ -138,6 +138,15 @@ public class YachtVacancyScraper extends VacancyScraper {
 
         }
         return returnSkillSet;
+    }
+
+    /**
+     * Method added for testing purposes. getDocument in VacancyScraper.java is static can't be mocked as it's static. It is possible to mock the return value of this function.
+     * @param url retrieve document from this url
+     * @return Document
+     */
+    Document getYachtDocument(String url) {
+        return getDocument(url);
     }
 
 }
