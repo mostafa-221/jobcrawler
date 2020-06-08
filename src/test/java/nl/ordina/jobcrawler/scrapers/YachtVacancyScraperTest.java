@@ -194,6 +194,9 @@ public class YachtVacancyScraperTest {
             assertTrue(vacancy.getTitle().contains("Vacancy"));
             assertTrue(vacancy.getVacancyURL().contains("https://www.yacht.nl/vacatures/"));
         }
+
+        verify(yachtSpy, times(1)).scrapeVacancies(anyInt());
+        verify(yachtSpy, times(2)).getYachtDocument(anyString());
     }
 
     @Test(expected = NullPointerException.class)
