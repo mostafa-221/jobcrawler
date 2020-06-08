@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ Upon fetching the vacancies it runs a check to verify if the vacancy is already 
 */
 
 @Slf4j
-@Component
+@Service
 public class VacancyStarter {
 
     @Autowired
