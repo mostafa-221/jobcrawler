@@ -22,6 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(SearchRequestController.class)
 class SearchRequestControllerTest {
+
     @Autowired
     private MockMvc mockMvc;
 

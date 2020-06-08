@@ -27,9 +27,9 @@ public class ScraperController {
         /* made in a new thread so that the sender of the request does not have to wait for a response until the
          * scraping is finished.
          */
-//        removed a new thread for testing purposes
-//        Thread newThread = new Thread(vacancyStarter::scrape);
-//        newThread.start();
-        vacancyStarter.scrape();
+
+        Thread newThread = new Thread(vacancyStarter::scrape);
+        newThread.start();
+
     }
 }
