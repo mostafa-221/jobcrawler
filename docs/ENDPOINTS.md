@@ -32,27 +32,23 @@ To manually add a job to the database. **Requires** a JSON body of the vacancy, 
 **Returns**:
 - 201 Created and a link to the new vacancy if success
 - 400 Bad Request if the given body is invalid
-- 500 Internal Server Error if it could not be saved
 
 ### /{id}
 #### GET
 **Returns**:
  - 200 OK and JSON body of the vacancy if the id is found and the vacancy is successfully retrieved 
- - 404 Not Found if the id was not found 
- - 500 Internal Server Error if vacancy retrieval error. 
+ - 404 Not Found if the id was not found  
 
 #### PUT 
 To update a vacancy. **Requires** a JSON body with the fields to be updated. **Returns**:
  - 200 OK if the id was found, and the vacancy is updated 
  - 404 Not Found if the id was not found
  - 409 Conflict if there is a conflict 
- - 500 Internal Server Error if vacancy retrieval or updating error.
 
 #### DELETE
 To delete a vacancy. **Returns**:
 - 200 OK if the delete was successful
 - 404 Not Found if a product with the specified ID is not found
-- 500 Internal Service Error if an error occurs during deletion
 
 ## /search
 Endpoint for interaction from the frontend. 
@@ -112,6 +108,5 @@ If successful **returns** found results in the following format:
 **Returns**:
 - 200 OK If successful with the results
 - 400 Bad Request if the given body is invalid
-- 500 Internal Service Error if an error occurs (during retrieval or filtering)
 
 
