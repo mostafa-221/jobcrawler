@@ -9,7 +9,14 @@ To begin the scraping of websites
 ## /vacancies (same holds for /skills)
 A CRUD endpoint for the vacancies that are scraped. 
 ### GET
-**Returns** all the vacancies that were scraped. 
+**Returns** all the vacancies that were scraped and code 200 OK. 
+
+Can have additional parameters for filtering and pagination such as 
+```
+GET /vacancies?location=city&sort_by=distance&result_size=20&page=2
+```  
+to sort the result by distance from the specified location and to give 20 results for page 2. 
+
 ### POST 
 To manually add a job to the database. **Requires** a JSON body of the vacancy, for example:
 ```
