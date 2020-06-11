@@ -13,7 +13,7 @@ A CRUD endpoint for the vacancies that are scraped.
 
 Can have additional parameters for filtering and pagination such as 
 ```
-GET /vacancies?location=city&sort_by=distance&result_size=20&page=2
+GET /vacancies?location=city&sort_by=distance&page_size=20&page=2
 ```  
 to sort the result by distance from the specified location and to give 20 results for page 2. 
 
