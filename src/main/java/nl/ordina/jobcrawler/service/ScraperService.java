@@ -25,7 +25,7 @@ Upon fetching the vacancies it runs a check to verify if the vacancy is already 
 
 @Slf4j
 @Service
-public class VacancyStarter {
+public class ScraperService {
 
     @Autowired
     private VacancyService vacancyService;
