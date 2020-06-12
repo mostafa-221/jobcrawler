@@ -25,7 +25,7 @@ Upon fetching the vacancies it runs a check to verify if the vacancy is already 
 
 @Slf4j
 @Service
-public class VacancyStarter {
+public class ScraperService {
 
     @Autowired
     private VacancyService vacancyService;
@@ -69,10 +69,9 @@ public class VacancyStarter {
     @Scheduled(cron = "0 30 11,17 * * *") // Runs two times a day. At 11.30am and 5.30pm.
     public void deleteNonExistingVacancies() {
         log.info("CRON Scheduled -- Started deleting non-existing jobs");
-        List<Vacancy> allVacancies = vacancyService.getAllVacancies();
-        List<Vacancy> vacanciesToDelete = allVacancies.stream()
-                .filter(vacancy -> !vacancy.hasValidURL()) //if the url is not good anymore add it in the vacanciesToDelete
-                .collect(Collectors.toList());
+        List<Vacancy> vacanciesToDelete = vacancyService.getAllVacancies();
+        vacanciesToDelete.removeIf(Vacancy::hasValidURL);
+
 
         log.info(vacanciesToDelete.size() + " vacancy to delete.");
 

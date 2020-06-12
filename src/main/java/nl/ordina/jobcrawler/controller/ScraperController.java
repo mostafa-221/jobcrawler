@@ -1,22 +1,20 @@
 package nl.ordina.jobcrawler.controller;
 
-import nl.ordina.jobcrawler.service.VacancyStarter;
+import nl.ordina.jobcrawler.service.ScraperService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
-
 @CrossOrigin
 @RestController
 public class ScraperController {
 
-    private final VacancyStarter vacancyStarter;
+    private final ScraperService scraperService;
 
     @Autowired
-    public ScraperController(VacancyStarter vacancyStarter) {
-        this.vacancyStarter = vacancyStarter;
+    public ScraperController(ScraperService scraperService) {
+        this.scraperService = scraperService;
     }
 
     /**
@@ -28,7 +26,7 @@ public class ScraperController {
          * scraping is finished.
          */
 
-        Thread newThread = new Thread(vacancyStarter::scrape);
+        Thread newThread = new Thread(scraperService::scrape);
         newThread.start();
 
     }

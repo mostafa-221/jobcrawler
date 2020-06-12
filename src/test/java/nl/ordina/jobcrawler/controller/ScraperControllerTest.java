@@ -1,6 +1,6 @@
 package nl.ordina.jobcrawler.controller;
 
-import nl.ordina.jobcrawler.service.VacancyStarter;
+import nl.ordina.jobcrawler.service.ScraperService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -18,18 +18,18 @@ class ScraperControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private VacancyStarter vacancyStarter;
+    private ScraperService scraperService;
 
     /**
      * Tests the /scrape end point, if it calls the VacancyStarter scrape method
      */
     @Test
     void scrape() throws Exception {
-        doNothing().when(vacancyStarter).scrape();
+        doNothing().when(scraperService).scrape();
 
         mockMvc.perform(put("/scrape"))
                 .andExpect(status().isOk());
 
-        verify(vacancyStarter, times(1)).scrape();
+        verify(scraperService, times(1)).scrape();
     }
 }
