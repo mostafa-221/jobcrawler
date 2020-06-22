@@ -3,6 +3,7 @@ package nl.ordina.jobcrawler.controller;
 import nl.ordina.jobcrawler.controller.exception.VacancyNotFoundException;
 import nl.ordina.jobcrawler.model.Vacancy;
 import nl.ordina.jobcrawler.service.VacancyService;
+import nl.ordina.jobcrawler.utils.VacancyFactory;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -21,7 +22,6 @@ import java.util.UUID;
 
 
 import static nl.ordina.jobcrawler.utils.Utils.asJsonString;
-import static nl.ordina.jobcrawler.utils.VacancyFactory.create;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -47,8 +47,8 @@ class VacancyControllerTest {
     @Test
     @DisplayName("GET - OK")
     void testGetAllVacancies() throws Exception {
-        Vacancy vacancy1 = create("job1");
-        Vacancy vacancy2 = create("job2");
+        Vacancy vacancy1 = VacancyFactory.create("job1");
+        Vacancy vacancy2 = VacancyFactory.create("job2");
 
         List<Vacancy> vacancies = Arrays.asList(vacancy1, vacancy2);
 
@@ -64,7 +64,7 @@ class VacancyControllerTest {
     @Test
     @DisplayName("POST - OK")
     void testCreateVacancySuccess() throws Exception {
-        Vacancy vacancy = create("job1");
+        Vacancy vacancy = VacancyFactory.create("job1");
 
         doReturn(vacancy).when(vacancyService).save(any(Vacancy.class));
 
@@ -80,7 +80,7 @@ class VacancyControllerTest {
     @Test
     @DisplayName("POST - Bad Request")
     void testCreateVacancyBadRequest() throws Exception {
-        Vacancy vacancy = create("job1");
+        Vacancy vacancy = VacancyFactory.create("job1");
 
         doReturn(vacancy).when(vacancyService).save(any(Vacancy.class));
 
@@ -100,7 +100,7 @@ class VacancyControllerTest {
         @Test
         @DisplayName("GET - OK")
         void testGetVacancyByIdFound() throws Exception {
-            Vacancy vacancy = create("job1");
+            Vacancy vacancy = VacancyFactory.create("job1");
 
             doReturn(Optional.of(vacancy)).when(vacancyService).findById(vacancy.getId());
 
@@ -125,8 +125,8 @@ class VacancyControllerTest {
         @Test
         @DisplayName("PUT - Not Found")
         void testUpdateVacancyNotFound() throws Exception {
-            Vacancy vacancy = create("job1");
-            Vacancy newVacancy = create("job2");
+            Vacancy vacancy = VacancyFactory.create("job1");
+            Vacancy newVacancy = VacancyFactory.create("job2");
 
             doReturn(Optional.empty()).when(vacancyService).replace(vacancy.getId(), newVacancy);
 
@@ -143,8 +143,8 @@ class VacancyControllerTest {
         @Test
         @DisplayName("PUT - Conflict")
         void testUpdateVacancyConflict() throws Exception {
-            Vacancy vacancy = create("job1");
-            Vacancy newVacancy = create("job2");
+            Vacancy vacancy = VacancyFactory.create("job1");
+            Vacancy newVacancy = VacancyFactory.create("job2");
 
             doReturn(Optional.empty()).when(vacancyService).replace(vacancy.getId(), newVacancy);
 
@@ -159,8 +159,8 @@ class VacancyControllerTest {
         @Test
         @DisplayName("PUT - OK")
         void testUpdateVacancySuccess() throws Exception {
-            Vacancy vacancy = create("job1");
-            Vacancy newVacancy = create("job2");
+            Vacancy vacancy = VacancyFactory.create("job1");
+            Vacancy newVacancy = VacancyFactory.create("job2");
 
             doReturn(Optional.empty()).when(vacancyService).replace(vacancy.getId(), newVacancy);
 
@@ -177,7 +177,7 @@ class VacancyControllerTest {
         @DisplayName("DELETE - OK")
         void deleteVacancyByIdFound() throws Exception {
 
-            Vacancy vacancy = create("job");
+            Vacancy vacancy = VacancyFactory.create("job");
 
             doNothing().when(vacancyService).delete(vacancy.getId());
 
@@ -189,7 +189,7 @@ class VacancyControllerTest {
         @DisplayName("DELETE - Not Found")
         void deleteVacancyByIdNotFound() throws Exception {
 
-            Vacancy vacancy = create("job");
+            Vacancy vacancy = VacancyFactory.create("job");
 
             doThrow(new VacancyNotFoundException("")).when(vacancyService).delete(any(UUID.class));
 
