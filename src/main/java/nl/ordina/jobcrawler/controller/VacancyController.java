@@ -39,19 +39,7 @@ public class VacancyController {
         return vacancy.orElseThrow(() -> new VacancyNotFoundException("Vacancy with id: " + id + " not found."));
     }
 
-    // getting jobs by broker
-    @GetMapping("/getJobsByBroker/{broker}")
-    public List<Vacancy> getJobsByBroker(@PathVariable("broker") String broker) {
-        // Retrieve all vacancies from a specific broker. Currently case sensitive
-        return vacancyService.getVacanciesByBroker(broker);
-    }
 
-    // getting jobs by skill
-    @GetMapping("/getJobsWithSkill/{skill}")
-    public Set<Vacancy> getJobsWithSkill(@PathVariable("skill") String skill) {
-        // Only show vacancies which needs a specific skill that's requested via a get method
-        return vacancyService.getVacanciesBySkill(skill);
-    }
 
     // getting all jobs from database
     @GetMapping("/getAllJobs")

@@ -23,7 +23,7 @@ public class SkillController {
     // getting all skills from database
     @GetMapping(path = "skills")
     public List<Skill> getAllSkills() {
-        return skillService.getAllSkills();
+        return skillService.findAll();
     }
 
 }
