@@ -1,7 +1,6 @@
 package nl.ordina.jobcrawler.service;
 
 
-import nl.ordina.jobcrawler.controller.exception.SkillNotFoundException;
 import nl.ordina.jobcrawler.model.Skill;
 import nl.ordina.jobcrawler.model.Vacancy;
 import nl.ordina.jobcrawler.repo.SkillRepository;
@@ -12,9 +11,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 @Service
-public class SkillService {
+public class SkillService implements CRUDService<Skill, UUID> {
 
     private SkillRepository skillRepository;
 
@@ -23,19 +23,40 @@ public class SkillService {
         this.skillRepository = skillRepository;
     }
 
-    //******** Getting ********//
-    public List<Skill> getAllSkills() {
+
+    @Override
+    public Optional<Skill> findById(UUID id) {
+        return skillRepository.findById(id);
+    }
+
+    @Override
+    public List<Skill> findAll() {
         return skillRepository.findAll();
     }
 
-    public Optional<Skill> getSkillByName(Skill skill) {
-        return skillRepository.findByName(skill.getName());
+    @Override
+    public boolean update(Skill skill) {
+        return false;   // TODO: implementing this function
     }
 
-    public Set<Vacancy> getVacanciesBySkill(String skillName) {
-        // searches for a skill, if not found throws a skill not found exception
-        Skill skill = skillRepository.findByName(skillName).orElseThrow(() -> new SkillNotFoundException(skillName));
-        return skill.getVacancies();
+    @Override
+    public Skill save(Skill skill) {
+        return skillRepository.save(skill);
+    }
+
+    @Override
+    public boolean delete(UUID id) {
+        try {
+            skillRepository.deleteById(id);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+
+    public Optional<Skill> getSkillByName(Skill skill) {
+        return skillRepository.findByName(skill.getName());
     }
 
 
@@ -78,7 +99,8 @@ public class SkillService {
 
     //******** Adding ********//
     // takes skills and adds it to a vacancy //
-    public void addSkillsToVacancy(Set<Skill> skills, Vacancy vacancy) { ;
+    public void addSkillsToVacancy(Set<Skill> skills, Vacancy vacancy) {
+        ;
         skills = linkToExistingSkills(skills);
         vacancy.addSkills(skills);
     }

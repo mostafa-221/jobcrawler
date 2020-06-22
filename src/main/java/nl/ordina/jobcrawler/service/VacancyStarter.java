@@ -9,7 +9,6 @@ import nl.ordina.jobcrawler.scrapers.YachtVacancyScraper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -51,7 +50,7 @@ public class VacancyStarter {
                 if (existCheck.isPresent()) {
                     existVacancy++;
                 } else {
-                    vacancyService.add(vacancy);
+                    vacancyService.save(vacancy);
                     newVacancy++;
                 }
             } catch (IncorrectResultSizeDataAccessException ie) {
@@ -69,7 +68,7 @@ public class VacancyStarter {
     @Scheduled(cron = "0 30 11,17 * * *") // Runs two times a day. At 11.30am and 5.30pm.
     public void deleteNonExistingVacancies() {
         log.info("CRON Scheduled -- Started deleting non-existing jobs");
-        List<Vacancy> allVacancies = vacancyService.getAllVacancies();
+        List<Vacancy> allVacancies = vacancyService.findAll();
         List<Vacancy> vacanciesToDelete = allVacancies.stream()
                 .filter(vacancy -> !vacancy.hasValidURL()) //if the url is not good anymore add it in the vacanciesToDelete
                 .collect(Collectors.toList());

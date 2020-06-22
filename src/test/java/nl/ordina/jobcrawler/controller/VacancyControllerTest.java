@@ -53,7 +53,7 @@ class VacancyControllerTest {
 
         List<Vacancy> vacancies = Arrays.asList(vacancy1, vacancy2);
 
-        doReturn(vacancies).when(vacancyService).getAllVacancies();
+        doReturn(vacancies).when(vacancyService).findAll();
 
         mockMvc.perform(get("/vacancies"))
                 .andExpect(status().isOk())
@@ -67,7 +67,7 @@ class VacancyControllerTest {
     void testCreateVacancySuccess() throws Exception {
         Vacancy vacancy = vacancyFactory("job1");
 
-        doReturn(vacancy).when(vacancyService).add(any(Vacancy.class));
+        doReturn(vacancy).when(vacancyService).save(any(Vacancy.class));
 
         mockMvc.perform(post("/vacancies")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -83,7 +83,7 @@ class VacancyControllerTest {
     void testCreateVacancyBadRequest() throws Exception {
         Vacancy vacancy = vacancyFactory("job1");
 
-        doReturn(vacancy).when(vacancyService).add(any(Vacancy.class));
+        doReturn(vacancy).when(vacancyService).save(any(Vacancy.class));
 
         mockMvc.perform(post("/vacancies")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -103,7 +103,7 @@ class VacancyControllerTest {
         void testGetVacancyByIdFound() throws Exception {
             Vacancy vacancy = vacancyFactory("job1");
 
-            doReturn(Optional.of(vacancy)).when(vacancyService).getVacancyByID(vacancy.getId());
+            doReturn(Optional.of(vacancy)).when(vacancyService).findById(vacancy.getId());
 
             mockMvc.perform(get("/vacancies/{id}", vacancy.getId()))
                     .andExpect(status().isOk())
@@ -117,7 +117,7 @@ class VacancyControllerTest {
         @DisplayName("GET - Not Found")
         void testGetVacancyByIDNotFound() throws Exception {
 
-            doReturn(Optional.empty()).when(vacancyService).getVacancyByID(any(UUID.class));
+            doReturn(Optional.empty()).when(vacancyService).findById(any(UUID.class));
 
             mockMvc.perform(get("/getByID/{id}", UUID.randomUUID()))
                     .andExpect(status().isNotFound());

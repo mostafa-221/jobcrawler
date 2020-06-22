@@ -26,7 +26,7 @@ public class VacancyController {
     //******** Adding jobs to database ********//
     @PostMapping("/addJobWithJson")
     public Vacancy addJob(@Valid @RequestBody Vacancy job) {
-        return vacancyService.add(job);
+        return vacancyService.save(job);
     }
 
 
@@ -35,7 +35,7 @@ public class VacancyController {
     @GetMapping("/getByID/{id}")
     public Vacancy getByID(@PathVariable("id") UUID id) {
         // Retrieve a vacancy by its ID (UUID). If Vacancy is not found it throws a 'VacancyNotFoundException' (HttpStatus.NOT_FOUND).
-        Optional<Vacancy> vacancy = vacancyService.getVacancyByID(id);
+        Optional<Vacancy> vacancy = vacancyService.findById(id);
         return vacancy.orElseThrow(() -> new VacancyNotFoundException("Vacancy with id: " + id + " not found."));
     }
 
@@ -57,7 +57,7 @@ public class VacancyController {
     @GetMapping("/getAllJobs")
     public List<Vacancy> getAllJobs() {
         // Retrieve all vacancies that are available in the database
-        return vacancyService.getAllVacancies();
+        return vacancyService.findAll();
     }
 
 
