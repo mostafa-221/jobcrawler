@@ -12,6 +12,6 @@ public class VacancyNotFoundException extends RuntimeException {
     }
 
     public VacancyNotFoundException(UUID id) {
-        super("Could not find Job " + id);
+        super("Could not find vacancy with id: " + id);
     }
 }
