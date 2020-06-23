@@ -30,6 +30,9 @@ public class ScraperService {
     @Autowired
     private VacancyService vacancyService;
 
+    @Autowired
+    private MatchSkillsService matchSkillsService;
+
     private final List<VacancyScraper> scraperList = new ArrayList<>() {
         {
             add(new YachtVacancyScraper());
@@ -51,6 +54,7 @@ public class ScraperService {
                 if (existCheck.isPresent()) {
                     existVacancy++;
                 } else {
+                    matchSkillsService.changeMatch(vacancy);
                     vacancyService.add(vacancy);
                     newVacancy++;
                 }
@@ -82,8 +86,17 @@ public class ScraperService {
     }
 
     private List<Vacancy> startScraping() {
+        //matchSkillsService.insertStandardSkills();
         List<Vacancy> vacanciesList = new ArrayList<>();
         scraperList.forEach(vacancyScraper -> vacanciesList.addAll(vacancyScraper.getVacancies()));
+//        for (VacancyScraper vs: scraperList) {
+//            List <Vacancy> vacancies = vs.getVacancies();
+//            for (Vacancy v: vacancies) {
+//                matchSkillsService.changeMatch(v);
+//            }
+//            vacanciesList.addAll(vacancies);
+//        }
+
         return vacanciesList;
     }
 }

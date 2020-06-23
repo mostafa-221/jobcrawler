@@ -43,7 +43,7 @@ public class Vacancy {
     private String about;
 
     // Without eager fetch type, the program gives an error when executing the scheduled deleting of jobs, any other ideas?
-    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)  //saves the skills when a vacancy gets saved
+    @ManyToMany(cascade = CascadeType.PERSIST)  //saves the skills when a vacancy gets saved
     @JoinTable(
             name = "vacancy_skills",
             joinColumns = @JoinColumn(name = "vacancy_id"),

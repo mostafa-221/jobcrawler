@@ -2,9 +2,11 @@ package nl.ordina.jobcrawler.scrapers;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.ordina.jobcrawler.model.Vacancy;
+import nl.ordina.jobcrawler.service.MatchSkillsService;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -35,6 +37,7 @@ import java.util.List;
 @Slf4j
 @Component
 public class JobBirdScraper extends VacancyScraper {
+
 
     private static final int MAX_NR_OF_PAGES = 25;  // 25 seems enough for demo purposes, can be up to approx 60
     // at a certain point the vacancy date will be missing
@@ -76,10 +79,13 @@ public class JobBirdScraper extends VacancyScraper {
                         .build();
 
                 vacancies.add(vacancy);
+
                 log.info(String.format("%s - Vacancy found: %s", getBROKER(), vacancy.getTitle()));
             }
         }
         log.info(String.format("%s -- Returning scraped vacancies", getBROKER()));
+
+
         return vacancies;
     }
 

@@ -1,10 +1,16 @@
 package nl.ordina.jobcrawler.controller;
 
+import nl.ordina.jobcrawler.model.Vacancy;
 import nl.ordina.jobcrawler.service.ScraperService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Set;
+
+/*
+ * This controller contains the endpoint to start scraping
+*/
+
 
 @CrossOrigin
 @RestController
@@ -15,6 +21,13 @@ public class ScraperController {
     @Autowired
     public ScraperController(ScraperService scraperService) {
         this.scraperService = scraperService;
+    }
+
+
+    // simply an endpoint to start scraping directly (not in a new thread). For test purposes only.
+    @GetMapping("/scrapetest")
+    public void scrapeDirect() {
+         scraperService.scrape();
     }
 
     /**
