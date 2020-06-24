@@ -123,7 +123,7 @@ public class VacancyService implements CRUDService<Vacancy, UUID> {
     }
 
 
-    public Optional<Vacancy> getExistingVacancy(String url) {
+    public Optional<Vacancy> findByURL(String url) {
         return vacancyRepository.findByVacancyURLEquals(url);
     }
 
