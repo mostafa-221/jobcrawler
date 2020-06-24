@@ -100,7 +100,6 @@ public class SkillService implements CRUDService<Skill, UUID> {
     //******** Adding ********//
     // takes skills and adds it to a vacancy //
     public void addSkillsToVacancy(Set<Skill> skills, Vacancy vacancy) {
-        ;
         skills = linkToExistingSkills(skills);
         vacancy.addSkills(skills);
     }
