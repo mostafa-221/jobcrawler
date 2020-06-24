@@ -90,10 +90,6 @@ public class VacancyService implements CRUDService<Vacancy, UUID> {
      */
     @Override
     public boolean delete(UUID id) {
-//        Vacancy vacancyToDelete = vacancyRepository.findById(id).orElseThrow(() -> new VacancyNotFoundException(id));
-//        Set<Skill> skillsToDelete = new HashSet<Skill>(vacancyToDelete.getSkills()); // saves the skills of the vacancy
-//
-//        skillsToDelete.forEach(skill -> skill.removeVacancy(vacancyToDelete)); // remove all vacancy relations
 
         try {
             vacancyRepository.deleteById(id); //deletes the vacancy and all relations to the skills
@@ -101,7 +97,6 @@ public class VacancyService implements CRUDService<Vacancy, UUID> {
             return false;
         }
 
-//        skillService.deleteSkillsIfNoRelations(skillsToDelete); //deletes the skills if there are no more relations pointing to it
         return true;
     }
 
