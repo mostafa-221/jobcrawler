@@ -86,17 +86,8 @@ public class ScraperService {
     }
 
     private List<Vacancy> startScraping() {
-        //matchSkillsService.insertStandardSkills();
         List<Vacancy> vacanciesList = new ArrayList<>();
         scraperList.forEach(vacancyScraper -> vacanciesList.addAll(vacancyScraper.getVacancies()));
-//        for (VacancyScraper vs: scraperList) {
-//            List <Vacancy> vacancies = vs.getVacancies();
-//            for (Vacancy v: vacancies) {
-//                matchSkillsService.changeMatch(v);
-//            }
-//            vacanciesList.addAll(vacancies);
-//        }
-
         return vacanciesList;
     }
 }

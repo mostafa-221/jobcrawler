@@ -1,12 +1,14 @@
 package nl.ordina.jobcrawler.service;
 
 
+import lombok.extern.slf4j.Slf4j;
 import nl.ordina.jobcrawler.model.Skill;
 import nl.ordina.jobcrawler.model.Vacancy;
 import nl.ordina.jobcrawler.repo.SkillRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -30,6 +32,7 @@ import java.util.Set;
 *
 * */
 
+@Slf4j
 @Service
 public class MatchSkillsService {
 
@@ -50,16 +53,12 @@ public class MatchSkillsService {
         Set<Skill> matchedSkills = new HashSet<>();
 
         for (Skill s: skills) {
-            System.out.println(vacancy.getTitle());
             if (matchesSkill(s.getName(), vacancy)) {
-                System.out.println("matches " + s.getName());
                 matchedSkills.add(s);
-            } else {
-                System.out.println("NO match with " + s.getName());
             }
         }
+        log.info(vacancy.getTitle() + " matched with skills: " + matchedSkills.toString());
         vacancy.setSkills(matchedSkills);
-        System.out.println(" ");
     } // changeMatch
 
 
@@ -69,13 +68,15 @@ public class MatchSkillsService {
         skillRepository.save(skill);
     }
 
+    //@PostConstruct   restore this line to create standard set of skills after database cleared
     public void insertStandardSkills() {
-//        skillRepository.deleteAll();  // just delete all skills
-//        addStandardSkill("AWS");
-//        addStandardSkill("SQL");
-//        addStandardSkill("Python");
-//        addStandardSkill("Docker");
-//        addStandardSkill("MySQL");
-//        addStandardSkill("Postgres");
+        //skillRepository.deleteAll();  // just delete all skills
+        addStandardSkill("AWS");
+        addStandardSkill("SQL");
+        addStandardSkill("Python");
+        addStandardSkill("Docker");
+        addStandardSkill("MySQL");
+        addStandardSkill("Postgres");
+        addStandardSkill("Java");
     }
 }
