@@ -2,16 +2,14 @@ package nl.ordina.jobcrawler.service;
 
 import nl.ordina.jobcrawler.controller.exception.VacancyNotFoundException;
 import nl.ordina.jobcrawler.controller.exception.VacancyURLMalformedException;
-import nl.ordina.jobcrawler.model.Skill;
 import nl.ordina.jobcrawler.model.Vacancy;
 import nl.ordina.jobcrawler.repo.VacancyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -86,18 +84,17 @@ public class VacancyService implements CRUDService<Vacancy, UUID> {
      *
      * @param id The id of the vacancy to delete.
      * @return True if the operation was successful, false otherwise.
-     * @throws VacancyNotFoundException if the vacancy with the specified id was not found.
      */
     @Override
     public boolean delete(UUID id) {
 
         try {
-            vacancyRepository.deleteById(id); //deletes the vacancy and all relations to the skills
-        } catch (Exception e) {
+            vacancyRepository.deleteById(id);
+            return true;
+        } catch (DataAccessException e) {
             return false;
         }
 
-        return true;
     }
 
 
