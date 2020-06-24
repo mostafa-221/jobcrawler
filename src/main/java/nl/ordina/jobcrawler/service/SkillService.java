@@ -55,8 +55,8 @@ public class SkillService implements CRUDService<Skill, UUID> {
     }
 
 
-    public Optional<Skill> getSkillByName(Skill skill) {
-        return skillRepository.findByName(skill.getName());
+    public Optional<Skill> getSkillByName(String skillName) {
+        return skillRepository.findByName(skillName);
     }
 
 
@@ -69,7 +69,7 @@ public class SkillService implements CRUDService<Skill, UUID> {
 
         for (Skill skill : skills) {
             System.out.println("** Checking if skill is in database for " + skill.getName());
-            Optional<Skill> existingSkill = getSkillByName(skill); //here happens a search query
+            Optional<Skill> existingSkill = getSkillByName(skill.getName()); //here happens a search query
 
             if (existingSkill.isPresent()) {
                 System.out.println("** Existing skill: " + existingSkill.get().getName() + "\t" + existingSkill.get().getId());
