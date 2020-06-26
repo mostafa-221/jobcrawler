@@ -135,7 +135,7 @@ class VacancyControllerTest {
             }
         }
 
-        @Disabled
+        @Disabled   // as vacancies are immutable, they cannot be updated
         @Nested
         @DisplayName("PUT")
         class put {

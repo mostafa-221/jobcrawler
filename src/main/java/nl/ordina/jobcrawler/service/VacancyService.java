@@ -1,6 +1,5 @@
 package nl.ordina.jobcrawler.service;
 
-import nl.ordina.jobcrawler.controller.exception.VacancyNotFoundException;
 import nl.ordina.jobcrawler.controller.exception.VacancyURLMalformedException;
 import nl.ordina.jobcrawler.model.Vacancy;
 import nl.ordina.jobcrawler.repo.VacancyRepository;
@@ -16,12 +15,10 @@ import java.util.UUID;
 public class VacancyService implements CRUDService<Vacancy, UUID> {
 
     private final VacancyRepository vacancyRepository;
-    private final SkillService skillService;
 
     @Autowired
-    public VacancyService(VacancyRepository vacancyRepository, SkillService skillService) {
+    public VacancyService(VacancyRepository vacancyRepository) {
         this.vacancyRepository = vacancyRepository;
-        this.skillService = skillService;
     }
 
 
@@ -56,7 +53,7 @@ public class VacancyService implements CRUDService<Vacancy, UUID> {
      */
     @Override
     public boolean update(Vacancy vacancy) {
-        return false;   //Todo: implementing this function
+        return false;
     }
 
 
@@ -98,31 +95,12 @@ public class VacancyService implements CRUDService<Vacancy, UUID> {
     }
 
 
-    //******** Updating ********//
-    // Updates Vacancy with a given new vacancy (can write to all 3 tables)//
-    public Vacancy replace(UUID id, Vacancy newJob) {
-        return vacancyRepository.findById(id)
-                .map(job -> {
-                    System.out.println("** Job before modification: \n" + job);
-
-                    job.setVacancyURL(newJob.getVacancyURL());
-                    job.setTitle(newJob.getTitle());
-                    job.setBroker(newJob.getBroker());
-                    job.setVacancyNumber(newJob.getVacancyNumber());
-                    job.setHours(newJob.getHours());
-                    job.setLocation(newJob.getLocation());
-                    job.setPostingDate(newJob.getPostingDate());
-                    job.setAbout(newJob.getAbout());
-
-                    skillService.updateSkills(newJob.getSkills(), job); // updates the skills of the job with the new skills
-
-                    return vacancyRepository.save(job);
-                })
-                .orElseThrow(() -> new VacancyNotFoundException(id));
-
-    }
-
-
+    /**
+     * Returns the vacancy with the specified url.
+     *
+     * @param url url of the vacancy to retrieve.
+     * @return An optional of the requested vacancy if found, and an empty optional otherwise.
+     */
     public Optional<Vacancy> findByURL(String url) {
         return vacancyRepository.findByVacancyURLEquals(url);
     }

@@ -79,21 +79,6 @@ public class VacancyController {
     }
 
     /**
-     * Updates the fields in the specified vacancy with the specified ID.
-     *
-     * @param newVacancy The vacancy field values to update.
-     * @param id         The ID of the vacancy to update.
-     * @return  A ResponseEntity that contains the updated vacancy or one of the following error statuses:
-     *          NOT_FOUND if there is no vacancy in the database with the specified ID
-     *          CONFLICT if the eTag does not match the version of the vacancy to update
-     */
-    @PutMapping("/{id}")
-    Vacancy updateVacancy(@PathVariable UUID id, @RequestBody Vacancy newVacancy) {
-        vacancyService.findById(id).orElseThrow(() -> new VacancyNotFoundException(id));
-        return vacancyService.replace(id, newVacancy);
-    }
-
-    /**
      * Deletes the vacancy with the specified ID.
      *
      * @param id The ID of the vacancy to delete.
