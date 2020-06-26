@@ -25,7 +25,7 @@ public interface CRUDService<T, U> {
      * @param t         The object to update.
      * @return          True if the update succeeded, otherwise false.
      */
-    boolean update(T t);
+    T update(U u, T t);
 
     /**
      * Saves the specified object to the database.

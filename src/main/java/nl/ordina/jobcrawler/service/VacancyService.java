@@ -52,8 +52,8 @@ public class VacancyService implements CRUDService<Vacancy, UUID> {
      * @return True if the update succeeded, otherwise false.
      */
     @Override
-    public boolean update(Vacancy vacancy) {
-        return false;
+    public Vacancy update(UUID id, Vacancy vacancy) {
+        return vacancy;
     }
 
 

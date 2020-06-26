@@ -145,7 +145,7 @@ class VacancyControllerTest {
                 Vacancy vacancy = VacancyFactory.create("job1");
                 Vacancy newVacancy = VacancyFactory.create("job2");
 
-                doReturn(Optional.empty()).when(vacancyService).replace(vacancy.getId(), newVacancy);
+//                doReturn(Optional.empty()).when(vacancyService).replace(vacancy.getId(), newVacancy);
 
                 mockMvc.perform(put("/vacancies/{id}", UUID.randomUUID())
                         .content(asJsonString(newVacancy))
@@ -162,7 +162,7 @@ class VacancyControllerTest {
                 Vacancy vacancy = VacancyFactory.create("job1");
                 Vacancy newVacancy = VacancyFactory.create("job2");
 
-                doReturn(Optional.empty()).when(vacancyService).replace(vacancy.getId(), newVacancy);
+//                doReturn(Optional.empty()).when(vacancyService).replace(vacancy.getId(), newVacancy);
 
                 mockMvc.perform(put("/vacancies/{id}", vacancy)
                         .content(asJsonString(newVacancy))
@@ -178,7 +178,7 @@ class VacancyControllerTest {
                 Vacancy vacancy = VacancyFactory.create("job1");
                 Vacancy newVacancy = VacancyFactory.create("job2");
 
-                doReturn(Optional.empty()).when(vacancyService).replace(vacancy.getId(), newVacancy);
+//                doReturn(Optional.empty()).when(vacancyService).replace(vacancy.getId(), newVacancy);
 
                 mockMvc.perform(put("/vacancies/{id}", vacancy)
                         .content(asJsonString(newVacancy))
