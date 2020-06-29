@@ -79,7 +79,7 @@ public class SkillController {
     }
 
     @PutMapping("/{id}")
-    public Skill updateSkill(@PathVariable UUID id, @RequestBody Skill skill) {
+    public Skill updateSkill(@PathVariable UUID id, @Valid @RequestBody Skill skill) {
         skillService.findById(id).orElseThrow(() -> new SkillNotFoundException(id));
         return skillService.update(id, skill);
     }

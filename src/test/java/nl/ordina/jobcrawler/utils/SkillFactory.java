@@ -14,4 +14,12 @@ public class SkillFactory {
                 .vacancies(new HashSet<Vacancy>())
                 .build();
     }
+
+    public static Skill create(UUID id, String title) {
+        return Skill.builder()
+                .id(id)
+                .name(title)
+                .vacancies(new HashSet<Vacancy>())
+                .build();
+    }
 }

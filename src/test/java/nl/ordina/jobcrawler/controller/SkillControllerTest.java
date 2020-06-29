@@ -127,7 +127,6 @@ class SkillControllerTest {
             }
         }
 
-        @Disabled   // as skills are immutable, they cannot be updated
         @Nested
         @DisplayName("PUT")
         class put {
@@ -137,7 +136,7 @@ class SkillControllerTest {
                 Skill skill = SkillFactory.create("skill1");
                 Skill newSkill = SkillFactory.create("skill2");
 
-//                doReturn(Optional.empty()).when(skillService).replace(skill.getId(), newSkill);
+                doReturn(Optional.empty()).when(skillService).findById(any(UUID.class));
 
                 mockMvc.perform(put("/skills/{id}", UUID.randomUUID())
                         .content(asJsonString(newSkill))
@@ -146,8 +145,8 @@ class SkillControllerTest {
                         .andExpect(status().isNotFound());
             }
 
-            /* TODO: Not sure what we want to do with versioning
-            maybe we can have immutability for skills */
+            // TODO: For later increment
+            @Disabled
             @Test
             @DisplayName("PUT - Conflict")
             void testUpdateSkillConflict() throws Exception {
@@ -156,7 +155,7 @@ class SkillControllerTest {
 
 //                doReturn(Optional.empty()).when(skillService).replace(skill.getId(), newSkill);
 
-                mockMvc.perform(put("/skills/{id}", skill)
+                mockMvc.perform(put("/skills/{id}", skill.getId())
                         .content(asJsonString(newSkill))
                         .contentType(MediaType.APPLICATION_JSON)
 
@@ -167,18 +166,22 @@ class SkillControllerTest {
             @Test
             @DisplayName("PUT - OK")
             void testUpdateSkillSuccess() throws Exception {
-                Skill skill = SkillFactory.create("skill1");
-                Skill newSkill = SkillFactory.create("skill2");
+                Skill skill = SkillFactory.create("skill");
+                Skill newSkill = new Skill("new skill");
 
-//                doReturn(Optional.empty()).when(skillService).replace(skill.getId(), newSkill);
+                Skill updatedSkill = SkillFactory.create(skill.getId(), newSkill.getName());
 
-                mockMvc.perform(put("/skills/{id}", skill)
+                doReturn(Optional.of(skill)).when(skillService).findById(skill.getId());
+                doReturn(updatedSkill).when(skillService).update(skill.getId(), newSkill);
+
+                mockMvc.perform(put("/skills/{id}", skill.getId())
+
                         .content(asJsonString(newSkill))
                         .contentType(MediaType.APPLICATION_JSON))
 
                         .andExpect(status().isOk())
                         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                        .andExpect(content().string(asJsonString(newSkill)));
+                        .andExpect(content().string(asJsonString(updatedSkill)));
             }
         }
 
