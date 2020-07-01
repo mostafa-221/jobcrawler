@@ -3,13 +3,10 @@ package nl.ordina.jobcrawler.service;
 
 import nl.ordina.jobcrawler.controller.exception.SkillNotFoundException;
 import nl.ordina.jobcrawler.model.Skill;
-import nl.ordina.jobcrawler.model.SkillDTO;
 import nl.ordina.jobcrawler.model.Vacancy;
 import nl.ordina.jobcrawler.repo.SkillRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.HashSet;
 import java.util.List;
@@ -33,6 +30,7 @@ public class SkillService {
         this.skillRepository = skillRepository;
     }
 
+
     //******** Getting ********//
     public List<Skill> getAllSkills() {
         return skillRepository.findAll();
@@ -50,9 +48,10 @@ public class SkillService {
 
 
     //******** linking ********//
-    // links the skills of the vacancy to existing entries in the database //
-    // reads from the skill table //
-    public Set<Skill> linkToExistingSkills(Set<Skill> skills) {
+    // finds the skills of the vacancy in the database
+    // add in a list of skills: either the skill of existing entry in the database
+    // or the skill in the list of skills if it was not found
+    public Set<Skill> retrieveLinksSkills(Set<Skill> skills) {
         Set<Skill> newSkills = new HashSet<>();
         // Todo: try to find a solution to have 1 query per iteration searching and fetching
 
@@ -89,7 +88,7 @@ public class SkillService {
     //******** Adding ********//
     // takes skills and adds it to a vacancy //
     public void addSkillsToVacancy(Set<Skill> skills, Vacancy vacancy) { ;
-        skills = linkToExistingSkills(skills);
+        skills = retrieveLinksSkills(skills);
         vacancy.addSkills(skills);
     }
 
@@ -143,16 +142,30 @@ public class SkillService {
         skillRepository.save(skill);
     }
 
+    // delete the skill by name including the link to the skill in the vacancy-skill table
     public void deleteSkill(String name) {
         skillRepository.deleteReferencesToSkill(name);
         skillRepository.deleteSkillByName(name);
     }
 
-    public void relinkSkills() {
+    // delete all the references to any of the skills
+    public void deleteReferencesToSkills() {
         skillRepository.deleteReferencesToSkills();
-        List<Skill> allSkills = this.getAllSkills();
-        for (Skill s: allSkills) {
+    }
 
+    // delete all skills in the skill table including the links in the vacancy-skill table
+    public void deleteAllSkills() {
+        skillRepository.deleteReferencesToSkills();
+        skillRepository.deleteSkills();
+    }
+
+    // Given a list of skills from the database, add the links to the vacancy-skills table
+    // for the given vacancy
+    public  void createMatchingSkillLinks(Vacancy vacancy, Set<Skill> matchingSkills) {
+        for (Skill skill: matchingSkills) {
+            skillRepository.linkSkillToVacancy(vacancy.getId(), skill.getId());
         }
     }
+
+
 }

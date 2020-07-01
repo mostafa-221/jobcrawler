@@ -3,6 +3,7 @@ package nl.ordina.jobcrawler.controller;
 import lombok.extern.slf4j.Slf4j;
 import nl.ordina.jobcrawler.model.Skill;
 import nl.ordina.jobcrawler.model.SkillDTO;
+import nl.ordina.jobcrawler.service.MatchSkillsService;
 import nl.ordina.jobcrawler.service.SkillService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -17,8 +18,12 @@ public class SkillController {
 
     private final SkillService skillService;
 
+    private final MatchSkillsService matchSkillsService;
+
     @Autowired
-    public SkillController(SkillService skillService) {
+    public SkillController(SkillService skillService,
+                           MatchSkillsService matchSkillsService) {
+        this.matchSkillsService = matchSkillsService;
         this.skillService = skillService;
     }
 
@@ -56,6 +61,6 @@ public class SkillController {
     @GetMapping(path = "relinkskills")
     public void relinkSkills() {
         log.info("relink skills");
-        skillService.relinkSkills();
+        matchSkillsService.relinkSkills();
     }
 }

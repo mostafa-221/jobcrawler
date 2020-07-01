@@ -1,6 +1,7 @@
 package nl.ordina.jobcrawler.repo;
 
 import nl.ordina.jobcrawler.model.Skill;
+import nl.ordina.jobcrawler.model.Vacancy;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Repository
@@ -37,4 +39,19 @@ public interface SkillRepository extends JpaRepository<Skill, UUID> {
     @Transactional
     @Modifying
     void deleteReferencesToSkills();
+
+    @Query(value = "delete from skills",
+            nativeQuery = true)
+    @Transactional
+    @Modifying
+    void deleteSkills();
+
+
+    @Query(value = "insert into vacancy_skills(vacancy_id, skill_id) values (?1, ?2)",
+            nativeQuery = true)
+    @Transactional
+    @Modifying
+    void linkSkillToVacancy(UUID vacancyId, UUID skillID);
+
+
 }
