@@ -1,11 +1,12 @@
 package nl.ordina.jobcrawler.controller;
 
-import nl.ordina.jobcrawler.model.Vacancy;
+
 import nl.ordina.jobcrawler.service.ScraperService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Set;
 
 /*
  * This controller contains the endpoint to start scraping

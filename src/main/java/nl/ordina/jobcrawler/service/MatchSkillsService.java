@@ -20,16 +20,6 @@ import java.util.Set;
 *  vacancies in the vacancy table and to add or update relationship records accordingly:
 *  It relies on the SkillService to interact with the database.
 *
-* This service has the following functionality:
-*     Boolean matchesSkill(skill name, vacancy)
-*         checks whether the vacancy text matches the skill name
-*
-*     ChangeMatch(vacancy)
-*     Change the match with skills for an existing vacancy in the database
-*     removes previous relationships with the skill table from this vacancy
-*     adds relationships to the skill table for which a matchesSkill holds
-*
-*
 * */
 
 @Slf4j
@@ -47,10 +37,14 @@ public class MatchSkillsService {
         this.skillService = skillService;
     }
 
+    //         checks whether the vacancy text matches the skill name
     public boolean matchesSkill(String skillName, Vacancy vacancy) {
         return (vacancy.getAbout().toUpperCase().contains(skillName.toUpperCase()));
     }
 
+    //     Change the match with skills for an existing vacancy in the database
+    //     removes previous relationships with the skill table from this vacancy
+    //     adds relationships to the skill table for which a matchesSkill holds
     public void changeMatch(Vacancy vacancy) {
         List<Skill> skills = skillService.getAllSkills();
         Set<Skill> matchedSkills = new HashSet<>();
