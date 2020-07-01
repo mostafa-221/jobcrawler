@@ -36,6 +36,7 @@ import java.util.List;
 @Component
 public class JobBirdScraper extends VacancyScraper {
 
+
     private static final int MAX_NR_OF_PAGES = 25;  // 25 seems enough for demo purposes, can be up to approx 60
     // at a certain point the vacancy date will be missing
 
@@ -76,10 +77,13 @@ public class JobBirdScraper extends VacancyScraper {
                         .build();
 
                 vacancies.add(vacancy);
+
                 log.info(String.format("%s - Vacancy found: %s", getBROKER(), vacancy.getTitle()));
             }
         }
         log.info(String.format("%s -- Returning scraped vacancies", getBROKER()));
+
+
         return vacancies;
     }
 

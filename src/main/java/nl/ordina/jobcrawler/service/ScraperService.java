@@ -27,8 +27,16 @@ Upon fetching the vacancies it runs a check to verify if the vacancy is already 
 @Service
 public class ScraperService {
 
-    @Autowired
+
     private VacancyService vacancyService;
+
+    private MatchSkillsService matchSkillsService;
+
+    @Autowired
+    public ScraperService(VacancyService vacancyService, MatchSkillsService matchSkillsService) {
+        this.vacancyService = vacancyService;
+        this.matchSkillsService = matchSkillsService;
+    }
 
     private final List<VacancyScraper> scraperList = new ArrayList<>() {
         {
@@ -51,6 +59,7 @@ public class ScraperService {
                 if (existCheck.isPresent()) {
                     existVacancy++;
                 } else {
+                    matchSkillsService.changeMatch(vacancy);
                     vacancyService.add(vacancy);
                     newVacancy++;
                 }
