@@ -24,11 +24,7 @@ public class ScraperController {
     }
 
 
-    // simply an endpoint to start scraping directly (not in a new thread). For test purposes only.
-    @GetMapping("/scrapetest")
-    public void scrapeDirect() {
-         scraperService.scrape();
-    }
+
 
     /**
      * start the scraping of jobs

@@ -134,4 +134,9 @@ public class SkillService {
         addSkillsToVacancy(skillsToAdd, vacancy);
     }
 
+    // add a new skill to the skill table
+    public void addSkill(Skill aSkill) {
+        skillRepository.save(aSkill);
+    }
+
 }

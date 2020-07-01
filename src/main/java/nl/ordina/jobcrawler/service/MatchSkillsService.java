@@ -36,13 +36,16 @@ import java.util.Set;
 @Service
 public class MatchSkillsService {
 
-    @Autowired
+
     private SkillService skillService;
-
-
-    @Autowired
     private SkillRepository skillRepository;
 
+
+    @Autowired
+    public MatchSkillsService(SkillRepository skillRepository, SkillService skillService) {
+        this.skillRepository = skillRepository;
+        this.skillService = skillService;
+    }
 
     public boolean matchesSkill(String skillName, Vacancy vacancy) {
         return (vacancy.getAbout().toUpperCase().contains(skillName.toUpperCase()));
@@ -65,12 +68,16 @@ public class MatchSkillsService {
 
     private void addStandardSkill(String aSkill) {
         Skill skill = new Skill(aSkill);
-        skillRepository.save(skill);
+        skillService.addSkill(skill);
     }
 
-    //@PostConstruct   restore this line to create standard set of skills after database cleared
+    //@PostConstruct   //restore this line to create standard set of skills after database cleared
     public void insertStandardSkills() {
-        //skillRepository.deleteAll();  // just delete all skills
+        List<Skill> skills = skillService.getAllSkills();
+        for (Skill s: skills) {
+            skillRepository.deleteReferencesToSkill(s.getName());
+        }
+        skillRepository.deleteAll();  // just delete all skills
         addStandardSkill("AWS");
         addStandardSkill("SQL");
         addStandardSkill("Python");
@@ -78,5 +85,7 @@ public class MatchSkillsService {
         addStandardSkill("MySQL");
         addStandardSkill("Postgres");
         addStandardSkill("Java");
+        addStandardSkill("JEE");
+        addStandardSkill("Angular");
     }
 }
