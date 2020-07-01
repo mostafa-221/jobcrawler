@@ -62,7 +62,7 @@ public class MatchSkillsService {
         }
         log.info(vacancy.getTitle() + " matched with skills: " + matchedSkills.toString());
         vacancy.setSkills(matchedSkills);
-    } // changeMatch
+    } 
 
 
 
