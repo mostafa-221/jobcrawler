@@ -83,4 +83,7 @@ a JSON body containing the DTO object of a skill
 see /saveskill
 
 
-
+## /relinkskills
+### GET
+Deletes links between all vacancies and skills
+Matches all skills with vacancies and creates new links 

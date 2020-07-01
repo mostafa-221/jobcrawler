@@ -31,6 +31,7 @@ public class MatchSkillsService {
     private SkillRepository skillRepository;
 
 
+
     @Autowired
     public MatchSkillsService(SkillRepository skillRepository, SkillService skillService) {
         this.skillRepository = skillRepository;
@@ -62,7 +63,7 @@ public class MatchSkillsService {
 
     private void addStandardSkill(String aSkill) {
         Skill skill = new Skill(aSkill);
-        skillService.addSkill(skill);
+        skillService.addSkill(skill.getName());
     }
 
     //@PostConstruct   //restore this line to create standard set of skills after database cleared

@@ -28,4 +28,13 @@ public interface SkillRepository extends JpaRepository<Skill, UUID> {
     @Transactional
     @Modifying
     void deleteReferencesToSkill(String name);
+
+    @Transactional
+    void deleteSkillByName(String name);
+
+    @Query(value = "delete from vacancy_skills",
+            nativeQuery = true)
+    @Transactional
+    @Modifying
+    void deleteReferencesToSkills();
 }

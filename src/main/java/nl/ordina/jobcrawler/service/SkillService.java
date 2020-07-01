@@ -3,10 +3,13 @@ package nl.ordina.jobcrawler.service;
 
 import nl.ordina.jobcrawler.controller.exception.SkillNotFoundException;
 import nl.ordina.jobcrawler.model.Skill;
+import nl.ordina.jobcrawler.model.SkillDTO;
 import nl.ordina.jobcrawler.model.Vacancy;
 import nl.ordina.jobcrawler.repo.SkillRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.HashSet;
 import java.util.List;
@@ -135,8 +138,21 @@ public class SkillService {
     }
 
     // add a new skill to the skill table
-    public void addSkill(Skill aSkill) {
-        skillRepository.save(aSkill);
+    public void addSkill(String name) {
+        Skill skill = new Skill(name);
+        skillRepository.save(skill);
     }
 
+    public void deleteSkill(String name) {
+        skillRepository.deleteReferencesToSkill(name);
+        skillRepository.deleteSkillByName(name);
+    }
+
+    public void relinkSkills() {
+        skillRepository.deleteReferencesToSkills();
+        List<Skill> allSkills = this.getAllSkills();
+        for (Skill s: allSkills) {
+
+        }
+    }
 }
