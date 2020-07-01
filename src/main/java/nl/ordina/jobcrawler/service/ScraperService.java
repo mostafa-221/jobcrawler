@@ -27,11 +27,16 @@ Upon fetching the vacancies it runs a check to verify if the vacancy is already 
 @Service
 public class ScraperService {
 
-    @Autowired
+
     private VacancyService vacancyService;
 
-    @Autowired
     private MatchSkillsService matchSkillsService;
+
+    @Autowired
+    public ScraperService(VacancyService vacancyService, MatchSkillsService matchSkillsService) {
+        this.vacancyService = vacancyService;
+        this.matchSkillsService = matchSkillsService;
+    }
 
     private final List<VacancyScraper> scraperList = new ArrayList<>() {
         {
