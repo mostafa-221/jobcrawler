@@ -16,6 +16,7 @@ import java.util.List;
 @RestController
 public class SkillController {
 
+
     private final SkillService skillService;
 
     private final MatchSkillsService matchSkillsService;
@@ -60,7 +61,8 @@ public class SkillController {
     // getting all skills from database
     @GetMapping(path = "relinkskills")
     public void relinkSkills() {
-        log.info("relink skills");
-        matchSkillsService.relinkSkills();
+            log.info("relink skills");
+            matchSkillsService.relinkSkills();
+            log.info("relink done");
     }
 }
