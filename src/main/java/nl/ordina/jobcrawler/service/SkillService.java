@@ -36,6 +36,11 @@ public class SkillService {
         return skillRepository.findAll();
     }
 
+
+    public List<Skill> getAllSkillsByNameAsc() {
+        return skillRepository.findByOrderByNameAsc();
+    }
+
     public Optional<Skill> getSkillByName(Skill skill) {
         return skillRepository.findByName(skill.getName());
     }

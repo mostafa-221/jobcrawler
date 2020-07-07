@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -54,4 +55,5 @@ public interface SkillRepository extends JpaRepository<Skill, UUID> {
     void linkSkillToVacancy(UUID vacancyId, UUID skillID);
 
 
+    List<Skill> findByOrderByNameAsc();
 }

@@ -36,7 +36,7 @@ public class SkillController {
 
     @GetMapping(path="getskills")
     public List<SkillDTO> getAllMySkills() {
-        List<Skill> skills = skillService.getAllSkills();
+        List<Skill> skills = skillService.getAllSkillsByNameAsc();
 
         List<SkillDTO> skilldoaList = new ArrayList<>();
         for (Skill s: skills) {
