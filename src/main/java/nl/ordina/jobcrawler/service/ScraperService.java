@@ -60,7 +60,7 @@ public class ScraperService {
                     existVacancy++;
                 } else {
                     matchSkillsService.changeMatch(vacancy);
-                    vacancyService.add(vacancy);
+                    vacancyService.save(vacancy);
                     newVacancy++;
                 }
             } catch (IncorrectResultSizeDataAccessException ie) {
