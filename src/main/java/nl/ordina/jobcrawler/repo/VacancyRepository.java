@@ -2,6 +2,7 @@ package nl.ordina.jobcrawler.repo;
 
 import nl.ordina.jobcrawler.model.Vacancy;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
@@ -10,6 +11,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
+@RepositoryRestResource
 public interface VacancyRepository extends JpaRepository<Vacancy, UUID> {
 
     @Transactional
