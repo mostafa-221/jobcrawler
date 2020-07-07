@@ -25,4 +25,9 @@ public interface SkillRepository extends JpaRepository<Skill, UUID> {
     @Modifying
     void removeRelationsById(UUID skillID, UUID jobID);
 
+    @Query(value = "delete from vacancy_skills where skill_id in (select id from skill where name = ?1)",
+            nativeQuery = true)
+    @Transactional
+    @Modifying
+    void deleteReferencesToSkill(String name);
 }

@@ -9,8 +9,10 @@ import nl.ordina.jobcrawler.scrapers.YachtVacancyScraper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -23,10 +25,18 @@ Upon fetching the vacancies it runs a check to verify if the vacancy is already 
 
 @Slf4j
 @Service
-public class VacancyStarter {
+public class ScraperService {
+
+
+    private VacancyService vacancyService;
+
+    private MatchSkillsService matchSkillsService;
 
     @Autowired
-    private VacancyService vacancyService;
+    public ScraperService(VacancyService vacancyService, MatchSkillsService matchSkillsService) {
+        this.vacancyService = vacancyService;
+        this.matchSkillsService = matchSkillsService;
+    }
 
     private final List<VacancyScraper> scraperList = new ArrayList<>() {
         {
@@ -36,7 +46,7 @@ public class VacancyStarter {
         }
     };
 
-//    @PostConstruct
+    //    @PostConstruct
     @Scheduled(cron = "0 0 12,18 * * *") // Runs two times a day. At 12pm and 6pm
     public void scrape() {
         log.info("CRON Scheduled -- Scrape vacancies");
@@ -49,7 +59,8 @@ public class VacancyStarter {
                 if (existCheck.isPresent()) {
                     existVacancy++;
                 } else {
-                    vacancyService.save(vacancy);
+                    matchSkillsService.changeMatch(vacancy);
+                    vacancyService.add(vacancy);
                     newVacancy++;
                 }
             } catch (IncorrectResultSizeDataAccessException ie) {
@@ -67,10 +78,8 @@ public class VacancyStarter {
     @Scheduled(cron = "0 30 11,17 * * *") // Runs two times a day. At 11.30am and 5.30pm.
     public void deleteNonExistingVacancies() {
         log.info("CRON Scheduled -- Started deleting non-existing jobs");
-        List<Vacancy> allVacancies = vacancyService.findAll();
-        List<Vacancy> vacanciesToDelete = allVacancies.stream()
-                .filter(vacancy -> !vacancy.hasValidURL()) //if the url is not good anymore add it in the vacanciesToDelete
-                .collect(Collectors.toList());
+        List<Vacancy> vacanciesToDelete = vacancyService.findAll();
+        vacanciesToDelete.removeIf(Vacancy::hasValidURL);
 
         log.info(vacanciesToDelete.size() + " vacancy to delete.");
 

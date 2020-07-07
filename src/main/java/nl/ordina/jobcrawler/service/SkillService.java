@@ -11,6 +11,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+/*
+    This service operates on the skills in the database
+    It contains functions that affect the skill table and the table that relates
+    the skill set in the skill table with the vacancies.
+ */
+
+
 @Service
 public class SkillService implements CRUDService<Skill, UUID> {
 
