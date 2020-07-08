@@ -1,10 +1,17 @@
 package nl.ordina.jobcrawler.controller;
 
+
 import nl.ordina.jobcrawler.service.ScraperService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+
+/*
+ * This controller contains the endpoint to start scraping
+*/
+
 
 @CrossOrigin
 @RestController
@@ -16,6 +23,9 @@ public class ScraperController {
     public ScraperController(ScraperService scraperService) {
         this.scraperService = scraperService;
     }
+
+
+
 
     /**
      * start the scraping of jobs

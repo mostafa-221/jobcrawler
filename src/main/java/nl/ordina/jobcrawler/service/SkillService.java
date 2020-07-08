@@ -13,6 +13,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+/*
+    This service operates on the skills in the database
+    It contains functions that affect the skill table and the table that relates
+    the skill set in the skill table with the vacancies.
+ */
+
+
 @Service
 public class SkillService {
 
@@ -97,7 +104,7 @@ public class SkillService {
 
 
     //******** Updating ********//
-    // Takes a new set of skills to replace old ones from a vacancy
+    // Takes a new set of skills to replace old ones from a vacancy in the database
     // calculates what needs to be removed and what needs to be added
     // Adds and removes the skills accordingly
     public void updateSkills(Set<Skill> newSkills, Vacancy vacancy) {
@@ -125,6 +132,11 @@ public class SkillService {
         removeSkillsFromVacancy(skillsToRemove, vacancy);
         skillRepository.saveAll(skillsToAdd);
         addSkillsToVacancy(skillsToAdd, vacancy);
+    }
+
+    // add a new skill to the skill table
+    public void addSkill(Skill aSkill) {
+        skillRepository.save(aSkill);
     }
 
 }

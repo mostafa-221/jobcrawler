@@ -12,6 +12,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+/*
+*    This controller contains endpoints to retrieve, update and delete vacancies
+*    in and from the database
+* */
+
 @CrossOrigin
 @RestController
 public class VacancyController {
