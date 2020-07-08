@@ -8,22 +8,11 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 @RepositoryRestResource
 public interface SkillRepository extends JpaRepository<Skill, UUID> {
-
-    Optional<Skill> findByName(String name);    // Spring makes the query automatically
-
-    @Query(value = "SELECT COUNT(*) FROM vacancy_skills vs WHERE vs.skill_id=?1", nativeQuery = true)
-    int countRelationsById(UUID id);
-
-    @Query(value = "DELETE FROM vacancy_skills vs WHERE vs.vacancy_id=?2 AND skill_id=?1", nativeQuery = true)
-    @Transactional
-    @Modifying
-    void removeRelationsById(UUID skillID, UUID jobID);
 
     @Query(value = "delete from vacancy_skills where skill_id in (select id from skill where name = ?1)",
             nativeQuery = true)
