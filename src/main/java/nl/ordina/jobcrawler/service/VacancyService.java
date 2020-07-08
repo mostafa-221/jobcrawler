@@ -53,7 +53,7 @@ public class VacancyService implements CRUDService<Vacancy, UUID> {
      */
     @Override
     public Vacancy update(UUID id, Vacancy vacancy) {
-        return vacancy;
+        return null;
     }
 
 
