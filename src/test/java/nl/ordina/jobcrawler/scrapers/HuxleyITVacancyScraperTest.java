@@ -3,26 +3,38 @@ package nl.ordina.jobcrawler.scrapers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import nl.ordina.jobcrawler.model.Vacancy;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.http.*;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+
+@ExtendWith(MockitoExtension.class)
 public class HuxleyITVacancyScraperTest {
 
     @InjectMocks
@@ -34,7 +46,7 @@ public class HuxleyITVacancyScraperTest {
     private static ResponseEntity<HuxleyITResponse> jsonResponse;
     private static ResponseEntity<HuxleyITResponse> noDataResponse;
 
-    @BeforeClass
+    @BeforeAll
     public static void init() throws Exception {
         // Saved .json response in resources folder is being used in this test. Content of this file is needed.
         File jsonFile = getFile("/HuxleyIT/postRequestResponse.json");
@@ -58,7 +70,7 @@ public class HuxleyITVacancyScraperTest {
     }
 
     @Test
-    public void scrapeVacancies_should_return_HuxleyITResponse() throws IOException {
+    public void scrapeVacancies_should_return_HuxleyITResponse() {
         // When the restTemplate.getForEntity method is used, regardless of the URL and class, we return our own data.
         when(restTemplateMock.postForEntity(anyString(), any(), any(Class.class)))
                 .thenReturn(jsonResponse);
@@ -75,13 +87,15 @@ public class HuxleyITVacancyScraperTest {
         verify(restTemplateMock, times(1)).postForEntity(anyString(), any(), any(Class.class));
     }
 
-    @Test(expected = MismatchedInputException.class)
-    public void scrapeVacancies_should_not_return_a_valid_response_empty_json_file() throws IOException {
-        // Set up data again for this test
-        File jsonFile = getFile("/HuxleyIT/postRequestEmptyFile.json");
-        HuxleyITResponse huxleyITResponse = new ObjectMapper().readValue(jsonFile, HuxleyITResponse.class);
+    @Test
+    public void scrapeVacancies_should_not_return_a_valid_response_empty_json_file() {
+        Assertions.assertThrows(MismatchedInputException.class, () -> {
+            // Set up data again for this test
+            File jsonFile = getFile("/HuxleyIT/postRequestEmptyFile.json");
+            HuxleyITResponse huxleyITResponse = new ObjectMapper().readValue(jsonFile, HuxleyITResponse.class);
 
-        // Todo: Handle this possible exception
+            // Todo: Handle this possible exception
+        });
     }
 
     @Test
@@ -126,18 +140,20 @@ public class HuxleyITVacancyScraperTest {
         verify(huxleySpy, times(2)).scrapeVacancies(anyInt());
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void getVacancies_should_throw_NullPointerException() {
-        // Spy the scraper as we call methods from its own class.
-        HuxleyITVacancyScraper huxleySpy = spy(new HuxleyITVacancyScraper());
+        Assertions.assertThrows(NullPointerException.class, () ->  {
+            // Spy the scraper as we call methods from its own class.
+            HuxleyITVacancyScraper huxleySpy = spy(new HuxleyITVacancyScraper());
 
-        // Setup return values for methods in same class.
-        doReturn(noDataResponse.getBody()).when(huxleySpy).scrapeVacancies(anyInt());
+            // Setup return values for methods in same class.
+            doReturn(noDataResponse.getBody()).when(huxleySpy).scrapeVacancies(anyInt());
 
-        // Retrieve vacancies
-        // Throws NullPointerException as response.getPages() isn't available.
-        // Todo: fix above issue
-        List<Vacancy> vacancies = huxleySpy.getVacancies();
+            // Retrieve vacancies
+            // Throws NullPointerException as response.getPages() isn't available.
+            // Todo: fix above issue
+            List<Vacancy> vacancies = huxleySpy.getVacancies();
+        });
     }
 
     // This method is used to retrieve the file content for local saved html files.
