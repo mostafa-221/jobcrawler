@@ -1,14 +1,8 @@
 package nl.ordina.jobcrawler.controller;
 
-
-import nl.ordina.jobcrawler.SearchRequest;
-import nl.ordina.jobcrawler.SearchResult;
 import nl.ordina.jobcrawler.controller.exception.VacancyNotFoundException;
-import nl.ordina.jobcrawler.model.Skill;
 import nl.ordina.jobcrawler.model.Vacancy;
-import nl.ordina.jobcrawler.service.SkillService;
 import nl.ordina.jobcrawler.service.VacancyService;
-import nl.ordina.jobcrawler.service.VacancyStarter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,27 +12,21 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+/*
+*    This controller contains endpoints to retrieve, update and delete vacancies
+*    in and from the database
+* */
 
 @CrossOrigin
 @RestController
-public class JobcrawlerController {
+public class VacancyController {
 
-    private VacancyService vacancyService;
-    private SkillService skillService;
-    private VacancyStarter vacancyStarter;
+    private final VacancyService vacancyService;
 
     @Autowired
-    public JobcrawlerController(VacancyService vacancyService, SkillService skillService, VacancyStarter vacancyStarter) {
+    public VacancyController(VacancyService vacancyService) {
         this.vacancyService = vacancyService;
-        this.skillService = skillService;
-        this.vacancyStarter = vacancyStarter;
     }
-
-    @PostMapping("/searchrequest")
-    public SearchResult searchRequest(@RequestBody SearchRequest request) {
-        return new SearchResult(request, vacancyService.getAllVacancies());
-    }
-
 
     //******** Adding jobs to database ********//
     @PostMapping("/addJobWithJson")
@@ -63,24 +51,18 @@ public class JobcrawlerController {
         return vacancyService.getVacanciesByBroker(broker);
     }
 
-    // getting all jobs from database
-    @GetMapping("/getAllJobs")
-    public List<Vacancy> getAllJobs() {
-        // Retrieve all vacancies that are available in the database
-        return vacancyService.getAllVacancies();
-    }
-
-    // getting all skills from database
-    @GetMapping(path = "skills")
-    public List<Skill> getAllSkills() {
-        return skillService.getAllSkills();
-    }
-
     // getting jobs by skill
     @GetMapping("/getJobsWithSkill/{skill}")
     public Set<Vacancy> getJobsWithSkill(@PathVariable("skill") String skill) {
         // Only show vacancies which needs a specific skill that's requested via a get method
         return vacancyService.getVacanciesBySkill(skill);
+    }
+
+    // getting all jobs from database
+    @GetMapping("/getAllJobs")
+    public List<Vacancy> getAllJobs() {
+        // Retrieve all vacancies that are available in the database
+        return vacancyService.getAllVacancies();
     }
 
 
@@ -99,21 +81,4 @@ public class JobcrawlerController {
     Vacancy replaceVacancy(@PathVariable UUID id, @RequestBody Vacancy newVacancy) {
         return vacancyService.replace(id, newVacancy);
     }
-
-    /**
-     * start the scraping of jobs
-     */
-    @PutMapping("/scrape")
-    void scrape () {
-        /* made in a new thread so that the sender of the request does not have to wait for a response until the
-         * scraping is finished.
-         */
-        Thread newThread = new Thread(() -> {
-                vacancyStarter.scrape();
-        });
-        newThread.start();
-    }
-
-
 }
-

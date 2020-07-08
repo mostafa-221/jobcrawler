@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -23,11 +24,19 @@ Upon fetching the vacancies it runs a check to verify if the vacancy is already 
 */
 
 @Slf4j
-@Component
-public class VacancyStarter {
+@Service
+public class ScraperService {
+
+
+    private VacancyService vacancyService;
+
+    private MatchSkillsService matchSkillsService;
 
     @Autowired
-    private VacancyService vacancyService;
+    public ScraperService(VacancyService vacancyService, MatchSkillsService matchSkillsService) {
+        this.vacancyService = vacancyService;
+        this.matchSkillsService = matchSkillsService;
+    }
 
     private final List<VacancyScraper> scraperList = new ArrayList<>() {
         {
@@ -50,6 +59,7 @@ public class VacancyStarter {
                 if (existCheck.isPresent()) {
                     existVacancy++;
                 } else {
+                    matchSkillsService.changeMatch(vacancy);
                     vacancyService.add(vacancy);
                     newVacancy++;
                 }
@@ -68,10 +78,9 @@ public class VacancyStarter {
     @Scheduled(cron = "0 30 11,17 * * *") // Runs two times a day. At 11.30am and 5.30pm.
     public void deleteNonExistingVacancies() {
         log.info("CRON Scheduled -- Started deleting non-existing jobs");
-        List<Vacancy> allVacancies = vacancyService.getAllVacancies();
-        List<Vacancy> vacanciesToDelete = allVacancies.stream()
-                .filter(vacancy -> !vacancy.hasValidURL()) //if the url is not good anymore add it in the vacanciesToDelete
-                .collect(Collectors.toList());
+        List<Vacancy> vacanciesToDelete = vacancyService.getAllVacancies();
+        vacanciesToDelete.removeIf(Vacancy::hasValidURL);
+
 
         log.info(vacanciesToDelete.size() + " vacancy to delete.");
 
