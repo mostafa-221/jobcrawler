@@ -22,6 +22,8 @@ public class YachtVacancyScraper extends VacancyScraper {
 
     private static final String VACANCY_URL_PREFIX = "https://www.yacht.nl";
 
+    RestTemplate restTemplate = new RestTemplate();
+
     @Autowired
     public YachtVacancyScraper() {
         super(
@@ -55,7 +57,7 @@ public class YachtVacancyScraper extends VacancyScraper {
                 Map<String, Object> vacancyMetaData = (Map<String, Object>) vacancyData.get("meta");
                 String vacancyURL = (String) vacancyData.get("detailUrl");
                 vacancyURL = vacancyURL.contains("?") ? vacancyURL.split("\\?")[0] : vacancyURL;
-                Document vacancyDoc = getDocument(VACANCY_URL_PREFIX + vacancyURL);
+                Document vacancyDoc = getYachtDocument(VACANCY_URL_PREFIX + vacancyURL);
                 Vacancy vacancy = Vacancy.builder()
                         .vacancyURL(VACANCY_URL_PREFIX + vacancyURL)
                         .title((String) vacancyData.get("title"))
@@ -83,8 +85,7 @@ public class YachtVacancyScraper extends VacancyScraper {
      * @param pageNumber Pagenumber of which the vacancy data should be retrieved
      * @return json response from the get request
      */
-    private YachtVacancyResponse scrapeVacancies(int pageNumber) {
-        RestTemplate restTemplate = new RestTemplate();
+    YachtVacancyResponse scrapeVacancies(int pageNumber) {
         MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
         mappingJackson2HttpMessageConverter.setSupportedMediaTypes(Arrays.asList(MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM));
         restTemplate.getMessageConverters().add(mappingJackson2HttpMessageConverter);
@@ -100,7 +101,7 @@ public class YachtVacancyScraper extends VacancyScraper {
      *
      * @param doc jsoup document of a vacancy
      */
-    private String getVacancyAbout(Document doc) {
+    String getVacancyAbout(Document doc) {
         // Extracts the about part from the vacancy
         Element vacancyBody = doc.select(".rich-text--vacancy").first();
         return vacancyBody.text();
@@ -111,7 +112,7 @@ public class YachtVacancyScraper extends VacancyScraper {
      *
      * @param doc jsoup document of a vacancy
      */
-    private Set<Skill> getSkills(Document doc) {
+    Set<Skill> getSkills(Document doc) {
         Set<Skill> returnSkillSet = new HashSet<>();
         // The needed skills for a vacancy in Dutch are named 'Functie-eisen'. We'd like to select these skills, starting from the h2 tag that contains those. Let's select everything after that h2 tag
         Elements skillSets = doc.select("h2:contains(Functie-eisen) ~ *");
@@ -137,6 +138,15 @@ public class YachtVacancyScraper extends VacancyScraper {
 
         }
         return returnSkillSet;
+    }
+
+    /**
+     * Method added for testing purposes. getDocument in VacancyScraper.java is static can't be mocked as it's static. It is possible to mock the return value of this function.
+     * @param url retrieve document from this url
+     * @return Document
+     */
+    Document getYachtDocument(String url) {
+        return getDocument(url);
     }
 
 }
