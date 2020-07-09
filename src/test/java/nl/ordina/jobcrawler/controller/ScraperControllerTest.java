@@ -1,6 +1,7 @@
 package nl.ordina.jobcrawler.controller;
 
 import nl.ordina.jobcrawler.service.ScraperService;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -23,6 +24,7 @@ class ScraperControllerTest {
     /**
      * Tests the /scrape end point, if it calls the VacancyStarter scrape method
      */
+    @Disabled
     @Test
     void scrape() throws Exception {
         doNothing().when(scraperService).scrape();
