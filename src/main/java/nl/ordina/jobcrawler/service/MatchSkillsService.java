@@ -46,7 +46,7 @@ public class MatchSkillsService {
     //     removes previous relationships with the skill table from this vacancy
     //     adds relationships to the skill table for which a matchesSkill holds
     public void changeMatch(Vacancy vacancy) {
-        List<Skill> skills = skillService.getAllSkills();
+        List<Skill> skills = skillService.findAll();
         Set<Skill> matchedSkills = new HashSet<>();
 
         for (Skill s: skills) {
@@ -62,12 +62,12 @@ public class MatchSkillsService {
 
     private void addStandardSkill(String aSkill) {
         Skill skill = new Skill(aSkill);
-        skillService.addSkill(skill);
+        skillService.save(skill);
     }
 
     //@PostConstruct   //restore this line to create standard set of skills after database cleared
     public void insertStandardSkills() {
-        List<Skill> skills = skillService.getAllSkills();
+        List<Skill> skills = skillService.findAll();
         for (Skill s: skills) {
             skillRepository.deleteReferencesToSkill(s.getName());
         }

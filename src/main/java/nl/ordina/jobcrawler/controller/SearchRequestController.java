@@ -22,6 +22,6 @@ public class SearchRequestController {
 
     @PostMapping("/searchrequest")
     public SearchResult searchRequest(@RequestBody SearchRequest request) {
-        return new SearchResult(request, vacancyService.getAllVacancies());
+        return new SearchResult(request, vacancyService.findAll());
     }
 }
