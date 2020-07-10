@@ -83,7 +83,7 @@ public class HuxleyITVacancyScraper extends VacancyScraper {
      * @param maxNrOfVacancies Used for sending a post request to retrieve all available vacancies from HuxleyIT
      * @return HuxleyITResponse with needed attributes to fill the Vacancy entity.
      */
-    HuxleyITResponse scrapeVacancies(int maxNrOfVacancies) {
+    private HuxleyITResponse scrapeVacancies(int maxNrOfVacancies) {
         /*
             We are using the Spring RestTemplate for calling the HuxleyIT API POST endpoint, which provides the vacancy data.
 
