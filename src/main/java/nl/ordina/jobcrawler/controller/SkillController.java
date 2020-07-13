@@ -89,16 +89,29 @@ public class SkillController {
 
 
     @PostMapping(path="deleteskill")
-    public void deleteskill(@RequestBody SkillDTO skillDTO) {
+    public ResponseEntity<ResponseCode> deleteskill(@RequestBody SkillDTO skillDTO) {
         log.info("delete skill:" + skillDTO.getName());
-        skillService.deleteSkill(skillDTO.getName());
+        try {
+            skillService.deleteSkill(skillDTO.getName());
+            return new ResponseEntity<>(new ResponseCode("OK"), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ResponseCode("Could not delete skill:" + e.getLocalizedMessage()), HttpStatus.OK);
+        }
     }
 
     // getting all skills from database
     @GetMapping(path = "relinkskills")
-    public void relinkSkills() {
-            log.info("relink skills");
+    public ResponseEntity<ResponseCode> relinkSkills() {
+        log.info("relink skills");
+        try {
             matchSkillsService.relinkSkills();
             log.info("relink done");
+            return new ResponseEntity<>(new ResponseCode("OK"), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new ResponseCode("Could not relink skills:" + e.getLocalizedMessage()), HttpStatus.OK);
+        }
+
     }
 }

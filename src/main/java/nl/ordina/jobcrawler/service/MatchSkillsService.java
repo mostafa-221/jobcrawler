@@ -56,15 +56,14 @@ public class MatchSkillsService {
     } 
 
     // Rematch all vacancies with the skills in the skill table
-    public void relinkSkills() {
-        skillService.deleteReferencesToSkills();
-        List<Vacancy> vacancies = vacancyService.getAllVacancies();
-        for (Vacancy vacancy: vacancies) {
-            Set<Skill> matchingSkills = findMatchingSkills(vacancy);
-            // not very fast -- could be improved
-            skillService.createMatchingSkillLinks(vacancy, matchingSkills);
-
-        }
+    public void relinkSkills() throws Exception {
+            skillService.deleteReferencesToSkills();
+            List<Vacancy> vacancies = vacancyService.getAllVacancies();
+            for (Vacancy vacancy: vacancies) {
+                Set<Skill> matchingSkills = findMatchingSkills(vacancy);
+                // not very fast -- could be improved
+                skillService.createMatchingSkillLinks(vacancy, matchingSkills);
+            }
     }
 
 

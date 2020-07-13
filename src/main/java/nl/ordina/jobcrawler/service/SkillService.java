@@ -148,7 +148,7 @@ public class SkillService {
     }
 
     // delete the skill by name including the link to the skill in the vacancy-skill table
-    public void deleteSkill(String name) {
+    public void deleteSkill(String name) throws Exception {
         skillRepository.deleteReferencesToSkill(name);
         skillRepository.deleteSkillByName(name);
     }
