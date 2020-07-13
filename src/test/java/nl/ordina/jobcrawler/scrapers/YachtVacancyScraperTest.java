@@ -2,14 +2,22 @@ package nl.ordina.jobcrawler.scrapers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.ordina.jobcrawler.model.Vacancy;
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
+
 import org.jsoup.nodes.Document;
+import org.junit.Assert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -20,17 +28,12 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+
 
 @ExtendWith(MockitoExtension.class)
+//@RunWith(PowerMockRunner.class)
+@PrepareForTest(Jsoup.class)
 public class YachtVacancyScraperTest {
 
     @InjectMocks
@@ -77,13 +80,15 @@ public class YachtVacancyScraperTest {
 
     @Test
     public void test_getVacancies() throws IOException {
+//        Connection connection = Mockito.mock(Connection.class);
+//        Mockito.when(connection.execute()).thenThrow(new IOException("test"));
+//        PowerMockito.mockStatic(Jsoup.class);
+//        PowerMockito.when(Jsoup.connect(Mockito.anyString())).
+//                thenReturn(connection);
         when(restTemplateMock.getForEntity(anyString(), any(Class.class)))
-                .thenReturn(jsonResponse);
-//        when(Jsoup.connect(any()).userAgent(anyString()).get())
-//                .thenReturn(VACANCY_DOC);
-        when(vacancyScraperMock.getDocument(anyString()))
-                .thenReturn(VACANCY_DOC);
+               .thenReturn(jsonResponse);
         List<Vacancy> vacancyList = yachtVacancyScraper.getVacancies();
+        Assert.assertEquals(2,vacancyList.size());
     }
 
     // This method is used to retrieve the file content for local saved html files.
