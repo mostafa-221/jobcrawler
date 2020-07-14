@@ -29,16 +29,14 @@ public class MatchSkillsService {
 
     private final SkillService skillService;
     private final VacancyService vacancyService;
-    private final SkillRepository skillRepository;
+
 
     @Autowired
     public MatchSkillsService(
             SkillService skillService,
-            VacancyService vacancyService,
-            SkillRepository skillRepository) {
+            VacancyService vacancyService) {
         this.skillService = skillService;
         this.vacancyService = vacancyService;
-        this.skillRepository = skillRepository;
     }
 
     //         checks whether the vacancy text matches the skill name
@@ -64,7 +62,7 @@ public class MatchSkillsService {
 
     // Rematch all vacancies with the skills in the skill table
     public void relinkSkills() throws Exception {
-            skillRepository.deleteReferencesToSkills();
+            skillService.deleteReferencesToSkills();
             List<Vacancy> vacancies = vacancyService.findAll();
             for (Vacancy vacancy: vacancies) {
                 Set<Skill> matchingSkills = findMatchingSkills(vacancy);
@@ -86,9 +84,9 @@ public class MatchSkillsService {
     public void insertStandardSkills() {
         List<Skill> skills = skillService.findAll();
         for (Skill s: skills) {
-            skillRepository.deleteReferencesToSkill(s.getName());
+            skillService.deleteReferencesToSkill(s.getName());
         }
-        skillRepository.deleteAll();  // just delete all skills
+        skillService.deleteAll();  // just delete all skills
         addStandardSkill("AWS");
         addStandardSkill("SQL");
         addStandardSkill("Python");

@@ -94,4 +94,15 @@ public class SkillService implements CRUDService<Skill, UUID> {
     }
 
 
+    public void deleteReferencesToSkills() {
+        skillRepository.deleteReferencesToSkills();
+    }
+
+    public void deleteReferencesToSkill(String name) {
+        skillRepository.deleteReferencesToSkill(name);
+    }
+
+    public void deleteAll() {
+        skillRepository.deleteAll();
+    }
 }
