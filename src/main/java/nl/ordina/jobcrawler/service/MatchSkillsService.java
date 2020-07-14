@@ -4,9 +4,13 @@ package nl.ordina.jobcrawler.service;
 import lombok.extern.slf4j.Slf4j;
 import nl.ordina.jobcrawler.model.Skill;
 import nl.ordina.jobcrawler.model.Vacancy;
+import nl.ordina.jobcrawler.repo.SkillRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -23,15 +27,18 @@ import java.util.Set;
 public class MatchSkillsService {
 
 
-    private SkillService skillService;
-    private VacancyService vacancyService;
+    private final SkillService skillService;
+    private final VacancyService vacancyService;
+    private final SkillRepository skillRepository;
 
     @Autowired
     public MatchSkillsService(
             SkillService skillService,
-            VacancyService vacancyService) {
+            VacancyService vacancyService,
+            SkillRepository skillRepository) {
         this.skillService = skillService;
         this.vacancyService = vacancyService;
+        this.skillRepository = skillRepository;
     }
 
     //         checks whether the vacancy text matches the skill name
@@ -43,7 +50,7 @@ public class MatchSkillsService {
     //     removes previous relationships with the skill table from this vacancy
     //     adds relationships to the skill table for which a matchesSkill holds
     public Set<Skill> findMatchingSkills(Vacancy vacancy) {
-        List<Skill> skills = skillService.getAllSkills();
+        List<Skill> skills = skillService.findAll();
         Set<Skill> matchedSkills = new HashSet<>();
 
         for (Skill s: skills) {
@@ -57,25 +64,31 @@ public class MatchSkillsService {
 
     // Rematch all vacancies with the skills in the skill table
     public void relinkSkills() throws Exception {
-            skillService.deleteReferencesToSkills();
-            List<Vacancy> vacancies = vacancyService.getAllVacancies();
+            skillRepository.deleteReferencesToSkills();
+            List<Vacancy> vacancies = vacancyService.findAll();
             for (Vacancy vacancy: vacancies) {
                 Set<Skill> matchingSkills = findMatchingSkills(vacancy);
                 // not very fast -- could be improved
-                skillService.createMatchingSkillLinks(vacancy, matchingSkills);
+                for(Skill skill : matchingSkills) {
+                    skillService.update(vacancy.getId(), skill);
+                }
+//                skillService.createMatchingSkillLinks(vacancy, matchingSkills);
             }
     }
 
 
     private void addStandardSkill(String aSkill) {
         Skill skill = new Skill(aSkill);
-        skillService.addSkill(skill.getName());
+        skillService.save(skill);
     }
 
     //@PostConstruct   //restore this line to create standard set of skills after database cleared
     public void insertStandardSkills() {
-
-        skillService.deleteAllSkills();  // just delete all skills
+        List<Skill> skills = skillService.findAll();
+        for (Skill s: skills) {
+            skillRepository.deleteReferencesToSkill(s.getName());
+        }
+        skillRepository.deleteAll();  // just delete all skills
         addStandardSkill("AWS");
         addStandardSkill("SQL");
         addStandardSkill("Python");

@@ -46,7 +46,7 @@ public class ScraperService {
         }
     };
 
-    //@PostConstruct
+    @PostConstruct
     @Scheduled(cron = "0 0 12,18 * * *") // Runs two times a day. At 12pm and 6pm
     public void scrape() {
         log.info("CRON Scheduled -- Scrape vacancies");
@@ -55,13 +55,13 @@ public class ScraperService {
         int newVacancy = 0;
         for (Vacancy vacancy : allVacancies) {
             try {
-                Optional<Vacancy> existCheck = vacancyService.getExistingVacancy(vacancy.getVacancyURL());
+                Optional<Vacancy> existCheck = vacancyService.findByURL(vacancy.getVacancyURL());
                 if (existCheck.isPresent()) {
                     existVacancy++;
                 } else {
                     Set<Skill> skills = matchSkillsService.findMatchingSkills(vacancy);
                     vacancy.setSkills(skills);
-                    vacancyService.add(vacancy);
+                    vacancyService.save(vacancy);
                     newVacancy++;
                 }
             } catch (IncorrectResultSizeDataAccessException ie) {
@@ -79,9 +79,8 @@ public class ScraperService {
     @Scheduled(cron = "0 30 11,17 * * *") // Runs two times a day. At 11.30am and 5.30pm.
     public void deleteNonExistingVacancies() {
         log.info("CRON Scheduled -- Started deleting non-existing jobs");
-        List<Vacancy> vacanciesToDelete = vacancyService.getAllVacancies();
+        List<Vacancy> vacanciesToDelete = vacancyService.findAll();
         vacanciesToDelete.removeIf(Vacancy::hasValidURL);
-
 
         log.info(vacanciesToDelete.size() + " vacancy to delete.");
 

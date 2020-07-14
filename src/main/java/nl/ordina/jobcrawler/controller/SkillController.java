@@ -3,6 +3,7 @@ package nl.ordina.jobcrawler.controller;
 import lombok.extern.slf4j.Slf4j;
 import nl.ordina.jobcrawler.model.Skill;
 import nl.ordina.jobcrawler.model.SkillDTO;
+import nl.ordina.jobcrawler.repo.SkillRepository;
 import nl.ordina.jobcrawler.service.MatchSkillsService;
 import nl.ordina.jobcrawler.service.SkillService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,22 +28,26 @@ public class SkillController {
 
     private final MatchSkillsService matchSkillsService;
 
+    private final SkillRepository skillRepository;
+
     @Autowired
     public SkillController(SkillService skillService,
-                           MatchSkillsService matchSkillsService) {
+                           MatchSkillsService matchSkillsService,
+                           SkillRepository skillRepository) {
         this.matchSkillsService = matchSkillsService;
         this.skillService = skillService;
+        this.skillRepository = skillRepository;
     }
 
     // getting all skills from database
     @GetMapping(path = "skills")
     public List<Skill> getAllSkills() {
-        return skillService.getAllSkills();
+        return skillService.findAll();
     }
 
     @GetMapping(path="getskills")
     public List<SkillDTO> getAllMySkills() {
-        List<Skill> skills = skillService.getAllSkillsByNameAsc();
+        List<Skill> skills = skillRepository.findByOrderByNameAsc();
 
         List<SkillDTO> skilldoaList = new ArrayList<>();
         for (Skill s: skills) {
@@ -71,7 +76,7 @@ public class SkillController {
                 return new ResponseEntity<>(new ResponseCode("Name should be longer than 2 characters"),
                         HttpStatus.OK);
             }
-            skillService.addSkill(skillDTO.getName());
+            skillService.save(new Skill(skillDTO.getName()));
             return new ResponseEntity<>(new ResponseCode("OK"), HttpStatus.OK);
         } catch (Exception e) {
             ResponseEntity<ResponseCode> errorResult;
@@ -92,7 +97,8 @@ public class SkillController {
     public ResponseEntity<ResponseCode> deleteskill(@RequestBody SkillDTO skillDTO) {
         log.info("delete skill:" + skillDTO.getName());
         try {
-            skillService.deleteSkill(skillDTO.getName());
+            skillRepository.deleteSkillByName(skillDTO.getName());
+//            skillService.deleteSkill(skillDTO.getName());
             return new ResponseEntity<>(new ResponseCode("OK"), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(
