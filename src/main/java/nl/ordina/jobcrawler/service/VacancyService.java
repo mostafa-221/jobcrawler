@@ -5,10 +5,13 @@ import nl.ordina.jobcrawler.model.Vacancy;
 import nl.ordina.jobcrawler.repo.VacancyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -33,15 +36,31 @@ public class VacancyService implements CRUDService<Vacancy, UUID> {
         return vacancyRepository.findById(id);
     }
 
-
-    /**
-     * Returns all vacancies in the database.
-     *
-     * @return All vacancies in the database.
-     */
     @Override
     public List<Vacancy> findAll() {
         return vacancyRepository.findAll();
+    }
+
+
+    /**
+     * Returns all vacancies in the database using pagination.
+     * @param paging - used for pagination
+     *
+     * @return All vacancies in the database.
+     */
+    public Page<Vacancy> findAll(Pageable paging) {
+        return vacancyRepository.findAll(paging);
+    }
+
+    /**
+     * Returns all vacancies in the database filter by skills.
+     * @param skills - skills that needs to be filtered
+     * @param paging - used for pagination
+     *
+     * @return All vacancies in the database filter by skills.
+     */
+    public Page<Vacancy> findBySkills(Set<String> skills, Pageable paging) {
+        return vacancyRepository.findBySkills(skills,paging);
     }
 
 
@@ -104,6 +123,8 @@ public class VacancyService implements CRUDService<Vacancy, UUID> {
     public Optional<Vacancy> findByURL(String url) {
         return vacancyRepository.findByVacancyURLEquals(url);
     }
+
+
 
 
 }
