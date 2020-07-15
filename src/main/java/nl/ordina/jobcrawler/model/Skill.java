@@ -42,14 +42,6 @@ public class Skill {
         this.name = name;
     }
 
-    public void addVacancy(Vacancy vacancy) {
-        this.vacancies.add(vacancy);
-    }
-
-    public void removeVacancy(Vacancy vacancyToBeRemoved) {
-        this.vacancies.remove(vacancyToBeRemoved);
-    }
-
     @Override
     public String toString() {
         return this.name;
