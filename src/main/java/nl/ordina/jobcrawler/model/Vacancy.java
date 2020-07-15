@@ -1,10 +1,7 @@
 package nl.ordina.jobcrawler.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import nl.ordina.jobcrawler.controller.exception.VacancyURLMalformedException;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -24,7 +21,8 @@ import java.net.URL;
 import java.util.Set;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

@@ -39,9 +39,11 @@ public class SearchRequestController {
             Page<Vacancy> vacancies;
             if (skills == null || skills.isEmpty())
                 vacancies = vacancyService.findAll(paging);
-            else
+            else if(page == 1){
+                vacancies = vacancyService.findBySkills(skills, PageRequest.of(0, size));
+            } else {
                 vacancies = vacancyService.findBySkills(skills, paging);
-
+            }
             vacancyList = vacancies.getContent();
 
             if (vacancyList.isEmpty()) {
