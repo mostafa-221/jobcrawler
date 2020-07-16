@@ -27,9 +27,9 @@ Upon fetching the vacancies it runs a check to verify if the vacancy is already 
 public class ScraperService {
 
 
-    private VacancyService vacancyService;
+    private final VacancyService vacancyService;
 
-    private SkillMatcherService skillMatcherService;
+    private final SkillMatcherService skillMatcherService;
 
     @Autowired
     public ScraperService(VacancyService vacancyService, SkillMatcherService skillMatcherService) {
