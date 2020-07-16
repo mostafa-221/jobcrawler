@@ -27,10 +27,8 @@ Upon fetching the vacancies it runs a check to verify if the vacancy is already 
 @Service
 public class ScraperService {
 
-
-    private VacancyService vacancyService;
-
-    private MatchSkillsService matchSkillsService;
+    private final VacancyService vacancyService;
+    private final MatchSkillsService matchSkillsService;
 
     @Autowired
     public ScraperService(VacancyService vacancyService, MatchSkillsService matchSkillsService) {
