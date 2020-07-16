@@ -1,6 +1,5 @@
 package nl.ordina.jobcrawler.controller;
 
-import nl.ordina.jobcrawler.SearchRequest;
 import nl.ordina.jobcrawler.SearchResult;
 import nl.ordina.jobcrawler.model.Vacancy;
 import nl.ordina.jobcrawler.service.VacancyService;
@@ -12,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.ws.rs.QueryParam;
 import java.util.*;
 
 @CrossOrigin
@@ -28,20 +26,22 @@ public class SearchRequestController {
 
     @GetMapping("/vacancies")
     public ResponseEntity<SearchResult> getVacancies(
+            @RequestParam(required = false) String value,
             @RequestParam(required = false) Set<String> skills,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
+            @RequestParam(defaultValue = "10") int size) {
         try {
             List<Vacancy> vacancyList = new ArrayList<>();
             Pageable paging = PageRequest.of(page, size);
 
             Page<Vacancy> vacancies;
-            if (skills == null || skills.isEmpty())
-                vacancies = vacancyService.findAll(paging);
-            else
-                vacancies = vacancyService.findBySkills(skills, paging);
 
+            if (value != null && !value.isBlank())
+                vacancies = vacancyService.findByAnyValue(value, paging);
+            else if(!skills.isEmpty())
+                vacancies = vacancyService.findBySkills(skills, paging);
+            else
+                vacancies = vacancyService.findAll(paging);
             vacancyList = vacancies.getContent();
 
             if (vacancyList.isEmpty()) {
@@ -54,7 +54,7 @@ public class SearchRequestController {
             searchResult.setTotalPages(vacancies.getTotalPages());
             return new ResponseEntity<>(searchResult, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

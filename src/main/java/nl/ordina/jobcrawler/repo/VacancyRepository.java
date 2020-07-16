@@ -26,6 +26,10 @@ public interface VacancyRepository extends JpaRepository<Vacancy, UUID> {
             "JOIN skill AS s ON s.id = vs.skill_id WHERE s.name IN (:skills)" , nativeQuery = true)
     Page<Vacancy> findBySkills(@Param("skills") Set<String> skills, Pageable pageable);
 
+    @Query(value = "SELECT v.* FROM Vacancy AS v " +
+            "WHERE v.about LIKE %:value% OR v.location LIKE %:value% OR v.title LIKE %:value%", nativeQuery = true)
+    Page<Vacancy> findByAnyValue(@Param("value") String value, Pageable pageable);
+
 
 
 }

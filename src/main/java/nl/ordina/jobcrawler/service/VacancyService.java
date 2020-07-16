@@ -63,6 +63,16 @@ public class VacancyService implements CRUDService<Vacancy, UUID> {
         return vacancyRepository.findBySkills(skills,paging);
     }
 
+    /**
+     * Returns all vacancies in the database filter by any values that user enters in the search field.
+     * @param value - value that needs to be filtered
+     * @param paging - used for pagination
+     *
+     * @return All vacancies in the database filter by any value.
+     */
+    public Page<Vacancy> findByAnyValue(String value, Pageable paging) {
+        return vacancyRepository.findByAnyValue(value,paging);
+    }
 
     /**
      * Updates the specified vacancy, identified by its id.
