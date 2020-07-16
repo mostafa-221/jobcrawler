@@ -12,13 +12,13 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @CrossOrigin
 @RestController
-public class MatchSkillController {
+public class SkillMatcherController {
 
 
     private final SkillMatcherService skillMatcherService;
 
     @Autowired
-    public MatchSkillController(
+    public SkillMatcherController(
             SkillMatcherService skillMatcherService) {
         this.skillMatcherService = skillMatcherService;
     }
