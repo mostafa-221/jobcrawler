@@ -54,37 +54,6 @@ public class Vacancy {
     @JsonIgnoreProperties("vacancies") // so that when printing a vacancy, it doesn't list all the vacancies of a skill (so no looping)
             Set<Skill> skills;  //a set is a collection that has no duplicates
 
-    public void addSkill(String skillsToBeAdded) {
-        Skill skill = new Skill(skillsToBeAdded);
-        this.skills.add(skill);
-        skill.addVacancy(this);
-    }
-
-    public void addSkill(Skill skillsToBeAdded) {
-        this.skills.add(skillsToBeAdded);
-        skillsToBeAdded.addVacancy(this);
-    }
-
-    public void removeSkill(Skill skillsToBeRemoved) {
-        this.skills.remove(skillsToBeRemoved);
-        skillsToBeRemoved.removeVacancy(this);
-    }
-
-    public void addSkills(Set<Skill> skillsToBeAdded) {
-        for (Skill skill : skillsToBeAdded) {
-            this.skills.add(skill);
-            skill.addVacancy(this);
-        }
-    }
-
-    public void removeSkills(Set<Skill> skillsToBeRemoved) {
-        for (Skill skill : skillsToBeRemoved) {
-            this.skills.remove(skill);
-            skill.removeVacancy(this);
-        }
-    }
-
-
     public boolean hasValidURL() {
         if (!this.vacancyURL.startsWith("http"))
             this.vacancyURL = "https://" + this.vacancyURL; //adding the protocol, if not present
