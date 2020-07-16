@@ -27,7 +27,8 @@ public interface VacancyRepository extends JpaRepository<Vacancy, UUID> {
     Page<Vacancy> findBySkills(@Param("skills") Set<String> skills, Pageable pageable);
 
     @Query(value = "SELECT v.* FROM Vacancy AS v " +
-            "WHERE v.about LIKE %:value% OR v.location LIKE %:value% OR v.title LIKE %:value%", nativeQuery = true)
+            "WHERE lower(v.about) LIKE lower(concat('%', :value, '%')) OR lower(v.location) LIKE lower(concat('%', :value, '%')) " +
+            "OR lower(v.title) LIKE lower(concat('%', :value, '%'))", nativeQuery = true)
     Page<Vacancy> findByAnyValue(@Param("value") String value, Pageable pageable);
 
 
