@@ -31,6 +31,7 @@ public class ScraperService {
 
     private final SkillMatcherService skillMatcherService;
 
+
     @Autowired
     public ScraperService(VacancyService vacancyService, SkillMatcherService skillMatcherService) {
         this.vacancyService = vacancyService;

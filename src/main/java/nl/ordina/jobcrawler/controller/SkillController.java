@@ -26,9 +26,7 @@ public class SkillController {
 
 
     @Autowired
-    public SkillController(SkillService skillService,
-                           SkillMatcherService skillMatcherService,
-                           SkillRepository skillRepository) {
+    public SkillController(SkillService skillService) {
         this.skillService = skillService;
     }
 

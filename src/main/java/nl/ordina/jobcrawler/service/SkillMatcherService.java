@@ -61,7 +61,7 @@ public class SkillMatcherService {
     } 
 
     // Rematch all vacancies with the skills in the skill table
-    public void relinkSkills() throws Exception {
+    public void relinkSkills() {
             skillService.deleteReferencesToSkills();
             List<Vacancy> vacancies = vacancyService.findAll();
             for (Vacancy vacancy: vacancies) {

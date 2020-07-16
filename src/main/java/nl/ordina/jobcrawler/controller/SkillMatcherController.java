@@ -12,31 +12,24 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @CrossOrigin
 @RestController
-public class MatchSkillController {
+public class SkillMatcherController {
 
 
     private final SkillMatcherService skillMatcherService;
 
     @Autowired
-    public MatchSkillController(
+    public SkillMatcherController(
             SkillMatcherService skillMatcherService) {
         this.skillMatcherService = skillMatcherService;
     }
-
 
 
     // rematch the skills
     @PutMapping(path = "skillmatcher")
     public ResponseEntity<ResponseCode> relinkSkills() {
         log.info("relink skills");
-        try {
-            skillMatcherService.relinkSkills();
-            log.info("relink done");
-            return new ResponseEntity<>(new ResponseCode("OK"), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(
-                    new ResponseCode("Could not relink skills:" + e.getLocalizedMessage()), HttpStatus.OK);
-        }
-
+        Thread newThread = new Thread(skillMatcherService::relinkSkills);
+        newThread.start();
+        return new ResponseEntity<>(new ResponseCode("OK"), HttpStatus.OK);
     }
 }
