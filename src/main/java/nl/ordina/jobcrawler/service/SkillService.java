@@ -2,6 +2,7 @@ package nl.ordina.jobcrawler.service;
 
 import nl.ordina.jobcrawler.controller.exception.SkillNotFoundException;
 import nl.ordina.jobcrawler.model.Skill;
+import nl.ordina.jobcrawler.model.Vacancy;
 import nl.ordina.jobcrawler.repo.SkillRepository;
 import org.hibernate.exception.JDBCConnectionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 /*
@@ -26,6 +28,10 @@ public class SkillService implements CRUDService<Skill, UUID> {
     @Autowired
     public SkillService(SkillRepository skillRepository) {
         this.skillRepository = skillRepository;
+    }
+
+    public List<Skill> findByOrderByNameAsc() {
+        return skillRepository.findByOrderByNameAsc();
     }
 
     /**
@@ -102,7 +108,24 @@ public class SkillService implements CRUDService<Skill, UUID> {
         skillRepository.deleteReferencesToSkill(name);
     }
 
+    // delete all skills
     public void deleteAll() {
         skillRepository.deleteAll();
     }
+
+    // delete a certain skill by name
+    public void deleteSkillByName(String name) {
+        deleteReferencesToSkill(name);
+        skillRepository.deleteSkillByName(name);
+    }
+
+
+    // Given a list of skills from the database, add the links to the vacancy-skills table
+    // for the given vacancy
+    public  void createMatchingSkillLinks(Vacancy vacancy, Set<Skill> matchingSkills) {
+        for (Skill skill: matchingSkills) {
+            skillRepository.linkSkillToVacancy(vacancy.getId(), skill.getId());
+        }
+    }
+
 }

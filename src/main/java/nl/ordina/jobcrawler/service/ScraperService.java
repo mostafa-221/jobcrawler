@@ -12,7 +12,6 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -30,12 +29,12 @@ public class ScraperService {
 
     private VacancyService vacancyService;
 
-    private MatchSkillsService matchSkillsService;
+    private SkillMatcherService skillMatcherService;
 
     @Autowired
-    public ScraperService(VacancyService vacancyService, MatchSkillsService matchSkillsService) {
+    public ScraperService(VacancyService vacancyService, SkillMatcherService skillMatcherService) {
         this.vacancyService = vacancyService;
-        this.matchSkillsService = matchSkillsService;
+        this.skillMatcherService = skillMatcherService;
     }
 
     private final List<VacancyScraper> scraperList = new ArrayList<>() {
@@ -59,7 +58,7 @@ public class ScraperService {
                 if (existCheck.isPresent()) {
                     existVacancy++;
                 } else {
-                    Set<Skill> skills = matchSkillsService.findMatchingSkills(vacancy);
+                    Set<Skill> skills = skillMatcherService.findMatchingSkills(vacancy);
                     vacancy.setSkills(skills);
                     vacancyService.save(vacancy);
                     newVacancy++;

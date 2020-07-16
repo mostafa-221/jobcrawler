@@ -24,7 +24,7 @@ import java.util.Set;
 
 @Slf4j
 @Service
-public class MatchSkillsService {
+public class SkillMatcherService {
 
 
     private final SkillService skillService;
@@ -32,7 +32,7 @@ public class MatchSkillsService {
 
 
     @Autowired
-    public MatchSkillsService(
+    public SkillMatcherService(
             SkillService skillService,
             VacancyService vacancyService) {
         this.skillService = skillService;
@@ -67,34 +67,10 @@ public class MatchSkillsService {
             for (Vacancy vacancy: vacancies) {
                 Set<Skill> matchingSkills = findMatchingSkills(vacancy);
                 // not very fast -- could be improved
-                for(Skill skill : matchingSkills) {
-                    skillService.update(vacancy.getId(), skill);
+                if (matchingSkills.size() > 0) {
+                    skillService.createMatchingSkillLinks(vacancy, matchingSkills);
                 }
-//                skillService.createMatchingSkillLinks(vacancy, matchingSkills);
             }
     }
 
-
-    private void addStandardSkill(String aSkill) {
-        Skill skill = new Skill(aSkill);
-        skillService.save(skill);
-    }
-
-    //@PostConstruct   //restore this line to create standard set of skills after database cleared
-    public void insertStandardSkills() {
-        List<Skill> skills = skillService.findAll();
-        for (Skill s: skills) {
-            skillService.deleteReferencesToSkill(s.getName());
-        }
-        skillService.deleteAll();  // just delete all skills
-        addStandardSkill("AWS");
-        addStandardSkill("SQL");
-        addStandardSkill("Python");
-        addStandardSkill("Docker");
-        addStandardSkill("MySQL");
-        addStandardSkill("Postgres");
-        addStandardSkill("Java");
-        addStandardSkill("JEE");
-        addStandardSkill("Angular");
-    }
 }

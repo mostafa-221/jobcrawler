@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import nl.ordina.jobcrawler.model.Skill;
 import nl.ordina.jobcrawler.model.SkillDTO;
 import nl.ordina.jobcrawler.repo.SkillRepository;
-import nl.ordina.jobcrawler.service.MatchSkillsService;
+import nl.ordina.jobcrawler.service.SkillMatcherService;
 import nl.ordina.jobcrawler.service.SkillService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -12,11 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Slf4j
 @CrossOrigin
@@ -26,17 +23,13 @@ public class SkillController {
 
     private final SkillService skillService;
 
-    private final MatchSkillsService matchSkillsService;
 
-    private final SkillRepository skillRepository;
 
     @Autowired
     public SkillController(SkillService skillService,
-                           MatchSkillsService matchSkillsService,
+                           SkillMatcherService skillMatcherService,
                            SkillRepository skillRepository) {
-        this.matchSkillsService = matchSkillsService;
         this.skillService = skillService;
-        this.skillRepository = skillRepository;
     }
 
     // getting all skills from database
@@ -47,7 +40,7 @@ public class SkillController {
 
     @GetMapping(path="getskills")
     public List<SkillDTO> getAllMySkills() {
-        List<Skill> skills = skillRepository.findByOrderByNameAsc();
+        List<Skill> skills = skillService.findByOrderByNameAsc();
 
         List<SkillDTO> skilldoaList = new ArrayList<>();
         for (Skill s: skills) {
@@ -97,7 +90,7 @@ public class SkillController {
     public ResponseEntity<ResponseCode> deleteskill(@RequestBody SkillDTO skillDTO) {
         log.info("delete skill:" + skillDTO.getName());
         try {
-            skillRepository.deleteSkillByName(skillDTO.getName());
+            skillService.deleteSkillByName(skillDTO.getName());
 //            skillService.deleteSkill(skillDTO.getName());
             return new ResponseEntity<>(new ResponseCode("OK"), HttpStatus.OK);
         } catch (Exception e) {
@@ -106,18 +99,5 @@ public class SkillController {
         }
     }
 
-    // getting all skills from database
-    @GetMapping(path = "relinkskills")
-    public ResponseEntity<ResponseCode> relinkSkills() {
-        log.info("relink skills");
-        try {
-            matchSkillsService.relinkSkills();
-            log.info("relink done");
-            return new ResponseEntity<>(new ResponseCode("OK"), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(
-                    new ResponseCode("Could not relink skills:" + e.getLocalizedMessage()), HttpStatus.OK);
-        }
 
-    }
 }
