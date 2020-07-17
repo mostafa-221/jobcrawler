@@ -30,11 +30,6 @@ public class SkillController {
         this.skillService = skillService;
     }
 
-    // getting all skills from database
-    @GetMapping(path = "skills")
-    public List<Skill> getAllSkills() {
-        return skillService.findAll();
-    }
 
     @GetMapping(path="getskills")
     public List<SkillDTO> getAllMySkills() {
