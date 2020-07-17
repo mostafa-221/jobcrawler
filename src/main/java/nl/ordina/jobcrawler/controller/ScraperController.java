@@ -22,7 +22,7 @@ public class ScraperController {
      * start the scraping of jobs
      */
     @PutMapping("/scrape")
-    void scrape() {
+    public void scrape() {
         /* made in a new thread so that the sender of the request does not have to wait for a response until the
          * scraping is finished.
          */
