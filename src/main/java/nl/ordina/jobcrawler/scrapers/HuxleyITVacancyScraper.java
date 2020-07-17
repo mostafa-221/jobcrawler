@@ -30,6 +30,8 @@ public class HuxleyITVacancyScraper extends VacancyScraper {
 
     private static final String VACANCY_URL_PREFIX = "https://www.huxley.com/nl-nl/job/kyc/";
 
+    RestTemplate restTemplate = new RestTemplate();
+
     /**
      * Default constructor that calls the constructor from the abstract class.
      */
@@ -98,7 +100,6 @@ public class HuxleyITVacancyScraper extends VacancyScraper {
             - "resultSize": This indicates the maximum number of results we want to get from the API. The API will return less results if this number is higher than the actual number of stored vacancies.
             = "country": This indicates what country we want the returned vacancies to be located in.
          */
-        RestTemplate restTemplate = new RestTemplate();
 
         // Configure headers for request
         HttpHeaders headers = new HttpHeaders();

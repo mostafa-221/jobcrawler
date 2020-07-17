@@ -1,6 +1,7 @@
 # Endpoints
 Documentation of endpoints provided by this API
 
+# Regular endpoints (user endpoints from Angular front end)
 ## /scraper
 An endpoint that controls the behaviour of the scraping of IT websites. 
 ### PUT
@@ -57,4 +58,32 @@ To delete a vacancy. **Returns**:
 - 200 OK if the delete was successful
 - 404 Not Found if a product with the specified ID is not found
 
+# Maintenance endpoints (endpoints from maintenance part of Angular front end)
 
+## /getskills
+### GET
+**Returns**
+A list of DTO objects containing the skill names
+
+## /saveskill
+saves a new skill to the skill table.
+### POST
+**Requires**
+a JSON body containing the DTO object of a skill i.e.
+{ 'id' : '',
+  'name':'Angular'
+} 
+the id is not yet used at this point, for our purpose, the id is generated in the back end
+
+## /deleteskill
+skill with the corresponding skill name will be deleted, including the links to vacancies
+### POST
+**Requires** 
+a JSON body containing the DTO object of a skill
+see /saveskill
+
+
+## /skillmatcher
+### PUT
+Deletes links between all vacancies and skills
+Matches all skills with vacancies and creates new links 
