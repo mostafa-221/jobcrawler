@@ -3,11 +3,15 @@ package nl.ordina.jobcrawler.controller;
 import nl.ordina.jobcrawler.SearchResult;
 import nl.ordina.jobcrawler.controller.exception.VacancyNotFoundException;
 import nl.ordina.jobcrawler.model.Vacancy;
+import nl.ordina.jobcrawler.model.assembler.VacancyModelAssembler;
 import nl.ordina.jobcrawler.service.VacancyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -21,12 +25,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @CrossOrigin
 @RestController
@@ -34,10 +40,12 @@ import java.util.UUID;
 public class VacancyController {
 
     private final VacancyService vacancyService;
+    private final VacancyModelAssembler vacancyModelAssembler;
 
     @Autowired
-    public VacancyController(VacancyService vacancyService) {
+    public VacancyController(VacancyService vacancyService, VacancyModelAssembler vacancyModelAssembler) {
         this.vacancyService = vacancyService;
+        this.vacancyModelAssembler = vacancyModelAssembler;
     }
 
     /**
@@ -59,7 +67,7 @@ public class VacancyController {
 
             if (value != null && !value.isBlank())
                 vacancies = vacancyService.findByAnyValue(value, paging);
-            else if(!skills.isEmpty())
+            else if (!skills.isEmpty())
                 vacancies = vacancyService.findBySkills(skills, paging);
             else
                 vacancies = vacancyService.findAll(paging);
@@ -79,25 +87,29 @@ public class VacancyController {
         }
     }
 
+    public CollectionModel<EntityModel<Vacancy>> getVacancies() {
+        List<EntityModel<Vacancy>> vacancies = vacancyService.findAll().stream()
+                .map(vacancyModelAssembler::toModel)
+                .collect(Collectors.toList());
+
+        return CollectionModel.of(vacancies,
+                linkTo(methodOn(VacancyController.class).getVacancies()).withSelfRel()
+        );
+    }
 
     /**
      * Creates a new vacancy.
      *
      * @param vacancy The vacancy to create.
-     * @return
-     *  The created vacancy and code 201 Created
-     *  Code 400 Bad Request if the given body is invalid
+     * @return The created vacancy and code 201 Created
+     * Code 400 Bad Request if the given body is invalid
      */
     @PostMapping
-    public ResponseEntity<Vacancy> createVacancy(@Valid @RequestBody Vacancy vacancy) {
-        Vacancy returnedVacancy = vacancyService.save(vacancy);
-        try {
-            return ResponseEntity
-                    .created(new URI("/vacancies/" + returnedVacancy.getId()))
-                    .body(returnedVacancy);
-        } catch (URISyntaxException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+    public ResponseEntity<EntityModel<Vacancy>> createVacancy(@Valid @RequestBody Vacancy vacancy) {
+        EntityModel<Vacancy> returnedVacancy = vacancyModelAssembler.toModel(vacancyService.save(vacancy));
+        return ResponseEntity
+                .created(returnedVacancy.getRequiredLink(IanaLinkRelations.SELF).toUri())
+                .body(returnedVacancy);
     }
 
 
@@ -109,9 +121,10 @@ public class VacancyController {
      * @throws VacancyNotFoundException when a vacancy is not found with the specified ID.
      */
     @GetMapping("/{id}")
-    public Vacancy getVacancy(@PathVariable UUID id) {
-        return vacancyService.findById(id)
+    public EntityModel<Vacancy> getVacancy(@PathVariable UUID id) {
+        Vacancy vacancy = vacancyService.findById(id)
                 .orElseThrow(() -> new VacancyNotFoundException(id));
+        return vacancyModelAssembler.toModel(vacancy);
     }
 
     /**
@@ -119,13 +132,14 @@ public class VacancyController {
      *
      * @param id The ID of the vacancy to delete.
      * @return A ResponseEntity with one of the following status codes:
-     *  200 OK if the delete was successful
-     *  404 Not Found if a vacancy with the specified ID is not found
+     * 200 OK if the delete was successful
+     * 404 Not Found if a vacancy with the specified ID is not found
      */
     @DeleteMapping("/{id}")
-    public boolean deleteVacancy(@PathVariable UUID id) {
+    public ResponseEntity<?> deleteVacancy(@PathVariable UUID id) {
         vacancyService.findById(id).orElseThrow(() -> new VacancyNotFoundException(id));
-        return vacancyService.delete(id);
+        vacancyService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
 
