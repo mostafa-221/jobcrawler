@@ -3,6 +3,7 @@ package nl.ordina.jobcrawler.controller;
 
 import nl.ordina.jobcrawler.controller.exception.SkillNotFoundException;
 import nl.ordina.jobcrawler.model.Skill;
+import nl.ordina.jobcrawler.model.assembler.SkillModelAssembler;
 import nl.ordina.jobcrawler.service.SkillService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
@@ -32,10 +33,12 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class SkillController {
 
     private final SkillService skillService;
+    private final SkillModelAssembler skillModelAssembler;
 
     @Autowired
-    public SkillController(SkillService skillService) {
+    public SkillController(SkillService skillService, SkillModelAssembler skillModelAssembler) {
         this.skillService = skillService;
+        this.skillModelAssembler = skillModelAssembler;
     }
 
     /**
@@ -80,10 +83,7 @@ public class SkillController {
     public EntityModel<Skill> getSkill(@PathVariable UUID id) {
         Skill skill = skillService.findById(id)
                 .orElseThrow(() -> new SkillNotFoundException(id));
-        return EntityModel.of(skill,
-                linkTo(methodOn(SkillController.class).getSkill(id)).withSelfRel(),
-                linkTo(methodOn(SkillController.class).getSkills()).withRel("skills")
-        );
+        return skillModelAssembler.toModel(skill);
     }
 
     @PutMapping("/{id}")
