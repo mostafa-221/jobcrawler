@@ -22,7 +22,7 @@ import java.util.UUID;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/vacancies")
+//@RequestMapping("/vacancies")
 public class VacancyController {
 
     private final VacancyService vacancyService;
