@@ -24,7 +24,6 @@ class ScraperControllerTest {
     /**
      * Tests the /scrape end point, if it calls the VacancyStarter scrape method
      */
-    @Disabled
     @Test
     void scrape() throws Exception {
         doNothing().when(scraperService).scrape();
