@@ -1,11 +1,9 @@
 package nl.ordina.jobcrawler.scrapers;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.ordina.jobcrawler.model.Skill;
 import nl.ordina.jobcrawler.model.Vacancy;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,10 +13,8 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 
 @Slf4j
@@ -73,7 +69,6 @@ public class YachtVacancyScraper extends VacancyScraper {
                         .postingDate((String) vacancyData.get("date"))
                         .about(getVacancyAbout(vacancyDoc))
                         .salary((String) vacancyMetaData.get("salary"))
-                        .skills(getSkills(vacancyDoc))
                         .build();
 
                 vacancies.add(vacancy);
@@ -113,40 +108,8 @@ public class YachtVacancyScraper extends VacancyScraper {
     }
 
     /**
-     * This method tries to select the needed skills for a vacancy. This can look different per vacancy for which a few scenarios are coded which covers most of them.
-     *
-     * @param doc jsoup document of a vacancy
-     */
-    Set<Skill> getSkills(Document doc) {
-        Set<Skill> returnSkillSet = new HashSet<>();
-        // The needed skills for a vacancy in Dutch are named 'Functie-eisen'. We'd like to select these skills, starting from the h2 tag that contains those. Let's select everything after that h2 tag
-        Elements skillSets = doc.select("h2:contains(Functie-eisen) ~ *");
-        for (Element skillSet : skillSets) {
-            // Once again break the loop if we find another h2 tag.
-            if ("h2".equals(skillSet.tagName()))
-                break;
-
-            // Some vacancies use an unsorted list for the required skills. Some don't. Let's try to select an unsorted list and verify there is one available.
-            if (skillSet.select("ul li").size() > 0) {
-                Elements skills = skillSet.select("ul li");
-                for (Element skill : skills)
-                    returnSkillSet.add(new Skill(skill.text()));
-            } else {
-                if (!skillSet.text().isEmpty()) {
-                    if (skillSet.text().startsWith("• ")) {
-                        returnSkillSet.add(new Skill(skillSet.text().substring(2)));
-                    } else {
-                        returnSkillSet.add(new Skill(skillSet.text()));
-                    }
-                }
-            }
-
-        }
-        return returnSkillSet;
-    }
-
-    /**
      * Method added for testing purposes. getDocument in VacancyScraper.java is static can't be mocked as it's static. It is possible to mock the return value of this function.
+     *
      * @param url retrieve document from this url
      * @return Document
      */
