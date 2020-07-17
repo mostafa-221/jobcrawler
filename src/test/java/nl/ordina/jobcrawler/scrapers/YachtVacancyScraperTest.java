@@ -2,7 +2,6 @@ package nl.ordina.jobcrawler.scrapers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
-import nl.ordina.jobcrawler.model.Skill;
 import nl.ordina.jobcrawler.model.Vacancy;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -23,7 +22,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -174,7 +172,6 @@ public class YachtVacancyScraperTest {
         for (Vacancy vacancy : vacancies) {
             assertEquals("Yacht", vacancy.getBroker());
             assertEquals("Random mock data", vacancy.getAbout());
-            assertEquals(4, vacancy.getSkills().size());
             assertTrue(vacancy.getTitle().contains("Vacancy"));
             assertTrue(vacancy.getVacancyURL().contains("https://www.yacht.nl/vacatures/"));
         }
