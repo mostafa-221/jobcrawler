@@ -16,8 +16,6 @@ import java.util.Set;
 import java.util.UUID;
 
 @Repository
-@RepositoryRestResource
-@CrossOrigin
 public interface VacancyRepository extends JpaRepository<Vacancy, UUID> {
 
     @Transactional
