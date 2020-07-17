@@ -157,37 +157,6 @@ public class YachtVacancyScraperTest {
     }
 
     @Test
-    public void getSkills_should_return_valid_skillSet() {
-        // Pass our vacancyDocument to the method to retrieve the skillset.
-        Set<Skill> skillSet = yachtVacancyScraper.getSkills(VACANCY_DOC);
-
-        // Document contains 4 skills.
-        assertEquals(4, skillSet.size());
-    }
-
-    @Test
-    public void getSkills_should_return_empty_skillSet() {
-        // Passing the removedVacancyDoc to the yachtVacancyScraper.getSkills method
-        Set<Skill> skillSet = yachtVacancyScraper.getSkills(REMOVED_VACANCY_DOC);
-
-        // Expect empty skillSet
-        assertEquals(0, skillSet.size());
-    }
-
-    @Test
-    public void getSkills_should_return_empty_skillSet_DocumentMock() {
-        // Pass the documentMock to the getSkills method.
-        when(documentMock.select(anyString())).thenReturn(new Elements());
-        Set<Skill> skillSet = yachtVacancyScraper.getSkills(documentMock);
-
-        // Assert that the skillSet is empty.
-        assertTrue(skillSet.isEmpty());
-
-        // Verify that the select function was used once on the documentMock.
-        verify(documentMock, times(1)).select(anyString());
-    }
-
-    @Test
     public void getVacancies_should_return_a_list_of_2_vacancies() throws IOException {
         // Spy the scraper as we call methods from its own class.
         YachtVacancyScraper yachtSpy = spy(new YachtVacancyScraper());
