@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
@@ -33,7 +34,7 @@ public class Skill {
     @Column(nullable = false, unique = true, columnDefinition = "TEXT")
     private String name;
 
-    @ManyToMany(mappedBy = "skills")
+    @ManyToMany(mappedBy = "skills", fetch = FetchType.EAGER)
     @JsonIgnoreProperties("skills")
     Set<Vacancy> vacancies = new HashSet<>();
 
