@@ -4,10 +4,12 @@ import nl.ordina.jobcrawler.controller.SkillController;
 import nl.ordina.jobcrawler.model.Skill;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
+import org.springframework.stereotype.Component;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+@Component
 public class SkillModelAssembler implements RepresentationModelAssembler<Skill, EntityModel<Skill>> {
     @Override
     public EntityModel<Skill> toModel(Skill skill) {

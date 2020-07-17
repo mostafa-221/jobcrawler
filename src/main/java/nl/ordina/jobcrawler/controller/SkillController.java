@@ -5,8 +5,11 @@ import nl.ordina.jobcrawler.controller.exception.SkillNotFoundException;
 import nl.ordina.jobcrawler.model.Skill;
 import nl.ordina.jobcrawler.model.assembler.SkillModelAssembler;
 import nl.ordina.jobcrawler.service.SkillService;
+import org.hibernate.engine.internal.Collections;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -22,7 +25,9 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -47,8 +52,14 @@ public class SkillController {
      * @return All skills in the database.
      */
     @GetMapping
-    public Iterable<Skill> getSkills() {
-        return skillService.findAll();
+    public CollectionModel<EntityModel<Skill>> getSkills() {
+        List<EntityModel<Skill>> skills = skillService.findAll().stream()
+                .map(skillModelAssembler::toModel)
+                .collect(Collectors.toList());
+
+        return CollectionModel.of(skills,
+            linkTo(methodOn(SkillController.class).getSkills()).withSelfRel()
+        );
     }
 
 
@@ -60,15 +71,13 @@ public class SkillController {
      * Code 400 Bad Request if the given body is invalid
      */
     @PostMapping
-    public ResponseEntity<Skill> createSkill(@Valid @RequestBody Skill skill) {
-        Skill returnedSkill = skillService.save(skill);
-        try {
-            return ResponseEntity
-                    .created(new URI("/skills/" + returnedSkill.getId()))
-                    .body(returnedSkill);
-        } catch (URISyntaxException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+    public ResponseEntity<EntityModel<Skill>> createSkill(@Valid @RequestBody Skill skill) {
+
+        EntityModel<Skill> returnedSkill = skillModelAssembler.toModel(skillService.save(skill));
+        return ResponseEntity
+                .created(returnedSkill.getRequiredLink(IanaLinkRelations.SELF).toUri())
+                .body(returnedSkill);
+
     }
 
 
@@ -101,9 +110,10 @@ public class SkillController {
      * 404 Not Found if a skill with the specified ID is not found
      */
     @DeleteMapping("/{id}")
-    public boolean deleteSkill(@PathVariable UUID id) {
+    public ResponseEntity<?> deleteSkill(@PathVariable UUID id) {
         skillService.findById(id).orElseThrow(() -> new SkillNotFoundException(id));
-        return skillService.delete(id);
+        skillService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
 
