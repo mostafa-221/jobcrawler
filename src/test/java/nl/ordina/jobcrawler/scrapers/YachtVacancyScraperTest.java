@@ -38,12 +38,12 @@ public class YachtVacancyScraperTest {
     @BeforeAll
     public static void init() throws Exception {
         // Saved .json response in resources folder is being used in this test. Content of this file is needed.
-        File jsonFile = getFile("/Yacht/getRequestResponse.json");
+        File jsonFile = getFile("/yacht/getRequestResponse.json");
         // We need to map the data from the jsonFile according to our YachtVacancyResponse.class
         YachtVacancyResponse yachtVacancyResponse = new ObjectMapper().readValue(jsonFile, YachtVacancyResponse.class);
         jsonResponse = new ResponseEntity<>(yachtVacancyResponse, HttpStatus.OK);
 
-        File jsonFileNoData = getFile("/Yacht/getRequestResponseNoData.json");
+        File jsonFileNoData = getFile("/yacht/getRequestResponseNoData.json");
         YachtVacancyResponse yachtVacancyResponseNoData = new ObjectMapper().readValue(jsonFileNoData, YachtVacancyResponse.class);
         noDataResponse = new ResponseEntity<>(yachtVacancyResponseNoData, HttpStatus.OK);
     }
