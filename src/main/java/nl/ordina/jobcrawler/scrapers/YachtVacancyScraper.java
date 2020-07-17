@@ -107,14 +107,4 @@ public class YachtVacancyScraper extends VacancyScraper {
         return vacancyBody.text();
     }
 
-    /**
-     * Method added for testing purposes. getDocument in VacancyScraper.java is static can't be mocked as it's static. It is possible to mock the return value of this function.
-     *
-     * @param url retrieve document from this url
-     * @return Document
-     */
-    Document getYachtDocument(String url) {
-        return getDocument(url);
-    }
-
 }
