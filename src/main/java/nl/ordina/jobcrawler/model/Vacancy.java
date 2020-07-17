@@ -1,7 +1,12 @@
 package nl.ordina.jobcrawler.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.*;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import nl.ordina.jobcrawler.controller.exception.VacancyURLMalformedException;
 import org.hibernate.annotations.GenericGenerator;
 
