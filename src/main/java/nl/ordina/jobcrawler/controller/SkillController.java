@@ -5,6 +5,7 @@ import nl.ordina.jobcrawler.controller.exception.SkillNotFoundException;
 import nl.ordina.jobcrawler.model.Skill;
 import nl.ordina.jobcrawler.service.SkillService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -21,6 +22,9 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.UUID;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @CrossOrigin
 @RestController
@@ -73,9 +77,13 @@ public class SkillController {
      * @throws SkillNotFoundException when a skill is not found with the specified ID.
      */
     @GetMapping("/{id}")
-    public Skill getSkill(@PathVariable UUID id) {
-        return skillService.findById(id)
+    public EntityModel<Skill> getSkill(@PathVariable UUID id) {
+        Skill skill = skillService.findById(id)
                 .orElseThrow(() -> new SkillNotFoundException(id));
+        return EntityModel.of(skill,
+                linkTo(methodOn(SkillController.class).getSkill(id)).withSelfRel(),
+                linkTo(methodOn(SkillController.class).getSkills()).withRel("skills")
+        );
     }
 
     @PutMapping("/{id}")
