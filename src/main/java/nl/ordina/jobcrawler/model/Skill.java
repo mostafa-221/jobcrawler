@@ -1,5 +1,6 @@
 package nl.ordina.jobcrawler.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,6 +29,7 @@ public class Skill {
 
     @GeneratedValue
     @Id
+    @JsonIgnore
     private UUID id;
 
     // Skill may not be null, must be unique. Define column as text as varchar is limited to 255 characters.
@@ -36,7 +38,7 @@ public class Skill {
     private String name;
 
     @ManyToMany(mappedBy = "skills", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
-    @JsonIgnoreProperties("skills")
+    @JsonIgnore
     Set<Vacancy> vacancies = new HashSet<>();
 
     public Skill(String name) {

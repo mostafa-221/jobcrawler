@@ -5,12 +5,10 @@ import nl.ordina.jobcrawler.controller.exception.SkillNotFoundException;
 import nl.ordina.jobcrawler.model.Skill;
 import nl.ordina.jobcrawler.model.assembler.SkillModelAssembler;
 import nl.ordina.jobcrawler.service.SkillService;
-import org.hibernate.engine.internal.Collections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,8 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -58,10 +54,9 @@ public class SkillController {
                 .collect(Collectors.toList());
 
         return CollectionModel.of(skills,
-            linkTo(methodOn(SkillController.class).getSkills()).withSelfRel()
+                linkTo(methodOn(SkillController.class).getSkills()).withSelfRel()
         );
     }
-
 
     /**
      * Creates a new skill.
@@ -96,9 +91,13 @@ public class SkillController {
     }
 
     @PutMapping("/{id}")
-    public Skill updateSkill(@PathVariable UUID id, @Valid @RequestBody Skill skill) {
+    public ResponseEntity<EntityModel<Skill>> updateSkill(@PathVariable UUID id, @Valid @RequestBody Skill skill) {
         skillService.findById(id).orElseThrow(() -> new SkillNotFoundException(id));
-        return skillService.update(id, skill);
+        EntityModel<Skill> updatedSkillEntityModel = skillModelAssembler.toModel(skillService.update(id, skill));
+
+        return ResponseEntity
+                .created(updatedSkillEntityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) //
+                .body(updatedSkillEntityModel);
     }
 
     /**
