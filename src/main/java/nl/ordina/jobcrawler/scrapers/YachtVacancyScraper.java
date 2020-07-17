@@ -58,9 +58,10 @@ public class YachtVacancyScraper extends VacancyScraper {
                 Map<String, Object> vacancyMetaData = (Map<String, Object>) vacancyData.get("meta");
                 String vacancyURL = (String) vacancyData.get("detailUrl");
                 vacancyURL = vacancyURL.contains("?") ? vacancyURL.split("\\?")[0] : vacancyURL;
-                Document vacancyDoc = getDocument(VACANCY_URL_PREFIX + vacancyURL);
+                vacancyURL = vacancyURL.contains("http") ? vacancyURL : VACANCY_URL_PREFIX + vacancyURL;
+                Document vacancyDoc = getDocument(vacancyURL);
                 Vacancy vacancy = Vacancy.builder()
-                        .vacancyURL(VACANCY_URL_PREFIX + vacancyURL)
+                        .vacancyURL(vacancyURL)
                         .title((String) vacancyData.get("title"))
                         .hours((String) vacancyMetaData.get("hours"))
                         .broker(getBROKER())

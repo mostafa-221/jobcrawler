@@ -2,9 +2,7 @@ package nl.ordina.jobcrawler.scrapers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.ordina.jobcrawler.model.Vacancy;
-import org.jsoup.Jsoup;
 
-import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,6 +19,7 @@ import java.net.URL;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 
@@ -31,27 +30,13 @@ public class YachtVacancyScraperTest {
     private YachtVacancyScraper yachtVacancyScraper;
 
     @Mock
-    private VacancyScraper vacancyScraperMock;
-
-    @Mock
     private RestTemplate restTemplateMock;
-
-    private static Document VACANCY_DOC;
-    private static Document REMOVED_VACANCY_DOC;
 
     private static ResponseEntity<YachtVacancyResponse> jsonResponse;
     private static ResponseEntity<YachtVacancyResponse> noDataResponse;
 
     @BeforeAll
     public static void init() throws Exception {
-        // Grab the file content of the files mentioned below. Parse this file using jsoup as HTML.
-
-        File vacancyDocHtml = getFile("/Yacht/yachtvacancy.html");
-        VACANCY_DOC = Jsoup.parse(vacancyDocHtml, "UTF-8");
-
-        File removedVacancyHtml = getFile("/Yacht/yachtremovedvacancy.html");
-        REMOVED_VACANCY_DOC = Jsoup.parse(removedVacancyHtml, "UTF-8");
-
         // Saved .json response in resources folder is being used in this test. Content of this file is needed.
         File jsonFile = getFile("/Yacht/getRequestResponse.json");
         // We need to map the data from the jsonFile according to our YachtVacancyResponse.class
@@ -69,6 +54,8 @@ public class YachtVacancyScraperTest {
                .thenReturn(jsonResponse);
         List<Vacancy> vacancyList = yachtVacancyScraper.getVacancies();
         assertEquals(2,vacancyList.size());
+        assertEquals("Moerdijk", vacancyList.get(0).getLocation());
+        assertTrue(vacancyList.get(0).getVacancyURL().contains("github"));
     }
 
     // This method is used to retrieve the file content for local saved html files.
