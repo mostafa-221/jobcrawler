@@ -3,6 +3,7 @@ package nl.ordina.jobcrawler.scrapers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.ordina.jobcrawler.model.Vacancy;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -56,6 +57,21 @@ public class YachtVacancyScraperTest {
         assertEquals(2,vacancyList.size());
         assertEquals("Moerdijk", vacancyList.get(0).getLocation());
         assertTrue(vacancyList.get(0).getVacancyURL().contains("github"));
+
+        verify(restTemplateMock, times(1)).getForEntity(anyString(), any(Class.class));
+    }
+
+    @Test
+    public void test_getVacancies_throws_exception() {
+        when(restTemplateMock.getForEntity(anyString(), any(Class.class)))
+                .thenReturn(noDataResponse);
+
+        // Calling the getVacancies() method causes a NullPointerException as the returned data gives an empty json response.
+        Assertions.assertThrows(NullPointerException.class, () -> {
+            List<Vacancy> vacancyList = yachtVacancyScraper.getVacancies();
+        });
+
+        verify(restTemplateMock, times(1)).getForEntity(anyString(), any(Class.class));
     }
 
     // This method is used to retrieve the file content for local saved html files.
