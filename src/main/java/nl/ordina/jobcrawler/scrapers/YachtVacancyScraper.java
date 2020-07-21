@@ -54,7 +54,8 @@ public class YachtVacancyScraper extends VacancyScraper {
             }
 
             log.info(String.format("%s -- Retrieving vacancy urls from page: %d of %d", getBROKER(), yachtVacancyResponse.getCurrentPage(), yachtVacancyResponse.getPages()));
-            for (Map<String, Object> vacancyData : yachtVacancyResponse.getVacancies()) {
+
+            yachtVacancyResponse.getVacancies().stream().parallel().forEachOrdered( (Map<String, Object> vacancyData) -> {
                 Map<String, Object> vacancyMetaData = (Map<String, Object>) vacancyData.get("meta");
                 String vacancyURL = (String) vacancyData.get("detailUrl");
                 vacancyURL = vacancyURL.contains("?") ? vacancyURL.split("\\?")[0] : vacancyURL;
@@ -74,7 +75,8 @@ public class YachtVacancyScraper extends VacancyScraper {
 
                 vacancies.add(vacancy);
                 log.info(String.format("%s - Vacancy found: %s", getBROKER(), vacancy.getTitle()));
-            }
+            });
+
         }
         log.info(String.format("%s -- Returning scraped vacancies", getBROKER()));
         return vacancies;
