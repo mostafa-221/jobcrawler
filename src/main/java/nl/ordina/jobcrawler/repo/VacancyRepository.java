@@ -23,12 +23,12 @@ public interface VacancyRepository extends JpaRepository<Vacancy, UUID> {
     @Transactional
     Optional<Vacancy> findByVacancyURLEquals(String url);
 
-    @Query(value = "SELECT v.* FROM Vacancy AS v " +
+    @Query(value = "SELECT DISTINCT v.* FROM Vacancy AS v " +
             "JOIN vacancy_skills AS vs ON vs.vacancy_id = v.id " +
             "JOIN skill AS s ON s.id = vs.skill_id WHERE s.name IN (:skills)" , nativeQuery = true)
     Page<Vacancy> findBySkills(@Param("skills") Set<String> skills, Pageable pageable);
 
-    @Query(value = "SELECT v.* FROM Vacancy AS v " +
+    @Query(value = "SELECT DISTINCT v.* FROM Vacancy AS v " +
             "WHERE lower(v.about) LIKE lower(concat('%', :value, '%')) OR lower(v.location) LIKE lower(concat('%', :value, '%')) " +
             "OR lower(v.title) LIKE lower(concat('%', :value, '%'))", nativeQuery = true)
     Page<Vacancy> findByAnyValue(@Param("value") String value, Pageable pageable);

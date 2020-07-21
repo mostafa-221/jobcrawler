@@ -6,13 +6,16 @@ import nl.ordina.jobcrawler.repo.VacancyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.util.*;
 
 @Service
 public class VacancyService implements CRUDService<Vacancy, UUID> {
@@ -23,6 +26,9 @@ public class VacancyService implements CRUDService<Vacancy, UUID> {
     public VacancyService(VacancyRepository vacancyRepository) {
         this.vacancyRepository = vacancyRepository;
     }
+
+    @Autowired
+    private EntityManager entityManager;
 
 
     /**
@@ -60,8 +66,41 @@ public class VacancyService implements CRUDService<Vacancy, UUID> {
      * @return All vacancies in the database filter by skills.
      */
     public Page<Vacancy> findBySkills(Set<String> skills, Pageable paging) {
-        return vacancyRepository.findBySkills(skills,paging);
+
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Vacancy> criteriaQuery = criteriaBuilder.createQuery(Vacancy.class);
+        Root<Vacancy> vacancyRoot = criteriaQuery.from(Vacancy.class);
+        List<Predicate> predicatelist = new ArrayList<>();
+        for(String s : skills) {
+            predicatelist.add(criteriaBuilder.like(vacancyRoot.get("about"), "% " + s + " %"));
+        }
+
+        switch (predicatelist.size()) {
+            case 2:
+                criteriaQuery.where(criteriaBuilder.and(predicatelist.get(0),predicatelist.get(1)));
+                break;
+
+            case 3:
+                criteriaQuery.where(criteriaBuilder.and(predicatelist.get(0),predicatelist.get(1),predicatelist.get(2)));
+                break;
+
+            case 4:
+                criteriaQuery.where(criteriaBuilder.and(predicatelist.get(0),predicatelist.get(1),predicatelist.get(2),predicatelist.get(3)));
+                break;
+
+            case 5:
+                criteriaQuery.where(criteriaBuilder.and(predicatelist.get(0),predicatelist.get(1),predicatelist.get(2),predicatelist.get(3),predicatelist.get(4)));
+                break;
+            default : criteriaQuery.where(criteriaBuilder.and(predicatelist.get(0)));
+
+        }
+
+        return new PageImpl<> (entityManager.createQuery(criteriaQuery).getResultList());
+
+
+        //return vacancyRepository.findBySkills(skills,paging);
     }
+
 
     /**
      * Returns all vacancies in the database filter by any values that user enters in the search field.
@@ -133,8 +172,4 @@ public class VacancyService implements CRUDService<Vacancy, UUID> {
     public Optional<Vacancy> findByURL(String url) {
         return vacancyRepository.findByVacancyURLEquals(url);
     }
-
-
-
-
 }
