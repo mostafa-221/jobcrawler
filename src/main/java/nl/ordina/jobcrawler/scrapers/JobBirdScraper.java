@@ -63,7 +63,7 @@ public class JobBirdScraper extends VacancyScraper {
          */
         List<Vacancy> vacancies = new ArrayList<>();
         List<String> vacancyURLs = getVacancyURLs();
-        for (String vacancyURL : vacancyURLs) {
+        vacancyURLs.parallelStream().forEachOrdered(vacancyURL -> {
             Document doc = getDocument(vacancyURL);
             if (doc != null) {
                 Vacancy vacancy = Vacancy.builder()
@@ -80,7 +80,7 @@ public class JobBirdScraper extends VacancyScraper {
 
                 log.info(String.format("%s - Vacancy found: %s", getBROKER(), vacancy.getTitle()));
             }
-        }
+        });
         log.info(String.format("%s -- Returning scraped vacancies", getBROKER()));
 
 
