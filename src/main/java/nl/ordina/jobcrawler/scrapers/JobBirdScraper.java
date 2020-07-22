@@ -63,7 +63,7 @@ public class JobBirdScraper extends VacancyScraper {
          */
         List<Vacancy> vacancies = new ArrayList<>();
         List<String> vacancyURLs = getVacancyURLs();
-        vacancyURLs.parallelStream().forEachOrdered(vacancyURL -> {
+        vacancyURLs.parallelStream().forEach(vacancyURL -> {
             Document doc = getDocument(vacancyURL);
             if (doc != null) {
                 Vacancy vacancy = Vacancy.builder()

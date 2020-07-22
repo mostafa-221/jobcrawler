@@ -93,7 +93,7 @@ public class ScraperService {
 
     private List<Vacancy> startScraping() {
         List<Vacancy> vacanciesList = new CopyOnWriteArrayList<>();
-        scraperList.parallelStream().forEachOrdered(vacancyScraper -> vacanciesList.addAll(vacancyScraper.getVacancies()));
+        scraperList.parallelStream().forEach(vacancyScraper -> vacanciesList.addAll(vacancyScraper.getVacancies()));
         return vacanciesList;
     }
 }
