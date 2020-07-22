@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /*  Search is limited to URLs for ICT jobs with search term "java"
  *       Search URL will be completed later:a page number is added to the url
@@ -61,7 +62,7 @@ public class JobBirdScraper extends VacancyScraper {
         /*
         getVacancies retrieves all vacancyURLs via the getVacancyURLs method and set the various elements of Vacancy below.
          */
-        List<Vacancy> vacancies = new ArrayList<>();
+        List<Vacancy> vacancies = new CopyOnWriteArrayList<>();
         List<String> vacancyURLs = getVacancyURLs();
         vacancyURLs.parallelStream().forEach(vacancyURL -> {
             Document doc = getDocument(vacancyURL);
