@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
 @Slf4j
@@ -42,7 +43,7 @@ public class YachtVacancyScraper extends VacancyScraper {
     @Override
     public List<Vacancy> getVacancies() {
         log.info(String.format("%s -- Start scraping", getBROKER().toUpperCase()));
-        List<Vacancy> vacancies = new ArrayList<>();
+        List<Vacancy> vacancies = new CopyOnWriteArrayList<>();
 
         int totalnumberOfPages = 1;
         for (int pageNumber = 1; pageNumber <= totalnumberOfPages; pageNumber++) {

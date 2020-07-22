@@ -59,7 +59,8 @@ public class YachtVacancyScraperTest {
                .thenReturn(jsonResponse);
         List<Vacancy> vacancyList = yachtVacancyScraper.getVacancies();
         assertEquals(2,vacancyList.size());
-        assertEquals("Moerdijk", vacancyList.get(0).getLocation());
+        assertTrue("Moerdijk".equals(vacancyList.get(0).getLocation())
+                || "Moerdijk".equals(vacancyList.get(1).getLocation()));
         assertTrue(vacancyList.get(0).getVacancyURL().contains("github"));
 
         verify(restTemplateMock, times(1)).getForEntity(anyString(), any(Class.class));
