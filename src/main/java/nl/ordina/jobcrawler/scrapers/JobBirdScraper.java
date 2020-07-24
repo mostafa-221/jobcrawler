@@ -201,7 +201,8 @@ public class JobBirdScraper extends VacancyScraper {
         Elements httplinks = lijst.select("a[href]");
         for (Element e : httplinks) {
             String sLink = e.attr("abs:href");
-            result.add(sLink);
+            String vacancyLink = sLink.contains("?") ? sLink.split("\\?")[0] : sLink;
+            result.add(vacancyLink);
         }
 
         return result;
