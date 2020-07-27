@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /*
 This 'starter' class uses the @Scheduled annotation. Every 15 minutes it executes the cronJobSch() function to retrieve all vacancies.
@@ -91,8 +92,8 @@ public class ScraperService {
     }
 
     private List<Vacancy> startScraping() {
-        List<Vacancy> vacanciesList = new ArrayList<>();
-        scraperList.forEach(vacancyScraper -> vacanciesList.addAll(vacancyScraper.getVacancies()));
+        List<Vacancy> vacanciesList = new CopyOnWriteArrayList<>();
+        scraperList.parallelStream().forEach(vacancyScraper -> vacanciesList.addAll(vacancyScraper.getVacancies()));
         return vacanciesList;
     }
 }
