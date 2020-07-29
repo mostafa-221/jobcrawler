@@ -1,6 +1,8 @@
 # Wireframe of the vacancylist
 
-( ADD LINK to JPEG HERE)
+
+![screenshot-wireframe-vacancylist](https://user-images.githubusercontent.com/55943332/88810727-08cb0f80-d1b6-11ea-96d8-1e8f660e6699.png)
+
 
 The vacancies screen shows the vacancies retrieved by the backend. (NB. search button and search field is missing from this wireframe screen)
 
