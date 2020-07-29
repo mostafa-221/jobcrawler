@@ -67,7 +67,7 @@ public class VacancyController {
 
             if (value != null && !value.isBlank())
                 vacancies = vacancyService.findByAnyValue(value, paging);
-            else if (!skills.isEmpty())
+            else if(skills != null && !skills.isEmpty())
                 vacancies = vacancyService.findBySkills(skills, paging);
             else
                 vacancies = vacancyService.findAll(paging);
