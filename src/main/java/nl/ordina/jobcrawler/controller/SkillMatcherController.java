@@ -6,11 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @CrossOrigin
 @RestController
+@RequestMapping(path = "/skillmatcher")
 public class SkillMatcherController {
 
     private final SkillMatcherService skillMatcherService;
@@ -21,7 +23,7 @@ public class SkillMatcherController {
     }
 
     // rematch the skills
-    @PutMapping(path = "/skillmatcher")
+    @PutMapping
     public void relinkSkills() {
         log.info("relink skills");
         Thread newThread = new Thread(skillMatcherService::relinkSkills);
