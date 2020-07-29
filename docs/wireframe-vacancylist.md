@@ -1,6 +1,6 @@
 # Wireframe of the vacancylist
 
-(HIER KOMT SCHERMVOORBEELD)
+( ADD LINK to JPEG HERE)
 
 The vacancies screen shows the vacancies retrieved by the backend. (NB. search button and search field is missing from this wireframe screen)
 
