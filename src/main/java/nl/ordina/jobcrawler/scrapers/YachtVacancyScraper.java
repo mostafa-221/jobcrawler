@@ -1,11 +1,9 @@
 package nl.ordina.jobcrawler.scrapers;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.ordina.jobcrawler.model.Skill;
 import nl.ordina.jobcrawler.model.Vacancy;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,10 +13,9 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
 @Slf4j
@@ -46,7 +43,7 @@ public class YachtVacancyScraper extends VacancyScraper {
     @Override
     public List<Vacancy> getVacancies() {
         log.info(String.format("%s -- Start scraping", getBROKER().toUpperCase()));
-        List<Vacancy> vacancies = new ArrayList<>();
+        List<Vacancy> vacancies = new CopyOnWriteArrayList<>();
 
         int totalnumberOfPages = 1;
         for (int pageNumber = 1; pageNumber <= totalnumberOfPages; pageNumber++) {
@@ -58,13 +55,15 @@ public class YachtVacancyScraper extends VacancyScraper {
             }
 
             log.info(String.format("%s -- Retrieving vacancy urls from page: %d of %d", getBROKER(), yachtVacancyResponse.getCurrentPage(), yachtVacancyResponse.getPages()));
-            for (Map<String, Object> vacancyData : yachtVacancyResponse.getVacancies()) {
+
+            yachtVacancyResponse.getVacancies().parallelStream().forEach( (Map<String, Object> vacancyData) -> {
                 Map<String, Object> vacancyMetaData = (Map<String, Object>) vacancyData.get("meta");
                 String vacancyURL = (String) vacancyData.get("detailUrl");
                 vacancyURL = vacancyURL.contains("?") ? vacancyURL.split("\\?")[0] : vacancyURL;
-                Document vacancyDoc = getYachtDocument(VACANCY_URL_PREFIX + vacancyURL);
+                vacancyURL = vacancyURL.contains("http") ? vacancyURL : VACANCY_URL_PREFIX + vacancyURL;
+                Document vacancyDoc = getDocument(vacancyURL);
                 Vacancy vacancy = Vacancy.builder()
-                        .vacancyURL(VACANCY_URL_PREFIX + vacancyURL)
+                        .vacancyURL(vacancyURL)
                         .title((String) vacancyData.get("title"))
                         .hours((String) vacancyMetaData.get("hours"))
                         .broker(getBROKER())
@@ -73,12 +72,12 @@ public class YachtVacancyScraper extends VacancyScraper {
                         .postingDate((String) vacancyData.get("date"))
                         .about(getVacancyAbout(vacancyDoc))
                         .salary((String) vacancyMetaData.get("salary"))
-                        .skills(getSkills(vacancyDoc))
                         .build();
 
                 vacancies.add(vacancy);
                 log.info(String.format("%s - Vacancy found: %s", getBROKER(), vacancy.getTitle()));
-            }
+            });
+
         }
         log.info(String.format("%s -- Returning scraped vacancies", getBROKER()));
         return vacancies;
@@ -90,7 +89,7 @@ public class YachtVacancyScraper extends VacancyScraper {
      * @param pageNumber Pagenumber of which the vacancy data should be retrieved
      * @return json response from the get request
      */
-    YachtVacancyResponse scrapeVacancies(int pageNumber) {
+    private YachtVacancyResponse scrapeVacancies(int pageNumber) {
         MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
         mappingJackson2HttpMessageConverter.setSupportedMediaTypes(Arrays.asList(MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM));
         restTemplate.getMessageConverters().add(mappingJackson2HttpMessageConverter);
@@ -106,52 +105,10 @@ public class YachtVacancyScraper extends VacancyScraper {
      *
      * @param doc jsoup document of a vacancy
      */
-    String getVacancyAbout(Document doc) {
+    private String getVacancyAbout(Document doc) {
         // Extracts the about part from the vacancy
         Element vacancyBody = doc.select(".rich-text--vacancy").first();
         return vacancyBody.text();
-    }
-
-    /**
-     * This method tries to select the needed skills for a vacancy. This can look different per vacancy for which a few scenarios are coded which covers most of them.
-     *
-     * @param doc jsoup document of a vacancy
-     */
-    Set<Skill> getSkills(Document doc) {
-        Set<Skill> returnSkillSet = new HashSet<>();
-        // The needed skills for a vacancy in Dutch are named 'Functie-eisen'. We'd like to select these skills, starting from the h2 tag that contains those. Let's select everything after that h2 tag
-        Elements skillSets = doc.select("h2:contains(Functie-eisen) ~ *");
-        for (Element skillSet : skillSets) {
-            // Once again break the loop if we find another h2 tag.
-            if ("h2".equals(skillSet.tagName()))
-                break;
-
-            // Some vacancies use an unsorted list for the required skills. Some don't. Let's try to select an unsorted list and verify there is one available.
-            if (skillSet.select("ul li").size() > 0) {
-                Elements skills = skillSet.select("ul li");
-                for (Element skill : skills)
-                    returnSkillSet.add(new Skill(skill.text()));
-            } else {
-                if (!skillSet.text().isEmpty()) {
-                    if (skillSet.text().startsWith("• ")) {
-                        returnSkillSet.add(new Skill(skillSet.text().substring(2)));
-                    } else {
-                        returnSkillSet.add(new Skill(skillSet.text()));
-                    }
-                }
-            }
-
-        }
-        return returnSkillSet;
-    }
-
-    /**
-     * Method added for testing purposes. getDocument in VacancyScraper.java is static can't be mocked as it's static. It is possible to mock the return value of this function.
-     * @param url retrieve document from this url
-     * @return Document
-     */
-    Document getYachtDocument(String url) {
-        return getDocument(url);
     }
 
 }

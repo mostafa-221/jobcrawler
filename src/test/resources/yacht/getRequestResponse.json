@@ -16,8 +16,8 @@
         "salary": "4.500"
       },
       "date": "02 juni 2020",
-      "detailUrl": "/vacatures/9081362/changemanager-%282-6-2020%29?position=1&filter=ja&listingType=regular&vakgebiedProf=IT",
-      "vacancyNumber": "9081362"
+      "detailUrl": "https://raw.githubusercontent.com/mostafa-221/jobcrawler-backend/develop/src/test/resources/yacht/yachtvacancy.html",
+      "vacancyNumber": "9082737"
     },
     {
       "title": "Vacancy 2",
@@ -27,8 +27,8 @@
         "location": "Amsterdam"
       },
       "date": "02 juni 2020",
-      "detailUrl": "/vacatures/9081344/azure-data-platform-engineer?position=2&filter=ja&listingType=regular&vakgebiedProf=IT",
-      "vacancyNumber": "9081344"
+      "detailUrl": "https://raw.githubusercontent.com/mostafa-221/jobcrawler-backend/develop/src/test/resources/yacht/yachtvacancy.html",
+      "vacancyNumber": "9082737"
     }
   ],
   "promoBanner": null,
