@@ -49,7 +49,7 @@ public class SkillController {
      */
     @GetMapping
     public CollectionModel<EntityModel<Skill>> getSkills() {
-        List<EntityModel<Skill>> skills = skillService.findAll().stream()
+        List<EntityModel<Skill>> skills = skillService.findByOrderByNameAsc().stream()
                 .map(skillModelAssembler::toModel)
                 .collect(Collectors.toList());
 
