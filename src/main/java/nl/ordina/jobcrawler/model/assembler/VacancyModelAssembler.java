@@ -11,6 +11,11 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
 public class VacancyModelAssembler implements RepresentationModelAssembler<Vacancy, EntityModel<Vacancy>> {
+    /**
+     * Takes a vacancy and adds RESTful links to it and returns it as an EntityModel
+     * @param vacancy vacancy to be converted 
+     * @return EntityModel of the vacancy containing links
+     */
     @Override
     public EntityModel<Vacancy> toModel(Vacancy vacancy) {
         return EntityModel.of(vacancy,

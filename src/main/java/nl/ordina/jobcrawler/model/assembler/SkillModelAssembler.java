@@ -11,6 +11,11 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
 public class SkillModelAssembler implements RepresentationModelAssembler<Skill, EntityModel<Skill>> {
+    /**
+     * Takes a skill and adds RESTful links to it and returns it as an EntityModel
+     * @param skill skill to be converted
+     * @return EntityModel of the skill containing links
+     */
     @Override
     public EntityModel<Skill> toModel(Skill skill) {
         return EntityModel.of(skill,
