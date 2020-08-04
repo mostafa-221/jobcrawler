@@ -1,0 +1,23 @@
+version: "3"
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=jobcrawler
+    restart: unless-stopped
+
+  # APP*****************************************
+  jobcrawler-appp:
+    build: .
+#    image: springbootapp:latest
+    container_name: jobcrawler-appp
+    ports:
+      - 8080:8080
+    restart: unless-stopped
+volumes:
+  postgres-data:
