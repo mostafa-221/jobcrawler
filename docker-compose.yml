@@ -14,7 +14,6 @@ services:
   # APP*****************************************
   jobcrawler-app:
     build: ./
-#    image: springbootapp:latest
     container_name: jobcrawler-app
     ports:
       - 8080:8080
