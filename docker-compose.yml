@@ -2,7 +2,7 @@ version: "3"
 services:
   jobcrawler-db:
     image: postgres:latest
-    container_name: postgres
+    container_name: jobcrawler-db
     ports:
       - 5432:5432
     environment:
@@ -19,5 +19,7 @@ services:
     ports:
       - 8080:8080
     restart: unless-stopped
+    depends_on:
+      - jobcrawler-db
 volumes:
   postgres-data:
