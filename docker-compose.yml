@@ -1,6 +1,6 @@
 version: "3"
 services:
-  postgres:
+  jobcrawler-db:
     image: postgres:latest
     container_name: postgres
     ports:
