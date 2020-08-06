@@ -16,4 +16,4 @@ FROM openjdk:11-jre-slim
 # copy application jar (with libraries inside)
 COPY --from=builder application/target/*.jar /app.jar
 # specify default command
-ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom", "-jar", "/app/app.jar"]
+ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom", "-jar", "app.jar"]
