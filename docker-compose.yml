@@ -13,7 +13,7 @@ services:
 
   # APP*****************************************
   jobcrawler-appp:
-    build: .
+    build: ./
 #    image: springbootapp:latest
     container_name: jobcrawler-appp
     ports:
