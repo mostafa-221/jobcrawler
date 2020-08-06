@@ -12,10 +12,10 @@ services:
     restart: unless-stopped
 
   # APP*****************************************
-  jobcrawler-appp:
+  jobcrawler-app:
     build: ./
 #    image: springbootapp:latest
-    container_name: jobcrawler-appp
+    container_name: jobcrawler-app
     ports:
       - 8080:8080
     restart: unless-stopped
