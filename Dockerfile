@@ -12,7 +12,7 @@ COPY src src
 RUN ./mvnw package -DskipTests
 
 # OpenJDK JRE only
-FROM openjdk:11-jre-slim
+FROM openjdk:11-jre-slim-buster
 # copy application jar (with libraries inside)
 COPY --from=builder application/target/*.jar /app.jar
 # specify default command
