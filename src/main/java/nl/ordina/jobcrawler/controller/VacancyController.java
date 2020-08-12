@@ -90,13 +90,9 @@ public class VacancyController {
     }
 
     public CollectionModel<EntityModel<Vacancy>> getVacancies() {
-        List<EntityModel<Vacancy>> vacancies = vacancyService.findAll().stream()
-                .map(vacancyModelAssembler::toModel)
-                .collect(Collectors.toList());
 
-        return CollectionModel.of(vacancies,
-                linkTo(methodOn(VacancyController.class).getVacancies()).withSelfRel()
-        );
+        return vacancyModelAssembler.toCollectionModel(vacancyService.findAll());
+
     }
 
     /**
