@@ -1,10 +1,16 @@
 package nl.ordina.jobcrawler.model.assembler;
 
+import nl.ordina.jobcrawler.controller.SkillController;
 import nl.ordina.jobcrawler.controller.VacancyController;
+import nl.ordina.jobcrawler.model.Skill;
 import nl.ordina.jobcrawler.model.Vacancy;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -22,6 +28,17 @@ public class VacancyModelAssembler implements RepresentationModelAssembler<Vacan
                 linkTo(methodOn(VacancyController.class).getVacancy(vacancy.getId())).withSelfRel(),
                 linkTo(methodOn(VacancyController.class).getVacancies()).withRel("vacancies")
         );
+    }
+
+    @Override
+    public CollectionModel<EntityModel<Vacancy>> toCollectionModel(Iterable<? extends Vacancy> vacancies) {
+        List<EntityModel<Vacancy>> returnVacancies = new ArrayList<>();
+        vacancies.forEach(skill -> returnVacancies.add(toModel(skill)));
+
+        return CollectionModel.of(returnVacancies,
+                linkTo(methodOn(SkillController.class).getSkills()).withSelfRel()
+        );
+
     }
 
 }
