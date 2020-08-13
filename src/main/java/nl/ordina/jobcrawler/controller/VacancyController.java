@@ -2,7 +2,9 @@ package nl.ordina.jobcrawler.controller;
 
 import nl.ordina.jobcrawler.SearchResult;
 import nl.ordina.jobcrawler.controller.exception.VacancyNotFoundException;
+import nl.ordina.jobcrawler.model.Skill;
 import nl.ordina.jobcrawler.model.Vacancy;
+import nl.ordina.jobcrawler.model.assembler.SkillModelAssembler;
 import nl.ordina.jobcrawler.model.assembler.VacancyModelAssembler;
 import nl.ordina.jobcrawler.service.VacancyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,13 +90,9 @@ public class VacancyController {
     }
 
     public CollectionModel<EntityModel<Vacancy>> getVacancies() {
-        List<EntityModel<Vacancy>> vacancies = vacancyService.findAll().stream()
-                .map(vacancyModelAssembler::toModel)
-                .collect(Collectors.toList());
 
-        return CollectionModel.of(vacancies,
-                linkTo(methodOn(VacancyController.class).getVacancies()).withSelfRel()
-        );
+        return vacancyModelAssembler.toCollectionModel(vacancyService.findAll());
+
     }
 
     /**
@@ -125,6 +123,20 @@ public class VacancyController {
         Vacancy vacancy = vacancyService.findById(id)
                 .orElseThrow(() -> new VacancyNotFoundException(id));
         return vacancyModelAssembler.toModel(vacancy);
+    }
+
+    /**
+     * Returns the skills of a vacancy with the specified ID.
+     *
+     * @param id The ID of the vacancy.
+     * @return The skills of the vacancy with the specified ID
+     * @throws VacancyNotFoundException when a vacancy is not found with the specified ID.
+     */
+    @GetMapping("/{id}/skills")
+    public CollectionModel<EntityModel<Skill>> getSkillsById(@PathVariable UUID id) {
+        Vacancy vacancy = vacancyService.findById(id)
+                .orElseThrow(() -> new VacancyNotFoundException(id));
+        return new SkillModelAssembler().toCollectionModel(vacancy.getSkills());
     }
 
     /**

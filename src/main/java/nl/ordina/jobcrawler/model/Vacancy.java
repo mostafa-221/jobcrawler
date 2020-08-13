@@ -37,7 +37,6 @@ public class Vacancy {
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-    @JsonIgnore
     private UUID id;
     @NotNull
     private String vacancyURL;

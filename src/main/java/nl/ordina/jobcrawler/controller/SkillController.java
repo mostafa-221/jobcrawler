@@ -49,13 +49,8 @@ public class SkillController {
      */
     @GetMapping
     public CollectionModel<EntityModel<Skill>> getSkills() {
-        List<EntityModel<Skill>> skills = skillService.findByOrderByNameAsc().stream()
-                .map(skillModelAssembler::toModel)
-                .collect(Collectors.toList());
 
-        return CollectionModel.of(skills,
-                linkTo(methodOn(SkillController.class).getSkills()).withSelfRel()
-        );
+        return skillModelAssembler.toCollectionModel(skillService.findByOrderByNameAsc());
     }
 
     /**
