@@ -8,7 +8,7 @@ Smoketest for both front end and backend for the JobCrawler application
 Test whether the application runs and is visible from the browser. Postgres is present in a separate docker container that must be run.
 
 ### Creates the container, runs it and creates a database 'jobcrawler' in it:
-#### Start the shell in the source folder of the backend project
+#### 1. Start the shell in the source folder of the backend project
 docker run --name jobcrawler-postgres -e POSTGRES_PASSWORD=admin -d -p 5432:5432 postgres
 
 docker exec -it jobcrawler-postgres bash
@@ -25,7 +25,7 @@ Run the application from IntelliJ
 
 What do I see: the application boots without problems and doesn't start scraping
 
-2. Start scraping
+#### 2. Start scraping
 
 Edit the scraperService.java and uncomment line @ PostConstruct before the scrape() method. Run the application again.
 
