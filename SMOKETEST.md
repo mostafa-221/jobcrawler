@@ -3,7 +3,7 @@
 Smoketest for both front end and backend for the JobCrawler application
 
 
-### Instellingen JDK etcetera 
+### Settings for JDK 
 
 Install JDK 11.0.6 (for example, the Oracle version, openJDK should also work).
 
