@@ -3,6 +3,15 @@
 Smoketest for both front end and backend for the JobCrawler application
 
 
+### Instellingen JDK etcetera 
+
+Install JDK 11.0.6 (for example, the Oracle version, openJDK should also work).
+
+In project settings: project SDK is 11, Project name is jobcrawler, project language level is 11 - local variable syntax for lambda parameters
+Ditto (11 - local variable syntax for lambda parameters) for project modules
+
+Install lombok into the IDE
+
 ### Test Backend run 1. Run from IntelliJ, separate Postgres docker file
 
 Test whether the application runs and is visible from the browser. Postgres is present in a separate docker container that must be run.
