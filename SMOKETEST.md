@@ -36,19 +36,34 @@ select title from vacancies
 
 I should now see a number of vacancies
 
-### Test Backend run 2 Create and run docker container including Postgres  
+### Start frontend
 
-#### Test1: Check get vacancies endpoint from browser
+#### 1. Start frontend in IntelliJ and in the browser
 
-#### Test2: Check get skills endpoint from browser
+Open the frontend in IntelliJ, start the frontend with ng serve
 
-#### Test3: Check add skill with Postman  
+What do I see: the application compiles successfully
 
+When I click in the browser on http://localhost:4200
 
+What do I see: a list of vacancies is shown. The filter column is still missing, because the skills are still empty.
 
+#### 2. Add skills via frontend
 
-### Deploy and run on server
+http://localhost:4200/getskills
 
+What do I see: a page that allows me to add skills.
 
+Add a skill: Java
 
+What do I see: Java is added to the skills
 
+What do I see: When I enter the container again and the database the skill is present in the skills table.
+
+#### 3. Relink the skills
+
+Click the relink button
+
+What do I see: in the IntelliJ console log it is visible that all vacancies are relinked to the Java skill.
+
+What do I see: in the container, in the database, I can see that the link table now has a number of entries.
