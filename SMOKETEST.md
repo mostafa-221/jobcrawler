@@ -27,7 +27,7 @@ What do I see: the application boots without problems and doesn't start scraping
 
 #### 2. Start scraping
 
-Edit the scraperService.java and uncomment line @ PostConstruct before the scrape() method. Run the application again.
+Edit the ScraperService.java and uncomment line @ PostConstruct before the scrape() method. Run the application again.
 
 What do I see: application starts and starts scraping
 
