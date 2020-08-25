@@ -1,6 +1,6 @@
-![Java CI with Maven](https://github.com/mostafa-221/jobcrawler-backend/workflows/Java%20CI%20with%20Maven/badge.svg)
-
 # Jobcrawler Backend
+**This repository is no longer maintained.** Please head to [Jobcrawler-backend](https://github.com/Jobcrawler-Ordina/jobcrawler-backend) for furthur development.
+
 Backend for the job crawler to find IT vacancies
 
 ## Endpoints
